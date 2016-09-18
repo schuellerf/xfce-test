@@ -11,7 +11,7 @@ RUN \
   rm -rf /var/lib/apt/lists/*
 
 RUN git clone --branch ${AVOCADO_BRANCH} https://github.com/avocado-framework/avocado.git && \
-    cd avocado && pip install -r requirements.txt && python setup.py install && \
+    cd avocado && pip install -r requirements.txt && make link && python setup.py install && \
     echo "pip freeze" >> /etc/avocado/sysinfo/commands
 
 #needed for LDTP and friends
