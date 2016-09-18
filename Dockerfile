@@ -1,18 +1,31 @@
 FROM ubuntu:16.04
 MAINTAINER Florian Schüller <florian.schueller@gmail.com>
 
+ENV AVOCADO_BRANCH ${AVOCADO_BRANCH:-master}
+
+#Test specific
+RUN \
+  apt-get update && \
+  apt-get -y install \
+          git python-dogtail ldtp libglib2.0-bin python-setuptools python-pip libvirt0 libvirt-dev liblzma-dev libyaml-dev && \
+  rm -rf /var/lib/apt/lists/*
+
+RUN git clone --branch ${AVOCADO_BRANCH} https://github.com/avocado-framework/avocado.git && \
+    cd avocado && pip install -r requirements.txt && python setup.py install && \
+    echo "pip freeze" >> /etc/avocado/sysinfo/commands
+
+#needed for LDTP and friends
+RUN /usr/bin/gsettings set org.gnome.desktop.interface toolkit-accessibility true
+
+#XFCE specific
 RUN \
   apt-get update && \
   apt-get -y install \
           xfce4-terminal xfce4-panel xfce4-session && \
   apt-get -y install \
-          libxfce4panel-2.0-dev libxfce4util-dev libxfconf-0-dev xfce4-dev-tools git build-essential libgtk-3-dev gtk-doc-tools libgtk2.0-dev libx11-dev libglib2.0-dev && \
-  apt-get -y install \
-          python-dogtail ldtp && \
-rm -rf /var/lib/apt/lists/*
+          libxfce4panel-2.0-dev libxfce4util-dev libxfconf-0-dev xfce4-dev-tools build-essential libgtk-3-dev gtk-doc-tools libgtk2.0-dev libx11-dev libglib2.0-dev && \
+  rm -rf /var/lib/apt/lists/*
 
-#needed for LDTP and friends
-RUN /usr/bin/gsettings set org.gnome.desktop.interface toolkit-accessibility true
 
 # Replace 1000 with your user / group id
 #RUN export uid=1000 gid=1000 && \

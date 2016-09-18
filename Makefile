@@ -1,11 +1,19 @@
-.PHONY: build run test xephyr setup exec-only start
+.PHONY: build xephyr setup exec-only all avocado-tests manual-session
 
-#just build and start the docker
-start: build run
+export AVOCADO_BRANCH=39.0
+
+# for experimenting you might want to start with
+# make manual-session
+
+all: avocado-tests
 
 #only a helper for ubuntu
 setup:
 	sudo apt install -y xserver-xephyr docker.io
+
+avocado-tests: test-setup run-avocado-tests run-manual-session test-teardown
+
+manual-session: test-setup start-clipman run-manual-session test-teardown
 
 xephyr:
 	-killall -q Xephyr
@@ -14,8 +22,6 @@ xephyr:
 build:
 	docker build --tag test-xfce-ubuntu:latest .
 
-run: build exec-only
-
 test-setup: xephyr
 	-docker run --detach \
               --env DISPLAY=":1" \
@@ -23,7 +29,8 @@ test-setup: xephyr
               test-xfce-ubuntu \
               /usr/bin/ldtp > .docker_ID
 	-docker exec --detach $$(cat .docker_ID) xfce4-session
-	./xfce4-session-default.py $$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $$(cat .docker_ID))
+	docker cp ./xfce4-session-default.py $$(cat .docker_ID):/tmp
+	docker exec $$(cat .docker_ID) /tmp/xfce4-session-default.py 127.0.0.1
 
 test-teardown:
 	docker stop $$(cat .docker_ID)
@@ -31,16 +38,17 @@ test-teardown:
 	rm .docker_ID
 	-killall -q Xephyr
 
+#just as a demo
 start-clipman:
-	./xfce4-start-clipman.py $$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $$(cat .docker_ID))
+	docker cp ./xfce4-start-clipman.py $$(cat .docker_ID):/tmp
+	docker exec $$(cat .docker_ID) /tmp/xfce4-start-clipman.py 127.0.0.1
 
-manual-session:
+run-manual-session:
 	-docker exec --tty --interactive $$(cat .docker_ID) /bin/bash
 
-exec-only: test-setup start-clipman manual-session test-teardown
-	
-	
-#start the LDTP environment to prepare automated scripts
-prepare-automatic-tests:
+run-avocado-tests:
+	docker cp tests $$(cat .docker_ID):/tmp
+	docker exec $$(cat .docker_ID) avocado run /tmp/tests/
+	docker cp $$(cat .docker_ID):/root/avocado .
+	@echo "AUTOMATIC TESTS DONE"
 
-automatic-tests:
