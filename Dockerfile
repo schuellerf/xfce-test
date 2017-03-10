@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:17.04
 MAINTAINER Florian Schüller <florian.schueller@gmail.com>
 
 ENV AVOCADO_BRANCH ${AVOCADO_BRANCH:-master}
@@ -17,13 +17,18 @@ RUN git clone --branch ${AVOCADO_BRANCH} https://github.com/avocado-framework/av
 #needed for LDTP and friends
 RUN /usr/bin/gsettings set org.gnome.desktop.interface toolkit-accessibility true
 
+COPY xubuntu-dev-xfce4-gtk3-zesty.list /etc/apt/sources.list.d/
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EB563F93142986CE
+
 #XFCE specific
 RUN \
   apt-get update && \
   apt-get -y install \
-          xfce4-terminal xfce4-panel xfce4-session && \
+          xfce4-terminal xfce4-panel xfce4-session gnome-themes-standard && \
+  apt-get -y build-dep xfce4-panel && \
+  apt-get -y build-dep garcon && \
   apt-get -y install \
-          libxfce4panel-2.0-dev libxfce4util-dev libxfconf-0-dev xfce4-dev-tools build-essential libgtk-3-dev gtk-doc-tools libgtk2.0-dev libx11-dev libglib2.0-dev && \
+          libxfce4panel-2.0-dev libxfce4util-dev libxfconf-0-dev xfce4-dev-tools build-essential libgtk-3-dev gtk-doc-tools libgtk2.0-dev libx11-dev libglib2.0-dev libwnck-3-dev && \
   rm -rf /var/lib/apt/lists/*
 
 
@@ -34,21 +39,20 @@ RUN \
 #    echo "developer:x:${uid}:" >> /etc/group && \
 #    chown ${uid}:${gid} -R /home/developer
 
-#libxfce4ui tag
-RUN git clone git://git.xfce.org/xfce/libxfce4ui \
- && cd /libxfce4ui \
- && git checkout libxfce4ui-4.13.0 \
- && ./autogen.sh \
- && make \
- && make install \
- && ldconfig
+# Grab garcon from master
+RUN git clone git://git.xfce.org/xfce/garcon \
+  && cd garcon \
+  && ./autogen.sh \
+  && make \
+  && make install \
+  && ldconfig
 
-#clipman plugin
-RUN git clone git://git.xfce.org/panel-plugins/xfce4-clipman-plugin \
- && cd /xfce4-clipman-plugin \
- && ./autogen.sh \
- && make \
- && make install
+# Grab xfce4-panel from master
+RUN git clone git://git.xfce.org/xfce/xfce4-panel \
+  && cd xfce4-panel \
+  && ./autogen.sh --prefix=/usr \
+  && make \
+  && make install
 
 #USER developer
 #ENV HOME /home/developer
