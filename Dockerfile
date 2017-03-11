@@ -7,7 +7,7 @@ ENV AVOCADO_BRANCH ${AVOCADO_BRANCH:-master}
 RUN \
   apt-get update && \
   apt-get -y install \
-          git python-dogtail ldtp libglib2.0-bin python-setuptools python-pip libvirt0 libvirt-dev liblzma-dev libyaml-dev && \
+          git python-dogtail ldtp libglib2.0-bin python-libvirt python-setuptools python-pip libvirt0 libvirt-dev liblzma-dev libyaml-dev && \
   rm -rf /var/lib/apt/lists/*
 
 RUN git clone --branch ${AVOCADO_BRANCH} https://github.com/avocado-framework/avocado.git && \
