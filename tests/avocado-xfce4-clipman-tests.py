@@ -15,7 +15,12 @@ class XFCE4_clipman(Test):
 		self.p=xmlrpclib.ServerProxy("http://localhost:4118")
 
 	def test_all_is_empty(self):
-		self.p.launchapp("xfce4-clipman")
+		print("Catching some I/O error?")
+		self.p.launchapp("xfce4-terminal")
+		time.sleep(1)
+		print(self.p.launchapp("xfce4-clipman"))
+		time.sleep(1)
+		print("Popup clipman menu")
 		self.p.launchapp("xfce4-popup-clipman")
 		self.assertTrue(self.p.waittillguiexist("dlg0","mnuClipboardisempty")==1)
 		self.p.generatekeyevent('<esc>')
