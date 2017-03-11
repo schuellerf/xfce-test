@@ -24,7 +24,7 @@ sudo apt install -y xserver-xephyr docker.io
 
 # Usage
 
-When you don't want do build this docker image on your own (with the Makefile from github) you should
+If you don't want to build this docker image on your own (with the Makefile from github) you should
 
  * pull the image from docker-hub
  * start Xephyr
