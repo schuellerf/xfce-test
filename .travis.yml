@@ -1,0 +1,27 @@
+sudo: required
+
+language: python
+
+services:
+  - docker
+
+before_install:
+  - docker build --tag test-xfce-ubuntu:latest .
+
+before_script:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 3 # give xvfb some time to start
+
+script:
+  - docker run --detach \
+              --env DISPLAY=":1" \
+              --volume /tmp/.X11-unix:/tmp/.X11-unix \
+              test-xfce-ubuntu \
+              /usr/bin/ldtp > .docker_ID
+  - "docker exec --detach $(cat .docker_ID) xfce4-session"
+
+  - "docker cp tests $(cat .docker_ID):/tmp"
+  - "docker exec $(cat .docker_ID) avocado run /tmp/tests/"
+  - "docker cp $(cat .docker_ID):/root/avocado ."
+
