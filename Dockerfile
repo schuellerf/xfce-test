@@ -54,6 +54,13 @@ RUN git clone git://git.xfce.org/xfce/xfce4-panel \
   && make \
   && make install
 
+# Grab xfce4-clipman from master
+RUN git clone git://git.xfce.org/panel-plugins/xfce4-clipman-plugin \
+  && cd /xfce4-clipman-plugin \
+  && ./autogen.sh \
+  && make \
+  && make install
+
 #USER developer
 #ENV HOME /home/developer
 

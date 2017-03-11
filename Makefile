@@ -22,15 +22,13 @@ xephyr:
 build:
 	docker build --tag test-xfce-ubuntu:latest .
 
-test-setup: xephyr
+test-setup: build xephyr
 	-docker run --detach \
               --env DISPLAY=":1" \
               --volume /tmp/.X11-unix:/tmp/.X11-unix \
               test-xfce-ubuntu \
               /usr/bin/ldtp > .docker_ID
 	-docker exec --detach $$(cat .docker_ID) xfce4-session
-	docker cp ./xfce4-session-default.py $$(cat .docker_ID):/tmp
-	docker exec $$(cat .docker_ID) /tmp/xfce4-session-default.py 127.0.0.1
 
 test-teardown:
 	docker stop $$(cat .docker_ID)
