@@ -15,10 +15,11 @@ before_script:
 
 script:
   - docker run --detach \
-              --env DISPLAY=":1" \
+              --env DISPLAY=":99.0" \
               --volume /tmp/.X11-unix:/tmp/.X11-unix \
               test-xfce-ubuntu \
               /usr/bin/ldtp > .docker_ID
+
   - "docker exec --detach $(cat .docker_ID) xfce4-session"
 
   - "docker cp tests $(cat .docker_ID):/tmp"
