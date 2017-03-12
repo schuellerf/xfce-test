@@ -28,7 +28,9 @@ class XFCE4_clipman(Test):
 		# Catching some I/O error on the very first application start in the container
 		self.p.launchapp("xfce4-terminal")
 		time.sleep(1)
-		self.assertFalse("xfce4-terminal" in self.p.getapplist(), "The initial I/O error is gone?")
+		#self.assertFalse("xfce4-terminal" in self.p.getapplist(), "The initial I/O error is gone?")
+		if "xfce4-terminal" in self.p.getapplist():
+			self.p.generatekeyevent('<alt><f4>')
 
 		self._startApp("xfce4-clipman")
 
