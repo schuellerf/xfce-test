@@ -54,17 +54,18 @@ class XFCE4_clipman(Test):
 
 		# selection is ignored in the default configuration
 		self.p.launchapp("xfce4-popup-clipman")
-		self.assertTrue(self.p.waittillguiexist("dlg0","mnuClipboardisempty")==1, "The popup menu did not show up")
+		self.assertTrue(self.p.waittillguiexist("dlg0","mnuClipboardisempty")==1, "The empty popup menu did not show up")
 		self.p.generatekeyevent('<esc>')
+		self.assertTrue(self.p.waittillguinotexist("dlg0")==1, "The empty popup menu didn't disappear")
 
 		# now really copy
 		self.p.generatekeyevent('<ctrl><shift>c')
 
 		# check if it's in the list
 		self.p.launchapp("xfce4-popup-clipman")
-		self.assertTrue(self.p.waittillguiexist("dlg0","mnuTest-text1")==1, "The popup menu did not show up")
+		self.assertTrue(self.p.waittillguiexist("dlg0","mnuTest-text1")==1, "The filled popup menu did not show up")
 		self.p.generatekeyevent('<esc>')
-		self.assertTrue(self.p.waittillguinotexist("dlg0")==1, "The popup menu didn't disappear")
+		self.assertTrue(self.p.waittillguinotexist("dlg0")==1, "The filled popup menu didn't disappear")
 
 		self.p.generatekeyevent('<ctrl>c')
 		self.p.generatekeyevent('<alt><f4>')
