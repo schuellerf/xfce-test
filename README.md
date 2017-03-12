@@ -1,6 +1,12 @@
 # XFCE Test
 Currently this is just a playground to setup xfce in docker.  
-This is not a full xfce/xubuntu installation but for now only installs the newest libxfce4ui and clipman plugin for testing
+This is not a full xfce/xubuntu installation but for now only installs the newest libxfce4ui and some plugins for testing
+
+# Travis
+
+The tests are run automatically by [travis](https://travis-ci.org/schuellerf/xfce-test).
+
+[![Build Status](https://travis-ci.org/schuellerf/xfce-test.svg?branch=master)](https://travis-ci.org/schuellerf/xfce-test)
 
 # Architecture
 
