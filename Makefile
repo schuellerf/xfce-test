@@ -7,6 +7,8 @@ export AVOCADO_BRANCH=39.0
 
 all: avocado-tests
 
+test: test-setup run-avocado-tests test-teardown
+
 #only a helper for ubuntu
 setup:
 	sudo apt install -y xserver-xephyr docker.io
