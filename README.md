@@ -52,3 +52,8 @@ killall Xephyr
 
 or just close Xephyr - which would be "_the hard way_"
 
+# Tests
+
+To inspect stuff inside the docker to help create more tests you might want to start `sniff` which will help you identify the windows and buttons for LDTP.
+
+

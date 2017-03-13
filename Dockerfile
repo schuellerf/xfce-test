@@ -7,7 +7,7 @@ ENV AVOCADO_BRANCH ${AVOCADO_BRANCH:-master}
 RUN \
   apt-get update && \
   apt-get -y install \
-          git python-dogtail ldtp libglib2.0-bin python-libvirt python-setuptools python-pip libvirt0 libvirt-dev liblzma-dev libyaml-dev && \
+          git python-ldtp python-dogtail ldtp libglib2.0-bin python-libvirt python-setuptools python-pip libvirt0 libvirt-dev liblzma-dev libyaml-dev && \
   rm -rf /var/lib/apt/lists/*
 
 RUN git clone --branch ${AVOCADO_BRANCH} https://github.com/avocado-framework/avocado.git && \
@@ -61,7 +61,14 @@ RUN git clone git://git.xfce.org/panel-plugins/xfce4-clipman-plugin \
   && make \
   && make install
 
+# Grab xfce4-appfinder from master
+RUN git clone git://git.xfce.org/xfce/xfce4-appfinder \
+  && cd xfce4-appfinder \
+  && ./autogen.sh --prefix=/usr \
+  && make \
+  && make install
+
 #USER developer
 #ENV HOME /home/developer
 
-CMD xfce4-session
+CMD [ "/bin/bash", "-c", "xfce4-session" ]

@@ -28,9 +28,7 @@ test-setup: build xephyr
 	-docker run --detach \
               --env DISPLAY=":1" \
               --volume /tmp/.X11-unix:/tmp/.X11-unix \
-              test-xfce-ubuntu \
-              /usr/bin/ldtp > .docker_ID
-	-docker exec --detach $$(cat .docker_ID) xfce4-session
+              test-xfce-ubuntu > .docker_ID
 
 test-teardown:
 	docker stop $$(cat .docker_ID)

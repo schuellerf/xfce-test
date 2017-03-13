@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-import xmlrpclib
+import ldtp
 import time
 from avocado import Test
 
@@ -12,13 +12,12 @@ class XFCE4_clipman(Test):
 		super(XFCE4_clipman, self).__init__(methodName, name, params,
                                                base_logdir, job,
                                                runner_queue)
-		self.p=xmlrpclib.ServerProxy("http://localhost:4118")
 
         def _startApp(self, app):
             """ start and assure running """
-            self.p.launchapp(app)
+            ldtp.launchapp(app)
             while True:
-                l = self.p.getapplist()
+                l = ldtp.getapplist()
                 print(l)
                 if app in l:
                     break
@@ -26,49 +25,45 @@ class XFCE4_clipman(Test):
 
 	def test_all_is_empty(self):
 		# Catching some I/O error on the very first application start in the container
-		self.p.launchapp("xfce4-terminal")
+		ldtp.launchapp("xfce4-terminal")
 		time.sleep(1)
-		#self.assertFalse("xfce4-terminal" in self.p.getapplist(), "The initial I/O error is gone?")
-		if "xfce4-terminal" in self.p.getapplist():
-			self.p.generatekeyevent('<alt><f4>')
+		#self.assertFalse("xfce4-terminal" in ldtp.getapplist(), "The initial I/O error is gone?")
+		if "xfce4-terminal" in ldtp.getapplist():
+			ldtp.generatekeyevent('<alt><f4>')
 
 		self._startApp("xfce4-clipman")
 
-		self.p.launchapp("xfce4-popup-clipman")
+		ldtp.launchapp("xfce4-popup-clipman")
 
-		self.assertTrue(self.p.waittillguiexist("dlg0","mnuClipboardisempty")==1, "The popup menu did not show up")
-		self.p.generatekeyevent('<esc>')
-		self.assertTrue(self.p.waittillguinotexist("dlg0")==1, "The popup menu didn't disappear")
+		self.assertTrue(ldtp.waittillguiexist("dlg0","mnuClipboardisempty")==1, "The popup menu did not show up")
+		ldtp.generatekeyevent('<esc>')
+		self.assertTrue(ldtp.waittillguinotexist("dlg0")==1, "The popup menu didn't disappear")
 
 	def test_first_copy(self):
 		# some app to type into
-                self._startApp("xfce4-terminal")
+                self._startApp("xfce4-appfinder")
 
 		#type something
-		self.p.generatekeyevent('Test-text1')
+		ldtp.generatekeyevent('Test-text1')
 
-		(x,y,w,h) = self.p.getwindowsize('frmTerminal')
-
-		# TBD find the correct text to double click and copy
-		self.p.generatemouseevent(x+w/3,y+70, 'b1d')
+		ldtp.generatekeyevent("<ctrl>a")
 
 		# selection is ignored in the default configuration
-		self.p.launchapp("xfce4-popup-clipman")
-		self.assertTrue(self.p.waittillguiexist("dlg0","mnuClipboardisempty")==1, "The empty popup menu did not show up")
-		self.p.generatekeyevent('<esc>')
-		self.assertTrue(self.p.waittillguinotexist("dlg0")==1, "The empty popup menu didn't disappear")
+		ldtp.launchapp("xfce4-popup-clipman")
+		self.assertTrue(ldtp.waittillguiexist("dlg0","mnuClipboardisempty")==1, "The empty popup menu did not show up")
+		ldtp.generatekeyevent('<esc>')
+		self.assertTrue(ldtp.waittillguinotexist("dlg0")==1, "The empty popup menu didn't disappear")
 
 		# now really copy
-		self.p.generatekeyevent('<ctrl><shift>c')
+		ldtp.generatekeyevent('<ctrl>c')
 
 		# check if it's in the list
-		self.p.launchapp("xfce4-popup-clipman")
-		self.assertTrue(self.p.waittillguiexist("dlg0","mnuTest-text1")==1, "The filled popup menu did not show up")
-		self.p.generatekeyevent('<esc>')
-		self.assertTrue(self.p.waittillguinotexist("dlg0")==1, "The filled popup menu didn't disappear")
+		ldtp.launchapp("xfce4-popup-clipman")
+		self.assertTrue(ldtp.waittillguiexist("dlg0","mnuTest-text1")==1, "The filled popup menu did not show up")
+		ldtp.generatekeyevent('<esc>')
+		self.assertTrue(ldtp.waittillguinotexist("dlg0")==1, "The filled popup menu didn't disappear")
 
-		self.p.generatekeyevent('<ctrl>c')
-		self.p.generatekeyevent('<alt><f4>')
+		ldtp.generatekeyevent('<esc>')
 
-		self.assertTrue(self.p.waittillguinotexist("frmTerminal")==1, "Terminal didn't close with ALT-F4")
+		self.assertTrue(ldtp.waittillguinotexist("frmApplicationFinder")==1, "App-Finder didn't close...")
 
