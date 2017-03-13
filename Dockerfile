@@ -17,6 +17,9 @@ RUN git clone --branch ${AVOCADO_BRANCH} https://github.com/avocado-framework/av
 #needed for LDTP and friends
 RUN /usr/bin/gsettings set org.gnome.desktop.interface toolkit-accessibility true
 
+# sooner or later we'll try thi
+RUN /usr/bin/pip install behave
+
 COPY xubuntu-dev-xfce4-gtk3-zesty.list /etc/apt/sources.list.d/
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EB563F93142986CE
 
