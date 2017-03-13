@@ -50,3 +50,12 @@ run-avocado-tests:
 	docker cp $$(cat .docker_ID):/root/avocado .
 	@echo "AUTOMATIC TESTS DONE"
 
+# internal function - call screenshots instead
+do-screenshots:
+	rm -rf screenshots
+	docker cp make_screenshots.py $$(cat .docker_ID):/tmp
+	docker exec $$(cat .docker_ID) python /tmp/make_screenshots.py
+	docker cp $$(cat .docker_ID):/screenshots .
+	docker exec $$(cat .docker_ID) xfce4-session-logout --logout
+
+screenshots: test-setup do-screenshots test-teardown
