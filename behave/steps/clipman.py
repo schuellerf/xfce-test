@@ -35,7 +35,7 @@ def step_impl(context):
 def step_impl(context, thing):
     assert(l.waittillguiexist(thing) == 1)
 
-@when('click on {thing} in {win}')
+@when('we click on {thing} in {win}')
 def step_impl(context, thing, win):
     l.waittillguiexist(win)
     l.mouseleftclick(win,thing)
@@ -56,3 +56,10 @@ def step_impl(context, thing, win):
 def step_impl(context, key):
     l.generatekeyevent(key)
 
+@then('{win:S} is gone')
+def step_impl(context, win):
+    assert(l.waittillguinotexist(win) == 1)
+
+@then('we make a short break')
+def step_impl(context):
+    time.sleep(1)

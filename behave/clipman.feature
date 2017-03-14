@@ -17,12 +17,21 @@ Feature: Some tests with clipman
       then we should see mnuExampleText in dlg0
        and close it with <esc>
 
+  Scenario: enable selection copy
+     Given we have xfce4-clipman started
+       and we have xfce4-clipman-settings started
+      when we click on chkIgnoreselections in dlgClipman
+       and we click on btnClose in dlgClipman
+      then dlgClipman is gone
+
   Scenario: Clear clipman list
      Given we have xfce4-clipman started
        and clipman list is not empty
       when we popup clipman
-       and click on mnuClearhistory in dlg0
-       and click on btnYes in dlgQuestion
+       and we click on mnuClearhistory in dlg0
+       and we click on btnYes in dlgQuestion
        and we popup clipman
       then we should see mnuClipboardisempty in dlg0
        and close it with <esc>
+       and we make a short break
+
