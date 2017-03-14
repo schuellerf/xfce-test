@@ -64,7 +64,7 @@ run-manual-session:
 run-avocado-tests:
 	docker cp tests $$(cat .docker_ID):/tmp
 	docker exec $$(cat .docker_ID) avocado run /tmp/tests/
-	docker cp $$(cat .docker_ID):/root/avocado .
+	docker cp $$(cat .docker_ID):/home/test_user/avocado .
 	@echo "AUTOMATIC TESTS DONE"
 
 # internal function - call screenshots instead
