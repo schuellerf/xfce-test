@@ -71,7 +71,9 @@ RUN git clone git://git.xfce.org/xfce/xfce4-appfinder \
   && make \
   && make install
 
-#USER developer
-#ENV HOME /home/developer
+RUN useradd -ms /bin/bash test_user
+
+USER test_user
+ENV HOME /home/test_user
 
 CMD [ "/bin/bash", "-c", "xfce4-session" ]
