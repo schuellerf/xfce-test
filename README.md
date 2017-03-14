@@ -69,3 +69,9 @@ then start your compile and test enviroment (assuming that you have https://gith
 your_host:~/xfce4-panel$ make -C ~/xfce-test compile-local
 ```
 then you can go into the directory `/data` in the docker container and compile/install and test in the Xephyr window
+
+finally quit the bash of the docker container and tear down the container and Xephyr with
+
+```
+your_host:~/xfce4-panel$ make -C ~/xfce-test test-teardown
+```
