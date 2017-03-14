@@ -1,6 +1,7 @@
 .PHONY: build xephyr setup exec-only all avocado-tests manual-session
 
 export AVOCADO_BRANCH=39.0
+export RESOLUTION=800x600
 
 # for experimenting you might want to start with
 # make manual-session
@@ -8,6 +9,17 @@ export AVOCADO_BRANCH=39.0
 $(info Don't forget to run make build or make pull)
 
 all: avocado-tests
+
+check_env:
+	if [ -z SRC_DIR ]; then echo "Please, set SRC_DIR where your sources are"; exit 1; fi
+
+#use this to compile a git directory you have locally (even maybe modified)
+compile-local: check_env xephyr
+	-docker run --detach \
+              --env DISPLAY=":1" \
+              --volume /tmp/.X11-unix:/tmp/.X11-unix --volume $(SRC_DIR):/data \
+              schuellerf/xfce-test:latest > .docker_ID
+	docker exec --tty --interactive  $$(cat .docker_ID) /bin/bash
 
 test: test-setup run-avocado-tests test-teardown
 
@@ -21,7 +33,7 @@ manual-session: test-setup start-clipman run-manual-session test-teardown
 
 xephyr:
 	-killall -q Xephyr
-	Xephyr :1 -ac -screen 800x600 &
+	Xephyr :1 -ac -screen $(RESOLUTION) &
 
 pull:
 	docker pull schuellerf/xfce-test
