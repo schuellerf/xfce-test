@@ -62,10 +62,10 @@ To inspect stuff inside the docker to help create more tests you might want to s
 You can also use this container as test and compilation environment.
 When you are in a source folder of a component (e.g. xfce4-panel) then you should set the `SRC_DIR` to be a full path e.g.
 ```
-export SRC_DIR=$(pwd)
+your_host:~/xfce4-panel$ export SRC_DIR=$(pwd)
 ```
 then start your compile and test enviroment (assuming that you have https://github.com/schuellerf/xfce-test checked out in your home)
 ```
-make -C ~/xfce-test compile-local
+your_host:~/xfce4-panel$ make -C ~/xfce-test compile-local
 ```
 then you can go into the directory `/data` in the docker container and compile/install and test in the Xephyr window
