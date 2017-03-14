@@ -22,9 +22,13 @@ os.rename(full_screen, os.path.join(basePath, "xfce-desktop.png"))
 # I/O error workaround
 l.launchapp("xfce4-terminal")
 time.sleep(1)
-
 l.generatekeyevent("<alt><f4>")
 
+
+# move the mouse away to avoid tool tips
+l.generatemouseevent(800,600, "abs")
+
+# appfinder crashes on imagecapture() - (has to window?)
 l.launchapp("xfce4-appfinder")
 l.waittillguiexist("ApplicationFinder")
 full_screen=l.imagecapture()

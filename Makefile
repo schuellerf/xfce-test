@@ -5,6 +5,8 @@ export AVOCADO_BRANCH=39.0
 # for experimenting you might want to start with
 # make manual-session
 
+$(info Don't forget to run make build or make pull)
+
 all: avocado-tests
 
 test: test-setup run-avocado-tests test-teardown
@@ -21,14 +23,17 @@ xephyr:
 	-killall -q Xephyr
 	Xephyr :1 -ac -screen 800x600 &
 
-build:
-	docker build --tag test-xfce-ubuntu:latest .
+pull:
+	docker pull schuellerf/xfce-test
 
-test-setup: build xephyr
+build:
+	docker build --tag schuellerf/xfce-test:latest .
+
+test-setup: xephyr
 	-docker run --detach \
               --env DISPLAY=":1" \
               --volume /tmp/.X11-unix:/tmp/.X11-unix \
-              test-xfce-ubuntu > .docker_ID
+              schuellerf/xfce-test:latest > .docker_ID
 
 test-teardown:
 	docker stop $$(cat .docker_ID)
