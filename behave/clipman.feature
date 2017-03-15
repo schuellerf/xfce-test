@@ -1,10 +1,22 @@
 Feature: Some tests with clipman
 
+  Scenario: Clipman doesn't always start on the first try?
+     Given we just start xfce4-clipman
+      when we kill xfce4-clipman
+      then we make a short break
+       and we don't expect anything
+
+  Scenario: There seems to be a bug when we don't do _anything_
+     Given nothing
+      when we wiggle the mouse
+      then we don't expect anything
+
   Scenario: Just open clipman popup
      Given we have xfce4-clipman started
       when we popup clipman
       then we should see dlg0
-      and close it with <esc>
+       and we make a short break
+       and close it with <esc>
 
   Scenario: Copy something
      Given we have xfce4-clipman started
@@ -34,4 +46,9 @@ Feature: Some tests with clipman
       then we should see mnuClipboardisempty in dlg0
        and close it with <esc>
        and we make a short break
+
+  Scenario: There was no clipman before _we_ started...
+     Given nothing
+      when we kill xfce4-clipman
+      then we don't expect anything
 

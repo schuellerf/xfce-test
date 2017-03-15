@@ -1,16 +1,27 @@
 from behave import *
 import ldtp as l
 import time
+import os
 
+def _getapplist():
+    """ just l.getapplist() but without exceptions
+    """
+    try:
+        return l.getapplist()
+    except:
+        return []
+
+# ---- given
 @given('we have {app:S} started')
 def step_impl(context, app):
     retry = 100
-    if app not in l.getapplist():
+    
+    if app not in _getapplist():
         l.launchapp(app)
         while True:
-            retry -= 0
-            if retry == 0: fail("Failed to start " + app)
-            applist = l.getapplist()
+            retry -= 1
+            assert(retry > 0)#, "Failed to start " + app)
+            applist = _getapplist()
             if app in applist:
                 break
             time.sleep(0.1)
@@ -27,6 +38,11 @@ def step_impl(context):
     assert(l.waittillguinotexist("dlg0","mnuClipboardisempty")==1)
     l.generatekeyevent("<esc>")
 
+@given('nothing')
+def step_impl(context):
+    pass
+
+# ---- when
 @when('we popup clipman')
 def step_impl(context):
     l.launchapp("xfce4-popup-clipman")
@@ -44,6 +60,17 @@ def step_impl(context, thing, win):
 def step_impl(context, text):
     l.generatekeyevent(text)
 
+@when('we wiggle the mouse')
+def step_impl(context):
+    l.simulatemousemove(0,0,100,100)
+    l.generatemouseevent(200,200) # There shouldn't be anything
+
+@when('we kill {app}')
+def step_impl(context, app):
+    time.sleep(2)
+    os.system("killall -9 " + app)
+
+# ---- then
 @then('we should see {thing:S}')
 def step_impl(context, thing):
     assert(l.waittillguiexist(thing) == 1)
@@ -63,3 +90,8 @@ def step_impl(context, win):
 @then('we make a short break')
 def step_impl(context):
     time.sleep(1)
+
+@then("we don't expect anything")
+def step_impl(context):
+    assert(True)
+
