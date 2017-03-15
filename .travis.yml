@@ -17,8 +17,6 @@ script:
   - "docker run --detach --env DISPLAY=\":99.0\" --volume /tmp/.X11-unix:/tmp/.X11-unix test-xfce-ubuntu /usr/bin/ldtp > .docker_ID"
   - "docker exec --detach $(cat .docker_ID) xfce4-session"
 
-  - "docker cp tests $(cat .docker_ID):/tmp"
-  - "docker exec $(cat .docker_ID) avocado run /tmp/tests/"
-  - "docker cp $(cat .docker_ID):/home/test_user/avocado ."
-  - "cat avocado/job-results/latest/results.json"
+  - "docker cp behave $(cat .docker_ID):/tmp"
+  - "docker exec $(cat .docker_ID) bash -c \"cd /tmp/behave/; behave \" "
 
