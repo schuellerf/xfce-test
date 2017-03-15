@@ -8,7 +8,7 @@ export RESOLUTION=800x600
 
 $(info Don't forget to run make build or make pull)
 
-all: avocado-tests
+all: behave-tests
 
 check_env:
 	if [ -z SRC_DIR ]; then echo "Please, set SRC_DIR where your sources are"; exit 1; fi
@@ -28,6 +28,7 @@ setup:
 	sudo apt install -y xserver-xephyr docker.io
 
 avocado-tests: test-setup run-avocado-tests run-manual-session test-teardown
+behave-tests:  test-setup run-behave-tests test-teardown
 
 manual-session: test-setup start-clipman run-manual-session test-teardown
 
@@ -48,6 +49,7 @@ test-setup: xephyr
               schuellerf/xfce-test:latest > .docker_ID
 
 test-teardown:
+	-docker exec $$(cat .docker_ID) xfce4-session-logout --logout
 	docker stop $$(cat .docker_ID)
 	docker rm $$(cat .docker_ID)
 	rm .docker_ID
@@ -66,6 +68,10 @@ run-avocado-tests:
 	docker exec $$(cat .docker_ID) avocado run /tmp/tests/
 	docker cp $$(cat .docker_ID):/home/test_user/avocado .
 	@echo "AUTOMATIC TESTS DONE"
+
+run-behave-tests:
+	docker cp behave $$(cat .docker_ID):/tmp
+	docker exec --tty $$(cat .docker_ID) bash -c "cd /tmp/behave;behave"
 
 # internal function - call screenshots instead
 do-screenshots:
