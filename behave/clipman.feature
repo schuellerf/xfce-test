@@ -33,7 +33,8 @@ Feature: Some tests with clipman
      Given we have xfce4-clipman started
        and we have xfce4-clipman-settings started
       when we click on chkIgnoreselections in dlgClipman
-       and we click on btnClose in dlgClipman
+      then we think chkIgnoreselections of dlgClipman is unchecked 
+      when we click on btnClose in dlgClipman
       then dlgClipman is gone
 
   Scenario: Clear clipman list
@@ -58,6 +59,17 @@ Feature: Some tests with clipman
       then we should see mnuExampleText in dlg0
        and close it with <esc>
 
+  Scenario: Should be saved
+     Given we find dlg0 which has mnuQuit by stupid-clicking frm0
+      when we click on mnuQuit in dlg0
+       and we make a short break
+      then dlg0 is gone
+
+  Scenario: Text should be here after re-starting
+     Given we just start xfce4-clipman
+      when we popup clipman
+      then we should see mnuExampleText in dlg0
+       and close it with <esc>
 
   Scenario: There was no clipman before _we_ started...
      Given nothing

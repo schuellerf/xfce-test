@@ -8,7 +8,7 @@ def app_is_in_ps(app):
     p = subprocess.Popen(['ps', '-A'], stdout=subprocess.PIPE)
     out, err = p.communicate()
     for line in out.splitlines():
-        if 'app' in line:
+        if (app in line) and ("defunct" not in line):
             #pid = int(line.split(None, 1)[0])
             return True
     return False
@@ -36,8 +36,9 @@ def step_impl(context, app):
             assert(retry > 0)#, "Failed to start " + app)
             applist = _getapplist()
             if app in applist:
+                time.sleep(1)
                 break
-            time.sleep(0.1)
+            time.sleep(0.5)
 
 #just for apps which can't be really detected
 @given('we just start {app:S}')
@@ -55,10 +56,22 @@ def step_impl(context):
 def step_impl(context):
     pass
 
+@given('we find {popupwin} which has {entry} by stupid-clicking {win}')
+def step_impl(context, popupwin, entry, win):
+    click_those = l.getobjectlist(win)
+    for thing in click_those:
+        l.mouserightclick(win, thing)
+        if l.waittillguiexist(popupwin, entry, 1): return
+        l.generatekeyevent("<esc>") #close possible menus
+        time.sleep(0.5)
+    #not found
+    assert(False)
+
 # ---- when
 @when('we popup clipman')
 def step_impl(context):
     l.launchapp("xfce4-popup-clipman")
+    time.sleep(1) # he doesn't wait for the popup
 
 @when('we see {thing:S}')
 def step_impl(context, thing):
@@ -87,6 +100,11 @@ def step_impl(context, app):
 def step_impl(context):
     time.sleep(1)
 
+@when('we make a longer break')
+def step_impl(context):
+    time.sleep(5)
+
+
 # ---- then
 @then('we should see {thing:S}')
 def step_impl(context, thing):
@@ -111,4 +129,14 @@ def step_impl(context):
 @then("we don't expect anything")
 def step_impl(context):
     assert(True)
+
+@then("we think {checkbox} of {win} is {state}")
+def step_impl(context, checkbox, win, state):
+    check = False
+    if state.lower() in ["checked", "true", "enabled"]:
+        check = True
+    if check:
+        assert(l.verifycheck(win, checkbox))
+    else:
+        assert(l.verifyuncheck(win, checkbox))
 
