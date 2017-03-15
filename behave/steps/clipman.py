@@ -2,6 +2,16 @@ from behave import *
 import ldtp as l
 import time
 import os
+import subprocess, signal
+
+def app_is_in_ps(app):
+    p = subprocess.Popen(['ps', '-A'], stdout=subprocess.PIPE)
+    out, err = p.communicate()
+    for line in out.splitlines():
+        if 'app' in line:
+            #pid = int(line.split(None, 1)[0])
+            return True
+    return False
 
 def _getapplist():
     """ just l.getapplist() but without exceptions
@@ -15,8 +25,11 @@ def _getapplist():
 @given('we have {app:S} started')
 def step_impl(context, app):
     retry = 100
-    
-    if app not in _getapplist():
+    applist = _getapplist()
+    if app not in applist:
+        if len(applist) == 0 and app_is_in_ps(app):
+            #grrrr why doesn't ldtp find the app!?
+            return
         l.launchapp(app)
         while True:
             retry -= 1
@@ -69,6 +82,10 @@ def step_impl(context):
 def step_impl(context, app):
     time.sleep(2)
     os.system("killall -9 " + app)
+
+@when('we make a short break')
+def step_impl(context):
+    time.sleep(1)
 
 # ---- then
 @then('we should see {thing:S}')

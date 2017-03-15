@@ -47,6 +47,18 @@ Feature: Some tests with clipman
        and close it with <esc>
        and we make a short break
 
+  Scenario: Just selecting now also copies
+     Given we have xfce4-clipman started
+       and we just start xfce4-appfinder
+      when we type "ExampleText"
+       and we type "<ctrl>a"
+       and we make a short break
+       and we type "<esc>"
+       and we popup clipman
+      then we should see mnuExampleText in dlg0
+       and close it with <esc>
+
+
   Scenario: There was no clipman before _we_ started...
      Given nothing
       when we kill xfce4-clipman
