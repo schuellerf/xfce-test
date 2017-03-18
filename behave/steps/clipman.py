@@ -51,6 +51,7 @@ def step_impl(context):
     l.launchapp("xfce4-popup-clipman")
     assert(l.waittillguinotexist("dlg0","mnuClipboardisempty")==1)
     l.generatekeyevent("<esc>")
+    time.sleep(0.1) # pressing a key usually needs a task switch to some UI thread to process it
 
 @given('nothing')
 def step_impl(context):
@@ -82,6 +83,7 @@ def step_impl(context, thing):
 def step_impl(context, thing, win):
     l.waittillguiexist(win)
     l.mouseleftclick(win,thing)
+    time.sleep(0.1) #clicking usually needs a task switch to some UI thread to process it
 
 @when('we type "{text}"')
 def step_impl(context, text):
@@ -96,6 +98,7 @@ def step_impl(context):
 def step_impl(context, app):
     time.sleep(2)
     os.system("killall -9 " + app)
+    time.sleep(1) # give the OS some time to kill it
 
 @when('we make a short break')
 def step_impl(context):

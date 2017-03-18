@@ -3,8 +3,7 @@ Feature: Some tests with clipman
   Scenario: Clipman doesn't always start on the first try?
      Given we just start xfce4-clipman
       when we kill xfce4-clipman
-      then we make a short break
-       and we don't expect anything
+      then we don't expect anything
 
   Scenario: There seems to be a bug when we don't do _anything_
      Given nothing
@@ -62,7 +61,6 @@ Feature: Some tests with clipman
   Scenario: Should be saved
      Given we find dlg0 which has mnuQuit by stupid-clicking frm0
       when we click on mnuQuit in dlg0
-       and we make a short break
       then dlg0 is gone
 
   Scenario: Text should be here after re-starting
