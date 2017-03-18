@@ -50,7 +50,9 @@ RUN git clone git://git.xfce.org/xfce/garcon \
 # Grab xfce4-panel from master
 RUN git clone git://git.xfce.org/xfce/xfce4-panel \
   && cd xfce4-panel \
-  && ./autogen.sh --prefix=/usr \
+  && ./autogen.sh --enable-debug --enable-maintainer-mode --host=x86_64-linux-gnu \
+        --build=x86_64-linux-gnu --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu \
+        --libexecdir=/usr/lib/x86_64-linux-gnu --enable-gtk3 --enable-gtk-doc \
   && make \
   && make install
 
