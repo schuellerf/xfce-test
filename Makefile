@@ -21,16 +21,13 @@ compile-local: check_env xephyr
               schuellerf/xfce-test:latest > .docker_ID
 	docker exec --tty --interactive  $$(cat .docker_ID) /bin/bash
 
-test: test-setup run-avocado-tests test-teardown
+test: behave-tests
 
 #only a helper for ubuntu
 setup:
 	sudo apt install -y xserver-xephyr docker.io
 
-avocado-tests: test-setup run-avocado-tests run-manual-session test-teardown
 behave-tests:  test-setup run-behave-tests test-teardown
-
-manual-session: test-setup start-clipman run-manual-session test-teardown
 
 xephyr:
 	-killall -q Xephyr
@@ -55,24 +52,13 @@ test-teardown:
 	rm .docker_ID
 	-killall -q Xephyr
 
-#just as a demo
-start-clipman:
-	docker cp ./xfce4-start-clipman.py $$(cat .docker_ID):/tmp
-	docker exec $$(cat .docker_ID) /tmp/xfce4-start-clipman.py 127.0.0.1
-
 run-manual-session:
 	-docker exec --tty --interactive $$(cat .docker_ID) /bin/bash
-
-run-avocado-tests:
-	docker cp tests $$(cat .docker_ID):/tmp
-	docker exec $$(cat .docker_ID) avocado run /tmp/tests/
-	docker cp $$(cat .docker_ID):/home/test_user/avocado .
-	@echo "AUTOMATIC TESTS DONE"
 
 run-behave-tests:
 	docker cp behave $$(cat .docker_ID):/tmp
 	docker exec --tty $$(cat .docker_ID) bash -c "cd /tmp/behave;behave"
-	docker exec --tty $$(cat .docker_ID) bash -c "cat ~/version_info.txt"
+	docker exec --tty $$(cat .docker_ID) bash -c "cat ~test_user/version_info.txt"
 
 # internal function - call screenshots instead
 do-screenshots:
