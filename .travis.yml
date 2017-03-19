@@ -19,4 +19,5 @@ script:
 
   - "docker cp behave $(cat .docker_ID):/tmp"
   - "docker exec $(cat .docker_ID) bash -c \"cd /tmp/behave/; behave \" "
+  - "docker exec $(cat .docker_ID) bash -c \"cat ~/version_info.txt\" "
 

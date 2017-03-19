@@ -72,6 +72,7 @@ run-avocado-tests:
 run-behave-tests:
 	docker cp behave $$(cat .docker_ID):/tmp
 	docker exec --tty $$(cat .docker_ID) bash -c "cd /tmp/behave;behave"
+	docker exec --tty $$(cat .docker_ID) bash -c "cat ~/version_info.txt"
 
 # internal function - call screenshots instead
 do-screenshots:
