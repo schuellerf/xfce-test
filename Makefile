@@ -52,6 +52,8 @@ test-teardown:
 	rm .docker_ID
 	-killall -q Xephyr
 
+manual-session: test-setup run-manual-session test-teardown
+
 run-manual-session:
 	-docker exec --tty --interactive $$(cat .docker_ID) /bin/bash
 

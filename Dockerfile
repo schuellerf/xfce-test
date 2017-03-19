@@ -86,4 +86,6 @@ ENV HOME /home/test_user
 
 RUN echo 'if [[ $- =~ "i" ]]; then echo -n "This container includes:\n"; cat ~test_user/version_info.txt; fi' >> ~test_user/.bashrc
 
+COPY behave /behave_tests
+
 CMD [ "/bin/bash", "-c", "xfce4-session" ]
