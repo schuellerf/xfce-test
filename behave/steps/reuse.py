@@ -18,6 +18,6 @@ def _get_scenario(context, scenario):
         ret += _reTextify(step) + u"\n"
     return ret
 
-@given(u'I repeat "{scenario}"')
+@given(u'we repeat "{scenario}"')
 def step_impl(context, scenario):
     context.execute_steps(_get_scenario(context, scenario))

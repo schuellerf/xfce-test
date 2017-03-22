@@ -46,13 +46,6 @@ def step_impl(context, app):
     l.launchapp(app)
     time.sleep(1)
 
-@given('clipman list is not empty')
-def step_impl(context):
-    l.launchapp("xfce4-popup-clipman")
-    assert(l.waittillguinotexist("dlg0","mnuClipboardisempty")==1)
-    l.generatekeyevent("<esc>")
-    time.sleep(0.1) # pressing a key usually needs a task switch to some UI thread to process it
-
 @given('nothing')
 def step_impl(context):
     pass
@@ -118,9 +111,14 @@ def step_impl(context, thing):
 def step_impl(context, thing, win):
     assert(l.waittillguiexist(win, thing) == 1)
 
+@then('we should not see {thing:S} in {win:S}')
+def step_impl(context, thing, win):
+    assert(l.waittillguinotexist(win, thing) == 1)
+
 @then('close it with {key}')
 def step_impl(context, key):
     l.generatekeyevent(key)
+    time.sleep(0.1) # input usually needs a task switch to some UI thread to process it
 
 @then('{win:S} is gone')
 def step_impl(context, win):

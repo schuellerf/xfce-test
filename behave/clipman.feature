@@ -10,10 +10,10 @@ Feature: Some tests with clipman
       when we wiggle the mouse
       then we don't expect anything
 
-  Scenario: Just open clipman popup
+  Scenario: Clipman popup is empty
      Given we have xfce4-clipman started
       when we popup clipman
-      then we should see dlg0
+      then we should see mnuClipboardisempty in dlg0
        and we make a short break
        and close it with <esc>
 
@@ -28,6 +28,13 @@ Feature: Some tests with clipman
       then we should see mnuExampleText in dlg0
        and close it with <esc>
 
+  Scenario: Clipman popup is not empty
+     Given we have xfce4-clipman started
+      when we popup clipman
+      then we should not see mnuClipboardisempty in dlg0
+       and we make a short break
+       and close it with <esc>
+
   Scenario: enable selection copy
      Given we have xfce4-clipman started
        and we have xfce4-clipman-settings started
@@ -37,15 +44,13 @@ Feature: Some tests with clipman
       then dlgClipman is gone
 
   Scenario: Clear clipman list
-     Given we have xfce4-clipman started
-       and clipman list is not empty
+     Given we repeat "Clipman popup is not empty"
       when we popup clipman
        and we click on mnuClearhistory in dlg0
        and we click on btnYes in dlgQuestion
        and we popup clipman
       then we should see mnuClipboardisempty in dlg0
        and close it with <esc>
-       and we make a short break
 
   Scenario: Just selecting now also copies
      Given we have xfce4-clipman started
