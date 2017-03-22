@@ -58,6 +58,13 @@ or just close Xephyr - which would be "_the hard way_"
 
 To inspect stuff inside the docker to help create more tests you might want to start `sniff` which will help you identify the windows and buttons for LDTP.
 
+You should start the tests with
+```
+make debug
+```
+This way the tests will stop executing and stay in the python debugger once a step fails.
+Once this happens you can inspect the current state of "behave" or checkout the current state in the Xephyr window or open up a second shell and start `make run-manual-session` to examine the current state
+
 
 # Package compilation
 
