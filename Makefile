@@ -28,6 +28,7 @@ setup:
 	sudo apt install -y xserver-xephyr docker.io
 
 behave-tests:  test-setup run-behave-tests test-teardown
+debug:  test-setup debug-behave-tests test-teardown
 
 xephyr:
 	-killall -q Xephyr
@@ -60,6 +61,11 @@ run-manual-session:
 run-behave-tests:
 	docker cp behave $$(cat .docker_ID):/tmp
 	docker exec --tty $$(cat .docker_ID) bash -c "cd /tmp/behave;behave"
+	docker exec --tty $$(cat .docker_ID) bash -c "cat ~test_user/version_info.txt"
+
+debug-behave-tests:
+	docker cp behave $$(cat .docker_ID):/tmp
+	docker exec --tty $$(cat .docker_ID) bash -c "cd /tmp/behave;behave -D DEBUG_ON_ERROR"
 	docker exec --tty $$(cat .docker_ID) bash -c "cat ~test_user/version_info.txt"
 
 # internal function - call screenshots instead
