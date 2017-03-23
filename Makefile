@@ -43,7 +43,7 @@ build:
 test-setup: xephyr
 	-docker run --detach \
               --env DISPLAY=":1" \
-              --volume /tmp/.X11-unix:/tmp/.X11-unix \
+              --volume /tmp/.X11-unix:/tmp/.X11-unix:z \
               schuellerf/xfce-test:latest > .docker_ID
 
 test-teardown:
