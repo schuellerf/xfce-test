@@ -15,11 +15,18 @@ check_env:
 
 #use this to compile a git directory you have locally (even maybe modified)
 compile-local: check_env xephyr
-	-docker run --detach \
+	-docker run --tty --interactive \
               --env DISPLAY=":1" \
               --volume /tmp/.X11-unix:/tmp/.X11-unix --volume $(SRC_DIR):/data \
-              schuellerf/xfce-test:latest > .docker_ID
-	docker exec --tty --interactive  $$(cat .docker_ID) /bin/bash
+              schuellerf/xfce-test:latest /bin/bash
+
+# see compile-local
+# this starts as root to be able to install stuff with apt
+compile-local-root: check_env xephyr
+	-docker run --tty --interactive --user 0:0 \
+              --env DISPLAY=":1" \
+              --volume /tmp/.X11-unix:/tmp/.X11-unix --volume $(SRC_DIR):/data \
+              schuellerf/xfce-test:latest /bin/bash
 
 test: behave-tests
 
