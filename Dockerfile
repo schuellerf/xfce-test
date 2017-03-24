@@ -53,7 +53,7 @@ RUN cd git \
   && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt \
   && ldconfig
 
-# Grab xfce4-panel from master
+# Grab xfce4-panel
 RUN cd git \
   && git clone git://git.xfce.org/xfce/xfce4-panel \
   && cd xfce4-panel \
@@ -64,7 +64,7 @@ RUN cd git \
   && make install \
   && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
 
-# Grab xfce4-clipman from master
+# Grab xfce4-clipman
 RUN cd git \
   && git clone git://git.xfce.org/panel-plugins/xfce4-clipman-plugin \
   && cd xfce4-clipman-plugin \
@@ -73,10 +73,19 @@ RUN cd git \
   && make install \
   && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
 
-# Grab xfce4-appfinder from master
+# Grab xfce4-appfinder
 RUN cd git \
   && git clone git://git.xfce.org/xfce/xfce4-appfinder \
   && cd xfce4-appfinder \
+  && ./autogen.sh --prefix=/usr \
+  && make \
+  && make install \
+  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
+
+# Grab xfwm4
+RUN cd git \
+  && git clone -b xfwm4-4.12.4 git://git.xfce.org/xfce/xfwm4 \
+  && cd xfwm4 \
   && ./autogen.sh --prefix=/usr \
   && make \
   && make install \
