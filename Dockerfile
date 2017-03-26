@@ -37,7 +37,7 @@ RUN mkdir /git
 RUN cd git \
   && git clone git://git.xfce.org/xfce/garcon \
   && cd garcon \
-  && ./autogen.sh \
+  && ./autogen.sh --enable-debug --enable-maintenance-mode \
   && make \
   && make install \
   && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt \
