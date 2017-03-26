@@ -47,7 +47,7 @@ build:
 	docker build --tag schuellerf/xfce-test:latest .
 
 test-setup: xephyr
-	docker rm xfce-test
+	-docker rm xfce-test
 	-docker run --name xfce-test --detach \
               --env DISPLAY=":1" \
               --volume /tmp/.X11-unix:/tmp/.X11-unix:z \
