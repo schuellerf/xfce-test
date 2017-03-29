@@ -33,6 +33,9 @@ RUN useradd -ms /bin/bash test_user
 # group all repos here
 RUN mkdir /git
 
+# line used to invalidate all git clones
+ARG DOWNLOAD_DATE=give_me_a_date
+
 # Grab garcon from master
 RUN cd git \
   && git clone git://git.xfce.org/xfce/garcon \

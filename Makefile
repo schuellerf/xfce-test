@@ -44,7 +44,7 @@ pull:
 	docker pull schuellerf/xfce-test
 
 build:
-	docker build --tag schuellerf/xfce-test:latest .
+	docker build --build-arg DOWNLOAD_DATE=$(shell date +%Y%m%d) --tag schuellerf/xfce-test:latest .
 
 test-setup: xephyr
 	-docker rm xfce-test
