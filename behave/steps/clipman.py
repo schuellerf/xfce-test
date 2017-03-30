@@ -60,6 +60,8 @@ def step_impl(context, popupwin, entry, win):
 def step_impl(context):
     time.sleep(2) # this is so asynchronous...
     l.launchapp("xfce4-popup-clipman")
+    time.sleep(1) # this doesn't work every time...?
+    l.launchapp("xfce4-popup-clipman")
     time.sleep(2) # he doesn't wait for the popup
 
 @when('we see {thing:S}')
