@@ -13,19 +13,13 @@ def app_is_in_ps(app):
             return True
     return False
 
-def _getapplist():
-    """ just l.getapplist() but without exceptions
-    """
-    try:
-        return l.getapplist()
-    except:
-        return []
+
 
 # ---- given
 @given('we have {app:S} started')
 def step_impl(context, app):
     retry = 100
-    applist = _getapplist()
+    applist = l.getapplist()
     if app not in applist:
         if len(applist) == 0 and app_is_in_ps(app):
             #grrrr why doesn't ldtp find the app!?
@@ -34,7 +28,7 @@ def step_impl(context, app):
         while True:
             retry -= 1
             assert(retry > 0)#, "Failed to start " + app)
-            applist = _getapplist()
+            applist = l.getapplist()
             if app in applist:
                 time.sleep(1)
                 break
@@ -64,9 +58,9 @@ def step_impl(context, popupwin, entry, win):
 # ---- when
 @when('we popup clipman')
 def step_impl(context):
-    time.sleep(0.5) # this is so asynchronous...
+    time.sleep(2) # this is so asynchronous...
     l.launchapp("xfce4-popup-clipman")
-    time.sleep(1) # he doesn't wait for the popup
+    time.sleep(2) # he doesn't wait for the popup
 
 @when('we see {thing:S}')
 def step_impl(context, thing):
@@ -76,7 +70,7 @@ def step_impl(context, thing):
 def step_impl(context, thing, win):
     l.waittillguiexist(win)
     l.mouseleftclick(win,thing)
-    time.sleep(0.1) #clicking usually needs a task switch to some UI thread to process it
+    time.sleep(2) #clicking usually needs a task switch to some UI thread to process it
 
 @when('we type "{text}"')
 def step_impl(context, text):
@@ -89,7 +83,7 @@ def step_impl(context):
 
 @when('we kill {app}')
 def step_impl(context, app):
-    time.sleep(2)
+    time.sleep(1)
     os.system("killall -9 " + app)
     time.sleep(1) # give the OS some time to kill it
 
@@ -105,23 +99,27 @@ def step_impl(context):
 # ---- then
 @then('we should see {thing:S}')
 def step_impl(context, thing):
+    time.sleep(2) # opening usually needs a task switch to some UI thread to process it
     assert(l.waittillguiexist(thing) == 1)
 
 @then('we should see {thing:S} in {win:S}')
 def step_impl(context, thing, win):
+    time.sleep(2) # opening usually needs a task switch to some UI thread to process it
     assert(l.waittillguiexist(win, thing) == 1)
 
 @then('we should not see {thing:S} in {win:S}')
 def step_impl(context, thing, win):
+    time.sleep(2) # closing usually needs a task switch to some UI thread to process it
     assert(l.waittillguinotexist(win, thing) == 1)
 
 @then('close it with {key}')
 def step_impl(context, key):
     l.generatekeyevent(key)
-    time.sleep(0.1) # input usually needs a task switch to some UI thread to process it
+    time.sleep(1) # input usually needs a task switch to some UI thread to process it
 
 @then('{win:S} is gone')
 def step_impl(context, win):
+    time.sleep(2) # closing usually needs a task switch to some UI thread to process it
     assert(l.waittillguinotexist(win) == 1)
 
 @then('we make a short break')

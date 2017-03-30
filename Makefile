@@ -23,6 +23,7 @@ compile-local: check_env xephyr
 # this starts as root to be able to install stuff with apt
 compile-local-root: check_env xephyr
 	-docker run --tty --interactive --user 0:0 \
+              --name xfce-test \
               --env DISPLAY=":1" \
               --volume /tmp/.X11-unix:/tmp/.X11-unix --volume $(SRC_DIR):/data \
               schuellerf/xfce-test:latest /bin/bash
@@ -55,8 +56,8 @@ test-setup: xephyr
 
 test-teardown:
 	-docker exec xfce-test xfce4-session-logout --logout
-	docker stop xfce-test
-	docker rm xfce-test
+	-docker stop xfce-test
+	-docker rm xfce-test
 	-killall -q Xephyr
 
 manual-session: test-setup run-manual-session test-teardown

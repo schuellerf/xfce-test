@@ -33,6 +33,12 @@ RUN useradd -ms /bin/bash test_user
 # group all repos here
 RUN mkdir /git
 
+# rather use my patched version
+RUN cd git \
+ && git clone https://github.com/schuellerf/ldtp2.git \
+ && cd ldtp2 \
+ && python setup.py install
+
 # line used to invalidate all git clones
 ARG DOWNLOAD_DATE=give_me_a_date
 
