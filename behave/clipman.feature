@@ -69,7 +69,7 @@ Feature: Some tests with clipman
       then dlg0 is gone
 
   Scenario: Text should be here after re-starting
-     Given we just start xfce4-clipman
+     Given we have xfce4-clipman started
       when we popup clipman
       then we should see mnuExampleText in dlg0
        and close it with <esc>
