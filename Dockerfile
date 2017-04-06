@@ -33,9 +33,9 @@ RUN useradd -ms /bin/bash test_user
 # group all repos here
 RUN mkdir /git
 
-# rather use my patched version
+# rather use my patched version (already merged upstream)
 RUN cd git \
- && git clone https://github.com/schuellerf/ldtp2.git \
+ && git clone https://github.com/ldtp/ldtp2.git \
  && cd ldtp2 \
  && python setup.py install
 
