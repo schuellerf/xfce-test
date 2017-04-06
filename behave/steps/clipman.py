@@ -23,7 +23,9 @@ def step_impl(context, app):
     if app not in applist:
         if len(applist) == 0 and app_is_in_ps(app):
             #grrrr why doesn't ldtp find the app!?
+            print(app + " was found by ps")
             return
+        print(app + " needs to be launched")
         l.launchapp(app)
         while True:
             retry -= 1
@@ -31,8 +33,11 @@ def step_impl(context, app):
             applist = l.getapplist()
             if app in applist:
                 time.sleep(1)
+                print(app + " started")
                 break
             time.sleep(0.5)
+    else:
+        print(app + " is running already")
 
 #just for apps which can't be really detected
 @given('we just start {app:S}')
@@ -61,6 +66,8 @@ def step_impl(context):
     time.sleep(2) # this is so asynchronous...
     l.launchapp("xfce4-popup-clipman")
     time.sleep(1) # this doesn't work every time...?
+    l.launchapp("xfce4-popup-clipman")
+    time.sleep(1) # now we are desperate
     l.launchapp("xfce4-popup-clipman")
     time.sleep(2) # he doesn't wait for the popup
 
