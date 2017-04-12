@@ -26,7 +26,7 @@ def step_impl(context, app):
             print(app + " was found by ps")
             return
         print(app + " needs to be launched")
-        l.launchapp(app)
+        l.launchapp(app, logfiles=("/tmp/%s-stdout.log" % app, "/tmp/%s-stderr.log" % app))
         while True:
             retry -= 1
             assert(retry > 0)#, "Failed to start " + app)
@@ -42,7 +42,7 @@ def step_impl(context, app):
 #just for apps which can't be really detected
 @given('we just start {app:S}')
 def step_impl(context, app):
-    l.launchapp(app)
+    l.launchapp(app, logfiles=("/tmp/%s-stdout.log" % app, "/tmp/%s-stderr.log" % app))
     time.sleep(1)
 
 @given('nothing')
@@ -64,11 +64,11 @@ def step_impl(context, popupwin, entry, win):
 @when('we popup clipman')
 def step_impl(context):
     time.sleep(2) # this is so asynchronous...
-    l.launchapp("xfce4-popup-clipman", logfiles=("stdout.log", "stderr.log"))
+    l.launchapp("xfce4-popup-clipman", logfiles=("/tmp/xfce4-popup-clipman-stdout.log", "/tmp/xfce4-popup-clipman-stderr.log"))
     time.sleep(1) # this doesn't work every time...?
-    l.launchapp("xfce4-popup-clipman")
+    l.launchapp("xfce4-popup-clipman", logfiles=("/tmp/xfce4-popup-clipman-stdout.log", "/tmp/xfce4-popup-clipman-stderr.log"))
     time.sleep(1) # now we are desperate
-    l.launchapp("xfce4-popup-clipman")
+    l.launchapp("xfce4-popup-clipman", logfiles=("/tmp/xfce4-popup-clipman-stdout.log", "/tmp/xfce4-popup-clipman-stderr.log"))
     time.sleep(2) # he doesn't wait for the popup
 
 @when('we see {thing:S}')
