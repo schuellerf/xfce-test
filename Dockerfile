@@ -21,6 +21,7 @@ RUN apt-get update \
  && apt-get -y install xfce4-terminal xfce4-panel xfce4-session gnome-themes-standard \
  && apt-get -y build-dep xfce4-panel \
  && apt-get -y build-dep garcon \
+ && apt-get -y build-dep xfce4-screenshooter \
  && apt-get -y install libglib2.0-bin libxfce4panel-2.0-dev libxfce4util-dev libxfconf-0-dev xfce4-dev-tools build-essential libgtk-3-dev gtk-doc-tools libgtk2.0-dev libx11-dev libglib2.0-dev libwnck-3-dev \
  && rm -rf /var/lib/apt/lists/*
 
@@ -95,6 +96,15 @@ RUN cd git \
 RUN cd git \
   && git clone -b xfwm4-4.12.4 git://git.xfce.org/xfce/xfwm4 \
   && cd xfwm4 \
+  && ./autogen.sh --prefix=/usr \
+  && make \
+  && make install \
+  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
+
+# Grab xfce4-screenshooter
+RUN cd git \
+  && git clone -b gtk3 https://github.com/andreldm/xfce4-screenshooter.git \
+  && cd xfce4-screenshooter \
   && ./autogen.sh --prefix=/usr \
   && make \
   && make install \
