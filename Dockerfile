@@ -103,7 +103,7 @@ RUN cd git \
 
 # Grab xfce4-screenshooter
 RUN cd git \
-  && git clone -b gtk3 https://github.com/andreldm/xfce4-screenshooter.git \
+  && git clone git://git.xfce.org/apps/xfce4-screenshooter \
   && cd xfce4-screenshooter \
   && ./autogen.sh --prefix=/usr \
   && make \
