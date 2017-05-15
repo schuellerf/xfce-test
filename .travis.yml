@@ -9,12 +9,12 @@ before_install:
   - docker build --tag test-xfce-ubuntu:latest .
 
 before_script:
-  - "export DISPLAY=:99.0"
-  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 800x600x24"
+  - "export DISPLAY=:23.0"
+  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_23.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :23 -ac -screen 0 800x600x24"
   - sleep 3 # give xvfb some time to start
 
 script:
-  - "docker run --detach --env DISPLAY=\":99.0\" --volume /tmp/.X11-unix:/tmp/.X11-unix test-xfce-ubuntu /usr/bin/ldtp > .docker_ID"
+  - "docker run --detach --env DISPLAY=\":23.0\" --volume /tmp/.X11-unix:/tmp/.X11-unix test-xfce-ubuntu /usr/bin/ldtp > .docker_ID"
   - "docker exec --detach $(cat .docker_ID) xfce4-session"
 
   - "docker cp behave $(cat .docker_ID):/tmp"
