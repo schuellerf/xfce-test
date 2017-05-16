@@ -22,6 +22,7 @@ RUN apt-get update \
  && apt-get -y build-dep xfce4-panel \
  && apt-get -y build-dep garcon \
  && apt-get -y build-dep xfce4-screenshooter \
+ && apt-get -y build-dep xfce4-whiskermenu-plugin \
  && apt-get -y install libglib2.0-bin libxfce4panel-2.0-dev libxfce4util-dev libxfconf-0-dev xfce4-dev-tools build-essential libgtk-3-dev gtk-doc-tools libgtk2.0-dev libx11-dev libglib2.0-dev libwnck-3-dev \
  && rm -rf /var/lib/apt/lists/*
 
@@ -42,12 +43,15 @@ RUN cd git \
 
 # line used to invalidate all git clones
 ARG DOWNLOAD_DATE=give_me_a_date
+ARG AUTOGEN_OPTIONS="--enable-debug --enable-maintainer-mode --host=x86_64-linux-gnu \
+                    --build=x86_64-linux-gnu --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu \
+                    --libexecdir=/usr/lib/x86_64-linux-gnu --enable-gtk3 --enable-gtk-doc"
 
 # Grab garcon from master
 RUN cd git \
   && git clone git://git.xfce.org/xfce/garcon \
   && cd garcon \
-  && ./autogen.sh --enable-debug --enable-maintenance-mode \
+  && ./autogen.sh $AUTOGEN_OPTIONS \
   && make \
   && make install \
   && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt \
@@ -57,7 +61,7 @@ RUN cd git \
 RUN cd git \
   && git clone -b exo-0.11.2 git://git.xfce.org/xfce/exo \
   && cd exo \
-  && ./autogen.sh \
+  && ./autogen.sh $AUTOGEN_OPTIONS \
   && make \
   && make install \
   && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt \
@@ -67,9 +71,17 @@ RUN cd git \
 RUN cd git \
   && git clone git://git.xfce.org/xfce/xfce4-panel \
   && cd xfce4-panel \
-  && ./autogen.sh --enable-debug --enable-maintainer-mode --host=x86_64-linux-gnu \
-        --build=x86_64-linux-gnu --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu \
-        --libexecdir=/usr/lib/x86_64-linux-gnu --enable-gtk3 --enable-gtk-doc \
+  && ./autogen.sh $AUTOGEN_OPTIONS \
+  && make \
+  && make install \
+  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
+
+# Grab xfce4-whiskermenu-plugin
+RUN cd git \
+  && git clone git://git.xfce.org/panel-plugins/xfce4-whiskermenu-plugin \
+  && cd xfce4-whiskermenu-plugin \
+  && mkdir build && cd build \
+  && cmake -DCMAKE_INSTALL_PREFIX=/usr .. \
   && make \
   && make install \
   && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
@@ -78,7 +90,7 @@ RUN cd git \
 RUN cd git \
   && git clone git://git.xfce.org/panel-plugins/xfce4-clipman-plugin \
   && cd xfce4-clipman-plugin \
-  && ./autogen.sh \
+  && ./autogen.sh $AUTOGEN_OPTIONS \
   && make \
   && make install \
   && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
@@ -87,7 +99,7 @@ RUN cd git \
 RUN cd git \
   && git clone git://git.xfce.org/xfce/xfce4-appfinder \
   && cd xfce4-appfinder \
-  && ./autogen.sh --prefix=/usr \
+  && ./autogen.sh $AUTOGEN_OPTIONS \
   && make \
   && make install \
   && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
@@ -96,7 +108,7 @@ RUN cd git \
 RUN cd git \
   && git clone -b xfwm4-4.12.4 git://git.xfce.org/xfce/xfwm4 \
   && cd xfwm4 \
-  && ./autogen.sh --prefix=/usr \
+  && ./autogen.sh $AUTOGEN_OPTIONS \
   && make \
   && make install \
   && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
@@ -105,7 +117,7 @@ RUN cd git \
 RUN cd git \
   && git clone git://git.xfce.org/apps/xfce4-screenshooter \
   && cd xfce4-screenshooter \
-  && ./autogen.sh --prefix=/usr \
+  && ./autogen.sh $AUTOGEN_OPTIONS \
   && make \
   && make install \
   && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
