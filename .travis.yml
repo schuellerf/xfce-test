@@ -16,6 +16,7 @@ before_script:
 script:
   - "docker run --detach --env DISPLAY=\":23.0\" --volume /tmp/.X11-unix:/tmp/.X11-unix test-xfce-ubuntu /usr/bin/ldtp > .docker_ID"
   - "docker exec --detach $(cat .docker_ID) xfce4-session"
+  - sleep 10 # give xfce some time to start
 
   - "docker cp behave $(cat .docker_ID):/tmp"
   - "docker exec $(cat .docker_ID) bash -c \"cd /tmp/behave/; behave \" "
