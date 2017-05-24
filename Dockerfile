@@ -19,7 +19,7 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EB563F93142986CE
 #XFCE specific
 RUN apt-get update \
  && apt-get -y install gnome-themes-standard \
- && apt-get -y install libglib2.0-bin build-essential libgtk-3-dev gtk-doc-tools libgtk2.0-dev libx11-dev libglib2.0-dev libwnck-3-dev intltool libdbus-glib-1-dev liburi-perl x11-xserver-utils libvte-2.91-dev dbus-x11 strace libgl1-mesa-dev adwaita-icon-theme libwnck-dev adwaita-icon-theme-full \
+ && apt-get -y install libglib2.0-bin build-essential libgtk-3-dev gtk-doc-tools libgtk2.0-dev libx11-dev libglib2.0-dev libwnck-3-dev intltool libdbus-glib-1-dev liburi-perl x11-xserver-utils libvte-2.91-dev dbus-x11 strace libgl1-mesa-dev adwaita-icon-theme libwnck-dev adwaita-icon-theme-full cmake libsoup2.4-dev \
  && rm -rf /var/lib/apt/lists/*
 
 #needed for LDTP and friends
@@ -185,9 +185,8 @@ RUN cd git \
   && make install \
   && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
 
-RUN apt-get update && apt-get install -y cmake
 # Grab xfce4-whiskermenu-plugin
-RUN cd git \
+RUN cat /usr/lib/x86_64-linux-gnu/pkgconfig/garcon-1.pc &&  cd git \
   && git clone git://git.xfce.org/panel-plugins/xfce4-whiskermenu-plugin \
   && cd xfce4-whiskermenu-plugin \
   && mkdir build && cd build \
@@ -205,7 +204,6 @@ RUN cd git \
   && make install \
   && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
 
-RUN apt-get update && apt-get install -y libsoup2.4-dev
 # Grab xfce4-screenshooter
 RUN cd git \
   && git clone git://git.xfce.org/apps/xfce4-screenshooter \
