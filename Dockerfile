@@ -64,10 +64,12 @@ RUN cd git \
   && ldconfig
 
 # Grab xfconf from master
+# someone needs to explain me why "make" only works after running autogen the second time
 RUN cd git \
   && git clone git://git.xfce.org/xfce/xfconf \
   && cd xfconf \
   && ./autogen.sh $AUTOGEN_OPTIONS \
+  ; ./autogen.sh $AUTOGEN_OPTIONS \
   && make \
   && make install \
   && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt \
