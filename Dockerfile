@@ -6,8 +6,9 @@ ENV DISPLAY ${DISPLAY:-:1}
 
 # Test specific
 # python-wheel is a missing dependency from behave
+# psmisc for "killall"
 RUN apt-get update \
- && apt-get -y --no-install-recommends install apt-utils \
+ && apt-get -y --no-install-recommends install apt-utils psmisc \
  && apt-get -y install dirmngr git python-ldtp ldtp python-pip python-wheel
 
 RUN /usr/bin/pip install --upgrade pip
