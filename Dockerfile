@@ -107,7 +107,7 @@ RUN cd git \
 
 # Grab xfce4-panel
 RUN cd git \
-  && git clone https://github.com/schuellerf/xfce4-panel.git \
+  && git clone git://git.xfce.org/xfce/xfce4-panel \
   && cd xfce4-panel \
   && ./autogen.sh $AUTOGEN_OPTIONS \
   && make \
