@@ -75,6 +75,18 @@ debug-behave-tests:
 	docker exec --tty xfce-test bash -c "cd /tmp/behave;behave -D DEBUG_ON_ERROR"
 	docker exec --tty xfce-test bash -c "cat ~test_user/version_info.txt"
 
+test-like-travis:
+	Xvfb :99 -ac -screen 0 800x600x24 &
+	docker run --name xfce-test-travis --detach --env DISPLAY=:99.0 --volume /tmp/.X11-unix:/tmp/.X11-unix schuellerf/xfce-test:latest /usr/bin/dbus-run-session /usr/bin/ldtp
+	ffmpeg -y -r 30 -f x11grab -s 800x600 -i :99.0 -c:a copy -f mpegts - 2>/dev/null|ffplay - 2>/dev/null 1>&1 &
+	docker exec --detach xfce-test-travis xfce4-session
+	docker cp behave xfce-test-travis:/tmp
+	docker exec xfce-test-travis bash -c "cd /tmp/behave;behave -D DEBUG_ON_ERROR"
+	-kill $$(cat /tmp/.X99-lock)
+	-docker stop xfce-test-travis
+	-docker rm xfce-test-travis
+	-killall ffmpeg
+
 # internal function - call screenshots instead
 do-screenshots:
 	rm -rf screenshots
