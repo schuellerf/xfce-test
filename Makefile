@@ -51,6 +51,7 @@ test-setup: xephyr
 	-docker rm xfce-test
 	-docker run --name xfce-test --detach \
               --env DISPLAY=":1" \
+              --env LDTP_DEBUG=2 \
               --volume /tmp/.X11-unix:/tmp/.X11-unix:z \
               schuellerf/xfce-test:latest
 
