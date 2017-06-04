@@ -117,7 +117,7 @@ RUN cd git \
 
 # Grab thunar
 RUN cd git \
-  && git clone git://git.xfce.org/xfce/thunar \
+  && git clone https://github.com/schuellerf/thunar.git \
   && cd thunar \
   && ./autogen.sh $AUTOGEN_OPTIONS \
   && make \
