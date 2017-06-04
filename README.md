@@ -1,6 +1,6 @@
 # XFCE Test
 Currently this is just a playground to setup xfce in docker.  
-This is not a full xfce/xubuntu installation but for now only installs the newest libxfce4ui and some plugins for testing
+This is a xubuntu 17.04, with a build from git sources of all core Xfce components + some apps for testing.
 
 # Travis
 
@@ -41,9 +41,9 @@ If you don't want to build this docker image on your own (with the Makefile from
 here are those steps as copy'n'paste lines
 
 ```
-docker pull schuellerf/xfce-test:ubuntu_17.04
+docker pull schuellerf/xfce-test:latest
 Xephyr :1 -ac -screen 800x600 &
-docker run --name xfce-test --rm --env DISPLAY=":1" --volume /tmp/.X11-unix:/tmp/.X11-unix schuellerf/xfce-test:ubuntu_17.04
+docker run --name xfce-test --rm --env DISPLAY=":1" --volume /tmp/.X11-unix:/tmp/.X11-unix schuellerf/xfce-test:latest
 ```
 
 to _stop_ testing you can leave the xfce-session and close Xephyr or

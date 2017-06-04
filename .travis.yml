@@ -14,9 +14,9 @@ before_script:
   - sleep 3 # give xvfb some time to start
 
 script:
-  - "docker run --detach --env DISPLAY=\":23.0\" --volume /tmp/.X11-unix:/tmp/.X11-unix test-xfce-ubuntu /usr/bin/xfce4-session > .docker_ID"
+  - "docker run --detach --env DISPLAY=\":23.0\" --volume /tmp/.X11-unix:/tmp/.X11-unix test-xfce-ubuntu /usr/bin/dbus-run-session /usr/bin/xfce4-session > .docker_ID"
   - sleep 10 # give xfce some time to start
-  - "docker exec --detach $(cat .docker_ID) /usr/bin/ldtp"
+  - "docker exec --detach $(cat .docker_ID) /usr/bin/dbus-run-session /usr/bin/ldtp"
   - sleep 10 # give ldtp some time to start
 
   - "docker cp behave $(cat .docker_ID):/tmp"
