@@ -77,7 +77,7 @@ RUN cd git \
 
 # Grab libxfce4ui from master
 RUN cd git \
-  && git clone git://git.xfce.org/xfce/libxfce4ui \
+  && git clone https://github.com/schuellerf/libxfce4ui.git \
   && cd libxfce4ui \
   && ./autogen.sh $AUTOGEN_OPTIONS \
    ; ./autogen.sh $AUTOGEN_OPTIONS \
