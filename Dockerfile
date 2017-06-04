@@ -80,6 +80,7 @@ RUN cd git \
   && git clone git://git.xfce.org/xfce/libxfce4ui \
   && cd libxfce4ui \
   && ./autogen.sh $AUTOGEN_OPTIONS \
+   ; ./autogen.sh $AUTOGEN_OPTIONS \
   && make \
   && make install \
   && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt \
