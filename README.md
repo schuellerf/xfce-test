@@ -65,6 +65,16 @@ make debug
 This way the tests will stop executing and stay in the python debugger once a step fails.
 Once this happens you can inspect the current state of "behave" or checkout the current state in the Xephyr window or open up a second shell and start `make run-manual-session` to examine the current state
 
+# Screenshots
+
+When you want to make screenshots for each test step just set the variable `SCREENSHOTS` to `ALWAYS`
+
+```
+export SCREENSHOTS=ALWAYS
+make
+```
+
+Don't forget to delete the `Screenshots` folder _before_ each run. Otherwise those pictures will get mixed up!
 
 # Package compilation
 

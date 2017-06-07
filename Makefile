@@ -16,6 +16,7 @@ check_env:
 compile-local: check_env xephyr
 	-docker run --tty --interactive \
               --env DISPLAY=":1" \
+              --env SCREENSHOTS=$(SCREENSHOTS) \
               --volume /tmp/.X11-unix:/tmp/.X11-unix --volume $(SRC_DIR):/data \
               schuellerf/xfce-test:latest /bin/bash
 
@@ -25,6 +26,7 @@ compile-local-root: check_env xephyr
 	-docker run --tty --interactive --user 0:0 \
               --name xfce-test \
               --env DISPLAY=":1" \
+              --env SCREENSHOTS=$(SCREENSHOTS) \
               --volume /tmp/.X11-unix:/tmp/.X11-unix --volume $(SRC_DIR):/data \
               schuellerf/xfce-test:latest /bin/bash
 
@@ -52,6 +54,8 @@ test-setup: xephyr
 	-docker run --name xfce-test --detach \
               --env DISPLAY=":1" \
               --env LDTP_DEBUG=2 \
+              --env SCREENSHOTS=$(SCREENSHOTS) \
+	      --volume $(shell pwd):/data \
               --volume /tmp/.X11-unix:/tmp/.X11-unix:z \
               schuellerf/xfce-test:latest
 
@@ -67,13 +71,11 @@ run-manual-session:
 	-docker exec --tty --interactive xfce-test /bin/bash
 
 run-behave-tests:
-	docker cp behave xfce-test:/tmp
-	docker exec --tty xfce-test bash -c "cd /tmp/behave;behave"
+	docker exec --tty xfce-test bash -c "cd /data/behave;behave"
 	docker exec --tty xfce-test bash -c "cat ~test_user/version_info.txt"
 
 debug-behave-tests:
-	docker cp behave xfce-test:/tmp
-	docker exec --tty xfce-test bash -c "cd /tmp/behave;behave -D DEBUG_ON_ERROR"
+	docker exec --tty xfce-test bash -c "cd /data/behave;behave -D DEBUG_ON_ERROR"
 	docker exec --tty xfce-test bash -c "cat ~test_user/version_info.txt"
 
 test-like-travis:
