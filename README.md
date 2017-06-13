@@ -6,7 +6,7 @@ This is a xubuntu 17.04, with a build from git sources of all core Xfce componen
 
 The tests are run automatically by [travis](https://travis-ci.org/schuellerf/xfce-test).
 
-:white_check_mark: Those test are usually errored or failed as we are building _master_ of those repositories. A more stable branch will follow.
+:white_check_mark: Those test are usually errored or failed as we are building _master_ of the xfce repositories. A more stable branch will follow.
 
 [![Build Status](https://travis-ci.org/schuellerf/xfce-test.svg?branch=master)](https://travis-ci.org/schuellerf/xfce-test)
 
