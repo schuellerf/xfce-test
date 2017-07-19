@@ -24,4 +24,5 @@ script:
   - "docker exec $(cat .docker_ID) bash -c \"cat ~/version_info.txt\" "
   - "docker exec $(cat .docker_ID) bash -c \"ls -la /tmp/*.log\" "
   - "docker exec $(cat .docker_ID) bash -c \"cat /tmp/*.log\" "
+  - "docker exec $(cat .docker_ID) bash -c \"apt-cache policy libgtk-3-0\" "
 
