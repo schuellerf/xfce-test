@@ -7,7 +7,8 @@ import sys
 
 basePath="/screenshots"
 
-os.mkdir(basePath)
+if not os.path.exists(basePath):
+    os.mkdir(basePath)
 
 def do_screenshot(app, app_name):
     l.launchapp(app)

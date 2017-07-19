@@ -93,6 +93,8 @@ test-like-travis:
 # internal function - call screenshots instead
 do-screenshots:
 	rm -rf screenshots
+	docker exec -u 0:0 xfce-test mkdir /screenshots
+	docker exec -u 0:0 xfce-test chown test_user /screenshots
 	docker cp make_screenshots.py xfce-test:/tmp
 	docker exec xfce-test python /tmp/make_screenshots.py
 	docker cp xfce-test:/screenshots .

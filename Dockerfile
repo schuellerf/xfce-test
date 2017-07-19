@@ -9,7 +9,7 @@ ENV DISPLAY ${DISPLAY:-:1}
 # psmisc for "killall"
 RUN apt-get update \
  && apt-get -y --no-install-recommends install apt-utils psmisc \
- && apt-get -y install dirmngr git python-ldtp ldtp python-pip python-wheel
+ && apt-get -y install dirmngr git python-ldtp ldtp python-pip python-wheel python-dogtail python-psutil
 
 RUN /usr/bin/pip install --upgrade pip
 RUN /usr/bin/pip install behave
