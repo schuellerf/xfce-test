@@ -1,4 +1,4 @@
-FROM ubuntu:17.04
+FROM ubuntu:17.10
 MAINTAINER Florian Schüller <florian.schueller@gmail.com>
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -14,12 +14,12 @@ RUN apt-get update \
 RUN /usr/bin/pip install --upgrade pip
 RUN /usr/bin/pip install behave
 
-COPY xubuntu-dev-xfce4-gtk3-zesty.list /etc/apt/sources.list.d/
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EB563F93142986CE
+#COPY xubuntu-dev-xfce4-gtk3-zesty.list /etc/apt/sources.list.d/
+#RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EB563F93142986CE
 
 #XFCE specific
 RUN apt-get update \
- && apt-get -y install gnome-themes-standard libglib2.0-bin build-essential libgtk-3-dev gtk-doc-tools libgtk2.0-dev libx11-dev libglib2.0-dev libwnck-3-dev intltool libdbus-glib-1-dev liburi-perl x11-xserver-utils libvte-2.91-dev dbus-x11 strace libgl1-mesa-dev adwaita-icon-theme libwnck-dev adwaita-icon-theme-full cmake libsoup2.4-dev \
+ && apt-get -y install gnome-themes-standard libglib2.0-bin build-essential libgtk-3-dev gtk-doc-tools libgtk2.0-dev libx11-dev libglib2.0-dev libwnck-3-dev intltool libdbus-glib-1-dev liburi-perl x11-xserver-utils libvte-2.91-dev dbus-x11 strace libgl1-mesa-dev adwaita-icon-theme libwnck-dev adwaita-icon-theme-full cmake libsoup2.4-dev libpcre2-dev \
  && rm -rf /var/lib/apt/lists/*
 
 #needed for LDTP and friends
