@@ -1,6 +1,6 @@
 # XFCE Test
 Currently this is just a playground to setup xfce in docker.  
-This is a xubuntu 17.04, with a build from git sources of all core Xfce components + some apps for testing.
+This is a xubuntu 17.10, with a build from git sources of all core Xfce components + some apps for testing.
 
 # Travis
 
@@ -29,7 +29,7 @@ make manual-session
 either "read" the Makefile :) or at least assure docker and Xephyr to be on-board
 
 ```
-sudo apt install -y xserver-xephyr docker.io
+sudo apt install -y xserver-xephyr docker.io xvfb
 ```
 
 # Usage
