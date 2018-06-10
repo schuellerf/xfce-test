@@ -10,6 +10,9 @@ export DISPLAY_NUM=1
 # set SCREENSHOTS to ALWAYS to get screenshots during behave tests
 export SCREENSHOTS=NONE
 
+export FFMPEG_CMD=$(shell which ffmpeg || echo NO_FFMPEG)
+export FFPLAY_CMD=$(shell which ffplay || echo NO_FFPLAY)
+
 # for experimenting you might want to start with
 # make manual-session
 
@@ -72,6 +75,9 @@ test-teardown:
 	-docker exec xfce-test xfce4-session-logout --logout
 	-docker stop xfce-test
 	-docker rm xfce-test
+	-docker exec xfce-test-travis xfce4-session-logout --logout
+	-docker stop xfce-test-travis
+	-docker rm xfce-test-travis
 	-killall -q Xephyr
 	-sudo rm -rf /tmp/.X11-unix/X$(DISPLAY_NUM) /tmp/.X$(DISPLAY_NUM)-lock
 
@@ -88,7 +94,14 @@ debug-behave-tests:
 	docker exec --tty xfce-test bash -c "cd /data/behave;behave -D DEBUG_ON_ERROR"
 	docker exec --tty xfce-test bash -c "cat ~test_user/version_info.txt"
 
-recording-test:
+$(FFMPEG_CMD):
+	echo Please install ffmpeg
+	exit 1
+$(FFPLAY_CMD):
+	echo Please install ffplay
+	exit 1
+
+recording-test: $(FFMPEG_CMD) $(FFPLAY_CMD)
 	Xvfb :99 -ac -screen 0 800x600x24 &
 	docker run --name xfce-test-travis --detach --env DISPLAY=:99.0 --volume /tmp/.X11-unix:/tmp/.X11-unix schuellerf/xfce-test:latest /usr/bin/dbus-run-session /usr/bin/ldtp
 	sleep 5
