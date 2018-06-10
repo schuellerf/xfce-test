@@ -11,7 +11,6 @@ RUN apt-get update \
  && apt-get -y --no-install-recommends install apt-utils psmisc \
  && apt-get -y install dirmngr git python-ldtp ldtp python-pip python-wheel python-dogtail python-psutil
 
-RUN /usr/bin/pip install --upgrade pip
 RUN /usr/bin/pip install behave
 
 #COPY xubuntu-dev-xfce4-gtk3-zesty.list /etc/apt/sources.list.d/
