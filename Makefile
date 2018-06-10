@@ -106,7 +106,11 @@ recording-test: $(FFMPEG_CMD) $(FFPLAY_CMD)
 	docker run --name xfce-test-travis --detach --env DISPLAY=:99.0 --volume /tmp/.X11-unix:/tmp/.X11-unix schuellerf/xfce-test:latest /usr/bin/dbus-run-session /usr/bin/ldtp
 	sleep 5
 	echo "Starting testframework..." > text.txt
-	ffmpeg -y -r 30 -f x11grab -s 800x600 -i :99.0 -vf "drawtext=fontfile=Vera.ttf:textfile=text.txt:reload=1:fontcolor=white: fontsize=12: box=1: boxcolor=black@0.5:y=500" -c:v libx264 -f mpegts - 2>video_log > video.ts & #|ffplay - &#> video.ts &
+ifdef DEBUG
+	ffmpeg -y -r 30 -f x11grab -s 800x600 -i :99.0 -vf "drawtext=fontfile=Vera.ttf:textfile=text.txt:reload=1:fontcolor=white: fontsize=12: box=1: boxcolor=black@0.5:y=500" -c:v libx264 -f mpegts - 2>video_log | tee video.ts |ffplay - &
+else
+	ffmpeg -y -r 30 -f x11grab -s 800x600 -i :99.0 -vf "drawtext=fontfile=Vera.ttf:textfile=text.txt:reload=1:fontcolor=white: fontsize=12: box=1: boxcolor=black@0.5:y=500" -c:v libx264 -f mpegts - 2>video_log > video.ts &
+endif
 	sleep 5
 	docker exec --detach xfce-test-travis xfce4-session
 	docker cp behave xfce-test-travis:/tmp
@@ -115,7 +119,7 @@ recording-test: $(FFMPEG_CMD) $(FFPLAY_CMD)
 	-kill $$(cat /tmp/.X99-lock)
 	-docker stop xfce-test-travis
 	-docker rm xfce-test-travis
-	-killall -q ffmpeg
+	-killall -q ffmpeg ffplay
 
 # internal function - call screenshots instead
 do-screenshots:
