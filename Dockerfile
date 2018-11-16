@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:18.10
 MAINTAINER Florian Schüller <florian.schueller@gmail.com>
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -13,94 +13,95 @@ RUN apt-get update \
 
 RUN /usr/bin/pip install behave
 
-#COPY xubuntu-dev-xfce4-gtk3-zesty.list /etc/apt/sources.list.d/
-#RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EB563F93142986CE
+# Enable source repositories
+RUN sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
 
-#XFCE specific
+# Xfce specific build dependencies
 RUN apt-get update \
- && apt-get -y install gnome-themes-standard libglib2.0-bin build-essential libgtk-3-dev gtk-doc-tools libgtk2.0-dev libx11-dev libglib2.0-dev libwnck-3-dev intltool libdbus-glib-1-dev liburi-perl x11-xserver-utils libvte-2.91-dev dbus-x11 strace libgl1-mesa-dev adwaita-icon-theme libwnck-dev adwaita-icon-theme-full cmake libsoup2.4-dev libpcre2-dev \
+ && apt-get -y install gnome-themes-standard libglib2.0-bin build-essential libgtk-3-dev gtk-doc-tools libgtk2.0-dev libx11-dev libglib2.0-dev libwnck-3-dev intltool libdbus-glib-1-dev liburi-perl x11-xserver-utils libvte-2.91-dev dbus-x11 strace libgl1-mesa-dev adwaita-icon-theme libwnck-dev adwaita-icon-theme-full cmake libsoup2.4-dev libpcre2-dev exo-utils \
+ && apt-get -y build-dep xfce4-panel thunar xfce4-settings xfce4-session xfdesktop4 xfwm4 xfce4-appfinder tumbler xfce4-terminal xfce4-clipman-plugin xfce4-screenshooter \
  && rm -rf /var/lib/apt/lists/*
 
 #needed for LDTP and friends
 RUN /usr/bin/dbus-run-session /usr/bin/gsettings set org.gnome.desktop.interface toolkit-accessibility true
 
-# create the directory for version_info.txt
+# Create the directory for version_info.txt
 RUN useradd -ms /bin/bash test_user
 
-# group all repos here
+# Group all repos here
 RUN mkdir /git
 
-# rather use my patched version
+# Rather use my patched version
 RUN cd git \
  && git clone https://github.com/schuellerf/ldtp2.git \
  && cd ldtp2 \
  && python setup.py install
 
-# line used to invalidate all git clones
+# Line used to invalidate all git clones
 ARG DOWNLOAD_DATE=give_me_a_date
 ARG AUTOGEN_OPTIONS="--disable-debug --enable-maintainer-mode --host=x86_64-linux-gnu \
                     --build=x86_64-linux-gnu --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu \
                     --libexecdir=/usr/lib/x86_64-linux-gnu --sysconfdir=/etc --localstatedir=/var --enable-gtk3 --enable-gtk-doc"
 
-# Grab xfce4-dev-tools from master
-RUN cd git \
-  && git clone git://git.xfce.org/xfce/xfce4-dev-tools \
-  && cd xfce4-dev-tools \
-  && ./autogen.sh $AUTOGEN_OPTIONS \
-  && make \
-  && make install \
-  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt \
-  && ldconfig
+## Grab xfce4-dev-tools from master
+#RUN cd git \
+#  && git clone git://git.xfce.org/xfce/xfce4-dev-tools \
+#  && cd xfce4-dev-tools \
+#  && ./autogen.sh $AUTOGEN_OPTIONS \
+#  && make \
+#  && make install \
+#  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt \
+#  && ldconfig
 
-# Grab libxfce4util from master
-RUN cd git \
-  && git clone git://git.xfce.org/xfce/libxfce4util \
-  && cd libxfce4util \
-  && ./autogen.sh $AUTOGEN_OPTIONS \
-  && make \
-  && make install \
-  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt \
-  && ldconfig
+## Grab libxfce4util from master
+#RUN cd git \
+#  && git clone git://git.xfce.org/xfce/libxfce4util \
+#  && cd libxfce4util \
+#  && ./autogen.sh $AUTOGEN_OPTIONS \
+#  && make \
+#  && make install \
+#  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt \
+#  && ldconfig
 
-# Grab xfconf from master
-RUN cd git \
-  && git clone git://git.xfce.org/xfce/xfconf \
-  && cd xfconf \
-  && ./autogen.sh $AUTOGEN_OPTIONS \
-  && make \
-  && make install \
-  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt \
-  && ldconfig
+## Grab xfconf from master
+#RUN cd git \
+#  && git clone git://git.xfce.org/xfce/xfconf \
+#  && cd xfconf \
+#  && ./autogen.sh $AUTOGEN_OPTIONS \
+#  && make \
+#  && make install \
+#  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt \
+#  && ldconfig
 
-# Grab libxfce4ui from master
-RUN cd git \
-  && git clone git://git.xfce.org/xfce/libxfce4ui \
-  && cd libxfce4ui \
-  && ./autogen.sh $AUTOGEN_OPTIONS \
-  && make \
-  && make install \
-  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt \
-  && ldconfig
+## Grab libxfce4ui from master
+#RUN cd git \
+#  && git clone git://git.xfce.org/xfce/libxfce4ui \
+#  && cd libxfce4ui \
+#  && ./autogen.sh $AUTOGEN_OPTIONS \
+#  && make \
+#  && make install \
+#  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt \
+#  && ldconfig
 
-# Grab garcon from master
-RUN cd git \
-  && git clone git://git.xfce.org/xfce/garcon \
-  && cd garcon \
-  && ./autogen.sh $AUTOGEN_OPTIONS \
-  && make \
-  && make install \
-  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt \
-  && ldconfig
+## Grab garcon from master
+#RUN cd git \
+#  && git clone git://git.xfce.org/xfce/garcon \
+#  && cd garcon \
+#  && ./autogen.sh $AUTOGEN_OPTIONS \
+#  && make \
+#  && make install \
+#  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt \
+#  && ldconfig
 
-# Grab exo from master
-RUN cd git \
-  && git clone git://git.xfce.org/xfce/exo \
-  && cd exo \
-  && ./autogen.sh $AUTOGEN_OPTIONS \
-  && make \
-  && make install \
-  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt \
-  && ldconfig
+## Grab exo from master
+#RUN cd git \
+#  && git clone git://git.xfce.org/xfce/exo \
+#  && cd exo \
+#  && ./autogen.sh $AUTOGEN_OPTIONS \
+#  && make \
+#  && make install \
+#  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt \
+#  && ldconfig
 
 # Grab xfce4-panel
 RUN cd git \
