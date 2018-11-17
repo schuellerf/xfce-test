@@ -1,6 +1,6 @@
 # XFCE Test
 Currently this is just a playground to setup xfce in docker.  
-This is a xubuntu 17.10, with a build from git sources of all core Xfce components + some apps for testing.
+This is a Xubuntu 18.10, with a build from git sources of all core Xfce components + some apps for testing.
 
 # Travis
 
