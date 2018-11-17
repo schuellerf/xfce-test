@@ -1,11 +1,5 @@
 Feature: Some tests with clipman
 
-  Scenario: Select default panel config
-     Given nothing
-      when we make a longer break
-       and we click on btnUsedefaultconfig in dlgQuestion
-      then dlgQuestion is gone
-
   Scenario: Clipman doesn't always start on the first try?
      Given we just start xfce4-clipman
       when we kill xfce4-clipman
@@ -45,7 +39,7 @@ Feature: Some tests with clipman
      Given we have xfce4-clipman started
        and we have xfce4-clipman-settings started
       when we click on chkIgnoreselections in dlgClipman
-      then we think chkIgnoreselections of dlgClipman is unchecked 
+      then we think chkIgnoreselections of dlgClipman is unchecked
       when we click on btnClose in dlgClipman
       then dlgClipman is gone
 
@@ -84,4 +78,3 @@ Feature: Some tests with clipman
      Given nothing
       when we kill xfce4-clipman
       then we don't expect anything
-
