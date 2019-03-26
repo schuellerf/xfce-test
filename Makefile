@@ -2,7 +2,7 @@
 
 # resolution of the test X server
 # TBD: define what the minimal supported resolution is
-export RESOLUTION=800x600
+export RESOLUTION=1024x768
 
 # use this X display number for the tests
 export DISPLAY_NUM=1
@@ -128,3 +128,11 @@ do-screenshots:
 	docker exec xfce-test xfce4-session-logout --logout
 
 screenshots: test-setup do-screenshots test-teardown
+
+do-language-test:
+	docker exec --tty xfce-test bash -c "mkdir -p /data/lang-screenshots; cd /data/lang-screenshots; /data/all_langs.sh"
+	docker exec xfce-test xfce4-session-logout --logout
+
+language-test: test-setup do-language-test test-teardown
+
+

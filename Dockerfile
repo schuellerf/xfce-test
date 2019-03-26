@@ -38,6 +38,11 @@ RUN cd git \
  && cd ldtp2 \
  && python setup.py install
 
+# Install _all_ languages for testing
+RUN apt-get update \
+ && apt-get -y install xautomation $(apt-cache search language-pack|grep -oP "^language-pack-...?(?= )") \
+ && rm -rf /var/lib/apt/lists/*
+
 # Line used to invalidate all git clones
 ARG DOWNLOAD_DATE=give_me_a_date
 ARG AUTOGEN_OPTIONS="--disable-debug --enable-maintainer-mode --host=x86_64-linux-gnu \
