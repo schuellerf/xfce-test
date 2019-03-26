@@ -40,7 +40,7 @@ RUN cd git \
 
 # Install _all_ languages for testing
 RUN apt-get update \
- && apt-get -y install xautomation $(apt-cache search language-pack|grep -oP "^language-pack-...?(?= )") \
+ && apt-get -y install transifex-client xautomation $(apt-cache search language-pack|grep -oP "^language-pack-...?(?= )") \
  && rm -rf /var/lib/apt/lists/*
 
 # Line used to invalidate all git clones
