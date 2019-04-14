@@ -9,7 +9,7 @@ ENV DISPLAY ${DISPLAY:-:1}
 # psmisc for "killall"
 RUN apt-get update \
  && apt-get -y --no-install-recommends install apt-utils psmisc \
- && apt-get -y install dirmngr git python-ldtp ldtp python-pip python-wheel python-dogtail python-psutil
+ && apt-get -y install dirmngr git python-ldtp ldtp python-pip python-wheel python-dogtail python-psutil vim sudo
 
 RUN /usr/bin/pip install behave
 
@@ -28,6 +28,9 @@ RUN /usr/bin/dbus-run-session /usr/bin/gsettings set org.gnome.desktop.interface
 
 # Create the directory for version_info.txt
 RUN useradd -ms /bin/bash test_user
+
+RUN adduser test_user sudo
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # Group all repos here
 RUN mkdir /git
@@ -218,6 +221,17 @@ RUN cd git \
   && make \
   && make install \
   && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
+
+RUN cp /usr/share/i18n/locales/en_GB /usr/share/i18n/locales/automate
+RUN sed -i -E "s/Language: en/Language: automate/" /usr/share/i18n/locales/automate
+RUN sed -i -E "s/lang_lib +\"eng\"/lang_lib    \"automate\"/" /usr/share/i18n/locales/automate
+RUN sed -i -E "s/lang_name +\"English\"/lang_name     \"Automate\"/" /usr/share/i18n/locales/automate
+RUN bash -c "cd /usr/share/i18n/locales;localedef -i automate -f UTF-8 automate.UTF-8 -c -v || echo Ignoring warnings..."
+RUN echo "automate UTF-8" > /var/lib/locales/supported.d/automate
+RUN locale-gen automate
+RUN dpkg-reconfigure fontconfig
+
+RUN chown -R test_user /git
 
 USER test_user
 ENV HOME /home/test_user
