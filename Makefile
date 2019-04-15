@@ -132,7 +132,7 @@ screenshots: test-setup do-screenshots test-teardown
 do-language-test:
 	mkdir -p lang-screenshots
 	chmod a+rwx lang-screenshots
-	docker exec --tty xfce-test bash -c "cd /data/lang-screenshots; /data/all_langs.sh"
+	docker exec --tty xfce-test bash -c "cd /data/lang-screenshots; /data/container_scripts/all_langs.sh"
 	docker exec xfce-test xfce4-session-logout --logout
 
 language-test: test-setup do-language-test test-teardown

@@ -233,11 +233,19 @@ RUN dpkg-reconfigure fontconfig
 
 RUN chown -R test_user /git
 
+COPY start.sh /
+COPY entrypoint.sh /
+COPY container_scripts /container_scripts
+RUN chmod a+x /start.sh /entrypoint.sh /container_scripts/*.sh
+
 USER test_user
 ENV HOME /home/test_user
+
+RUN mkdir -p ~test_user/Desktop
+RUN ln -s /container_scripts ~test_user/Desktop/container_scripts
 
 RUN echo 'if [[ $- =~ "i" ]]; then echo -n "This container includes:\n"; cat ~test_user/version_info.txt; fi' >> ~test_user/.bashrc
 
 COPY behave /behave_tests
 
-CMD [ "/bin/bash", "-c", "xfce4-session" ]
+CMD [ "/entrypoint.sh" ]
