@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 if xprop -root >/dev/null; then
+  cd /data
   xfce4-session
 else
   echo "-------------------"

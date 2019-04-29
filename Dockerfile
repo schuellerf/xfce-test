@@ -9,7 +9,8 @@ ENV DISPLAY ${DISPLAY:-:1}
 # psmisc for "killall"
 RUN apt-get update \
  && apt-get -y --no-install-recommends install apt-utils psmisc \
- && apt-get -y install dirmngr git python-ldtp ldtp python-pip python-wheel python-dogtail python-psutil vim sudo
+ && apt-get -y install dirmngr git python-ldtp ldtp python-pip python-wheel python-dogtail python-psutil vim sudo gdb valgrind \
+ && rm -rf /var/lib/apt/lists/*
 
 RUN /usr/bin/pip install behave
 
@@ -241,6 +242,7 @@ RUN chmod a+x /start.sh /container_scripts/*.sh
 
 USER test_user
 ENV HOME /home/test_user
+ENV AUTOGEN_OPTIONS $AUTOGEN_OPTIONS
 
 RUN mkdir -p ~test_user/Desktop
 RUN ln -s /container_scripts ~test_user/Desktop/container_scripts
