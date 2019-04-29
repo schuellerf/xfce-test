@@ -2,7 +2,10 @@
 
 install_me() {
   mkdir -p ~/.local/bin
+  # "fall back"
   cp $0 ~/.local/bin/xfce-test
+  echo "Trying to get the latest version"
+  curl -o ~/.local/bin/xfce-test https://raw.githubusercontent.com/schuellerf/xfce-test/master/xfce-test || echo "... well I tried to."
   chmod u+x ~/.local/bin/xfce-test
   echo "Installed 'xfce-test' to $(readlink -f ~/.local/bin/xfce-test)"
   echo "You can just call it with 'xfce-test'"
@@ -19,9 +22,15 @@ usage() {
     echo "                   easier execution"
     echo "      start        Start the container for testing"
     echo "                   USE THIS IF YOU ARE NOT SURE"
+    echo "      pull         Get the latest container"
     echo "      no-session   starts the container without a session"
     echo "                   (this is great if you want to test the session itself ;)"
+    echo ""
+    echo "  -- Commands only working from within the cloned git repository"
+    echo "      build        Builds the container locally"
 }
+
+MODES=("start" "pull" "no-session" "build")
 
 if [ $# -eq 1 ]; then
     case $1 in
@@ -33,9 +42,10 @@ if [ $# -eq 1 ]; then
             usage
             exit 0
         ;;
-        no-session|start)
+        #TBD: change to someting like $(IFS=$'|'; echo "${MODES[*]}")
+        #     ... but working
+        start|pull|no-session|build)
             mode=$1
-            break
         ;;
         *)
             echo "Unknown Option '$1'"
@@ -47,8 +57,10 @@ if [ $# -eq 1 ]; then
 
 else
 
+    usage
+
     PS3="Choose option: "
-    select mode in install no-session start; do
+    select mode in install ${MODES[@]}; do
         case $mode in
             "install")
                 install_me
@@ -60,6 +72,18 @@ else
         esac
     done
 fi
+
+
+case $mode in
+    "pull")
+        docker pull schuellerf/xfce-test
+        exit 0
+    ;;
+    "build")
+        docker build --build-arg DOWNLOAD_DATE=$(date +%Y%m%d) --tag schuellerf/xfce-test:latest .
+        exit 0
+    ;;
+esac
 
 # This starts the container for manual or semi automated tests
 
