@@ -1,4 +1,4 @@
-FROM ubuntu:19.04
+FROM fedora:29
 MAINTAINER Florian Schüller <florian.schueller@gmail.com>
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -7,22 +7,19 @@ ENV DISPLAY ${DISPLAY:-:1}
 # Test specific
 # python-wheel is a missing dependency from behave
 # psmisc for "killall"
-RUN apt-get update \
- && apt-get -y --no-install-recommends install apt-utils psmisc \
- && apt-get -y install dirmngr git python-ldtp ldtp python-pip python-wheel python-dogtail python-psutil vim sudo gdb valgrind \
- && rm -rf /var/lib/apt/lists/*
+RUN yum -y update \
+ && yum -y install psmisc \
+ && yum -y install dirmngr git ldtp python-pip python-wheel python-dogtail python-psutil vim sudo gdb valgrind \
+ && yum clean all
 
-RUN /usr/bin/pip install behave
-
-# Enable source repositories
-RUN sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
+RUN /usr/bin/pip install behave ldtp
 
 # Xfce specific build dependencies
-RUN apt-get update \
- && apt-get -y install gnome-themes-standard libglib2.0-bin build-essential libgtk-3-dev gtk-doc-tools libgtk2.0-dev libx11-dev libglib2.0-dev libwnck-3-dev intltool libdbus-glib-1-dev liburi-perl x11-xserver-utils libvte-2.91-dev dbus-x11 strace libgl1-mesa-dev adwaita-icon-theme libwnck-dev adwaita-icon-theme-full cmake libsoup2.4-dev libpcre2-dev exo-utils \
- && apt-get -y install xfce4 xfce4-appfinder tumbler xfce4-terminal xfce4-clipman-plugin xfce4-screenshooter xfce4-power-manager xfce4-notifyd \
- && apt-get -y build-dep xfce4-panel thunar xfce4-settings xfce4-session xfdesktop4 xfwm4 xfce4-appfinder tumbler xfce4-terminal xfce4-clipman-plugin xfce4-screenshooter \
- && rm -rf /var/lib/apt/lists/*
+# && yum -y install gnome-themes-standard libglib2.0-bin build-essential libgtk-3-dev gtk-doc-tools libgtk2.0-dev libx11-dev libglib2.0-dev libwnck-3-dev intltool libdbus-glib-1-dev liburi-perl x11-xserver-utils libvte-2.91-dev dbus-x11 strace libgl1-mesa-dev adwaita-icon-theme libwnck-dev adwaita-icon-theme-full cmake libsoup2.4-dev libpcre2-dev exo-utils \
+RUN yum -y update \
+ && yum -y install xfce4-appfinder tumbler xfce4-terminal xfce4-clipman-plugin xfce4-screenshooter xfce4-power-manager xfce4-notifyd librsvg2 \
+ && dnf -y builddep xfce4-panel Thunar xfce4-settings xfce4-session xfdesktop xfwm4 xfce4-appfinder tumbler xfce4-terminal xfce4-clipman-plugin xfce4-screenshooter \
+ && yum clean all
 
 #needed for LDTP and friends
 RUN /usr/bin/dbus-run-session /usr/bin/gsettings set org.gnome.desktop.interface toolkit-accessibility true
@@ -30,8 +27,8 @@ RUN /usr/bin/dbus-run-session /usr/bin/gsettings set org.gnome.desktop.interface
 # Create the directory for version_info.txt
 RUN useradd -ms /bin/bash test_user
 
-RUN adduser test_user sudo
-RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN usermod test_user -G wheel
+RUN sed -i "s/^%wheel.*/%wheel ALL=(ALL) NOPASSWD:ALL/" /etc/sudoers
 
 # Group all repos here
 RUN mkdir /git
@@ -43,8 +40,8 @@ RUN cd git \
  && python setup.py install
 
 # Install _all_ languages for testing
-RUN apt-get update \
- && apt-get -y install transifex-client xautomation $(apt-cache search language-pack|grep -oP "^language-pack-...?(?= )") \
+RUN yum -y update \
+ && yum -y install transifex-client xautomation $(yum search glibc-langpack-|grep -oP "^glibc-langpack-...?(?=.x86)") \
  && rm -rf /var/lib/apt/lists/*
 
 # Line used to invalidate all git clones
@@ -225,14 +222,15 @@ RUN cd git \
 
 RUN pip install opencv-python
 
-RUN cp /usr/share/i18n/locales/en_GB /usr/share/i18n/locales/automate
-RUN sed -i -E "s/Language: en/Language: automate/" /usr/share/i18n/locales/automate
-RUN sed -i -E "s/lang_lib +\"eng\"/lang_lib    \"automate\"/" /usr/share/i18n/locales/automate
-RUN sed -i -E "s/lang_name +\"English\"/lang_name     \"Automate\"/" /usr/share/i18n/locales/automate
-RUN bash -c "cd /usr/share/i18n/locales;localedef -i automate -f UTF-8 automate.UTF-8 -c -v || echo Ignoring warnings..."
-RUN echo "automate UTF-8" > /var/lib/locales/supported.d/automate
-RUN locale-gen automate
-RUN dpkg-reconfigure fontconfig
+# TBD language generation - it's different than in ubuntu...
+#RUN cp -r /usr/share/locale/en_GB /usr/share/locale/automate
+#RUN sed -i -E "s/Language: en/Language: automate/" /usr/share/locale/automate
+#RUN sed -i -E "s/lang_lib +\"eng\"/lang_lib    \"automate\"/" /usr/share/i18n/locale/automate
+#RUN sed -i -E "s/lang_name +\"English\"/lang_name     \"Automate\"/" /usr/share/i18n/locale/automate
+#RUN bash -c "cd /usr/share/i18n/locale;localedef -i automate -f UTF-8 automate.UTF-8 -c -v || echo Ignoring warnings..."
+#RUN echo "automate UTF-8" > /var/lib/locale/supported.d/automate
+#RUN locale-gen automate
+#RUN dpkg-reconfigure fontconfig
 
 RUN chown -R test_user /git
 
