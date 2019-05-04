@@ -9,7 +9,7 @@ ENV DISPLAY ${DISPLAY:-:1}
 # psmisc for "killall"
 RUN yum -y update \
  && yum -y install psmisc \
- && yum -y install dirmngr git ldtp python-pip python-wheel python-dogtail python-psutil vim sudo gdb valgrind \
+ && yum -y install dirmngr git ldtp python-pip python-wheel python-dogtail python-psutil vim sudo gdb valgrind cmake \
  && yum clean all
 
 RUN /usr/bin/pip install behave ldtp
