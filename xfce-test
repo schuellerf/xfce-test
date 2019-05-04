@@ -80,7 +80,12 @@ case $mode in
         exit 0
     ;;
     "build")
-        docker build --build-arg DOWNLOAD_DATE=$(date +%Y%m%d) --tag schuellerf/xfce-test:latest .
+        TAG=$(git rev-parse --abbrev-ref HEAD|tr '/' '_')
+        if [[ $TAG != *_* ]]; then
+            TAG=latest
+        fi
+        echo "Building $TAG"
+        docker build --build-arg DOWNLOAD_DATE=$(date +%Y%m%d) --tag schuellerf/xfce-test:$TAG .
         exit 0
     ;;
 esac
