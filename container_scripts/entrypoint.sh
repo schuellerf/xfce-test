@@ -5,10 +5,10 @@ if xprop -root >/dev/null; then
   xfce4-session
 else
   echo "-------------------"
-  cat /start.sh
+  cat /xfce-test
   echo "-------------------"
   echo ""
   echo "Hi"\!
   echo "X11 does not seem to be available in Docker - please save the code above in a file"
-  echo "called 'start.sh' and execute it"
+  echo "called 'xfce-test' and execute it"
 fi
