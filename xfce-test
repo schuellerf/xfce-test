@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+DOWNLOAD_DATE=${DOWNLOAD_DATE:-$(date +%Y%m%d)}
+
 install_me() {
   mkdir -p ~/.local/bin
   # "fall back"
@@ -28,6 +30,10 @@ usage() {
     echo ""
     echo "  -- Commands only working from within the cloned git repository"
     echo "      build        Builds the container locally"
+    echo "                   Environment variable:"
+    echo "                   DOWNLOAD_DATE defines if all source code should be"
+    echo "                                 newly cloned and rebuilt"
+    echo "                   default: ${DOWNLOAD_DATE}"
 }
 
 WORK_MODES=("start" "pull" "no-session")
@@ -91,7 +97,8 @@ case $mode in
         exit 0
     ;;
     "build")
-        docker build --build-arg DOWNLOAD_DATE=$(date +%Y%m%d) --tag schuellerf/xfce-test:$TAG .
+        echo "DOWNLOAD_DATE is set to ${DOWNLOAD_DATE}"
+        docker build --build-arg DOWNLOAD_DATE=${DOWNLOAD_DATE} --tag schuellerf/xfce-test:$TAG .
         exit 0
     ;;
 esac

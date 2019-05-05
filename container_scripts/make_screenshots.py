@@ -5,7 +5,7 @@ import os
 import time
 import sys
 
-basePath="/screenshots"
+basePath="/data/app_screenshots"
 
 if not os.path.exists(basePath):
     os.mkdir(basePath)

@@ -49,6 +49,8 @@ RUN apt-get update \
 
 # Line used to invalidate all git clones
 ARG DOWNLOAD_DATE=give_me_a_date
+ENV DOWNLOAD_DATE=$DOWNLOAD_DATE
+RUN echo "Newly cloning all repos as date-flag changed to ${DOWNLOAD_DATE}"
 ARG AUTOGEN_OPTIONS="--disable-debug --enable-maintainer-mode --host=x86_64-linux-gnu \
                     --build=x86_64-linux-gnu --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu \
                     --libexecdir=/usr/lib/x86_64-linux-gnu --sysconfdir=/etc --localstatedir=/var --enable-gtk3 --enable-gtk-doc"
