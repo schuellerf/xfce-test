@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+DOWNLOAD_DATE=${DOWNLOAD_DATE:-$(date +%Y%m%d)}
+
 install_me() {
   mkdir -p ~/.local/bin
   # "fall back"
@@ -26,17 +28,33 @@ usage() {
     echo "      install      Installed the script to ~/.local/bin for"
     echo "                   easier execution"
     echo ""
+    echo "  -- Commands doing some automatic stuff"
+    echo "     screenshots   Creating just a screenshot of each 'main' xfce app"
+    echo ""
     echo "  -- Commands only working from within the cloned git repository"
     echo "      build        Builds the container locally"
+    echo "                   Environment variable:"
+    echo "                   DOWNLOAD_DATE defines if all source code should be"
+    echo "                                 newly cloned and rebuilt"
+    echo "                   default: ${DOWNLOAD_DATE}"
 }
 
-WORK_MODES=("start" "pull" "no-session")
+MANUAL_MODES=("start" "pull" "no-session")
+AUTOMATIC_MODES=("screenshots")
+
 REPO_MODES=("build")
+WORK_MODES=(${MANUAL_MODES[*]} ${AUTOMATIC_MODES[*]})
+if git status > /dev/null; then
+    WORK_MODES+=(${REPO_MODES[*]})
+fi
+
 MODES=("install" ${WORK_MODES[*]})
 
-if git status > /dev/null; then
-    MODES+=(${REPO_MODES[*]})
-fi
+
+# prepare all available modes in a bash-case syntax
+MODES_FOR_CASE=$(IFS=$'|'; echo "${WORK_MODES[*]}")
+shopt -s extglob
+MODES_FOR_CASE="+($MODES_FOR_CASE)"
 
 if [ $# -eq 1 ]; then
     case $1 in
@@ -48,9 +66,7 @@ if [ $# -eq 1 ]; then
             usage
             exit 0
         ;;
-        #TBD: change to someting like $(IFS=$'|'; echo "${WORK_MODES[*]}")
-        #     ... but working
-        start|pull|no-session|build)
+        $MODES_FOR_CASE )
             mode=$1
         ;;
         *)
@@ -91,7 +107,8 @@ case $mode in
         exit 0
     ;;
     "build")
-        docker build --build-arg DOWNLOAD_DATE=$(date +%Y%m%d) --tag schuellerf/xfce-test:$TAG .
+        echo "DOWNLOAD_DATE is set to ${DOWNLOAD_DATE}"
+        docker build --build-arg DOWNLOAD_DATE=${DOWNLOAD_DATE} --tag schuellerf/xfce-test:$TAG .
         exit 0
     ;;
 esac
@@ -138,6 +155,7 @@ MODES=""
 
 if [ $mode == "no-session" ]; then
     COMMAND=/bin/bash
+    # don't detach:
     DETACH=""
     MODES="--tty --interactive"
 fi
@@ -152,11 +170,18 @@ docker run --name xfce-test $DETACH $MODES \
            schuellerf/xfce-test:$TAG $COMMAND
 
 if [ -n $DETACH ]; then
-    docker exec --tty --interactive xfce-test /bin/bash
+    # always start ldtp 
+    docker exec --detach xfce-test /usr/bin/dbus-run-session /usr/bin/ldtp
+    sleep 3
+    if [ $mode == "screenshots" ]; then
+        docker exec --tty --interactive xfce-test /container_scripts/make_screenshots.py
+    else
+        docker exec --tty --interactive xfce-test /bin/bash
+    fi
 fi
 
 # Tear down
-if [ $mode != "no-sessoin" ]; then
+if [ $mode != "no-session" ]; then
     docker exec xfce-test xfce4-session-logout --logout
 fi
 docker stop xfce-test
