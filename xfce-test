@@ -30,6 +30,7 @@ usage() {
     echo ""
     echo "  -- Commands doing some automatic stuff"
     echo "     screenshots   Creating just a screenshot of each 'main' xfce app"
+    echo "     behave        Run all behave tests"
     echo ""
     echo "  -- Commands only working from within the cloned git repository"
     echo "      build        Builds the container locally"
@@ -40,7 +41,7 @@ usage() {
 }
 
 MANUAL_MODES=("start" "pull" "no-session")
-AUTOMATIC_MODES=("screenshots")
+AUTOMATIC_MODES=("screenshots", "behave")
 
 REPO_MODES=("build")
 WORK_MODES=(${MANUAL_MODES[*]} ${AUTOMATIC_MODES[*]})
@@ -175,6 +176,8 @@ if [ -n $DETACH ]; then
     sleep 3
     if [ $mode == "screenshots" ]; then
         docker exec --tty --interactive xfce-test /container_scripts/make_screenshots.py
+    elif [ $mode == "behave" ]; then
+        docker exec --tty --interactive xfce-test bash -c "cd /behave_tests; GUI_TIMEOUT=120 behave"
     else
         docker exec --tty --interactive xfce-test /bin/bash
     fi
