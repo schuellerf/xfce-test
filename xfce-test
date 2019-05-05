@@ -58,6 +58,13 @@ MODES_FOR_CASE=$(IFS=$'|'; echo "${WORK_MODES[*]}")
 shopt -s extglob
 MODES_FOR_CASE="+($MODES_FOR_CASE)"
 
+if [ -z $TAG ]; then
+    TAG=$(git rev-parse --abbrev-ref HEAD 2>/dev/null|tr '/' '_')
+    if [[ $TAG != *_* ]]; then
+        TAG=latest
+    fi
+fi
+
 if [ $# -eq 1 ]; then
     case $1 in
         "install")
@@ -83,12 +90,25 @@ else
 
     usage
 
+    
+    MODES=(${MODES[*]} "tag")
+
+    echo ""
+    echo "  -- Commands only for interactive mode"
+    echo "      tag          changes docker \"TAG\" to work with (e.g. ubuntu_19.04)"
+    echo "                   (only for the current execution of $0)"
+    echo ""
+
     PS3="Choose option: "
     select mode in ${MODES[@]}; do
         case $mode in
             "install")
                 install_me
                 exit 0
+            ;;
+            "tag")
+                read -p "Change tag from \"$TAG\" to: " TAG
+                echo "OK - tag changed to $TAG"
             ;;
             *)
                 break
@@ -97,15 +117,11 @@ else
     done
 fi
 
-TAG=$(git rev-parse --abbrev-ref HEAD 2>/dev/null|tr '/' '_')
-if [[ $TAG != *_* ]]; then
-    TAG=latest
-fi
 echo "You are working with the container: $TAG"
 
 case $mode in
     "pull")
-        docker pull schuellerf/xfce-test
+        docker pull schuellerf/xfce-test:${TAG}
         exit 0
     ;;
     "build")
@@ -153,17 +169,17 @@ echo ""
 
 COMMAND=""
 DETACH="--detach"
-MODES=""
+DOCKER_MODES=""
 
 if [ $mode == "no-session" ]; then
     COMMAND=/bin/bash
     # don't detach:
     DETACH=""
-    MODES="--tty --interactive"
+    DOCKER_MODES="--tty --interactive"
 fi
 
 echo -n "Starting container: "
-docker run --name xfce-test $DETACH $MODES \
+docker run --name xfce-test $DETACH $DOCKER_MODES \
            --env DISPLAY=":${DISPLAY_NUM}" \
            --env LDTP_DEBUG=2 \
            --env SCREENSHOTS=${SCREENSHOTS} \
