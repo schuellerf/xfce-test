@@ -7,19 +7,18 @@ ENV DISPLAY ${DISPLAY:-:1}
 # Test specific
 # python-wheel is a missing dependency from behave
 # psmisc for "killall"
-RUN yum -y update \
- && yum -y install psmisc \
- && yum -y install dirmngr git ldtp python-pip python-wheel python-dogtail python-psutil vim sudo gdb valgrind cmake \
- && yum clean all
+RUN dnf -y update \
+ && dnf -y install psmisc xorg-x11-utils \
+ && dnf -y install dirmngr git ldtp python-pip python-wheel python-dogtail python-psutil vim sudo gdb valgrind cmake \
+ && dnf clean all
 
 RUN /usr/bin/pip install behave ldtp
 
 # Xfce specific build dependencies
-# && yum -y install gnome-themes-standard libglib2.0-bin build-essential libgtk-3-dev gtk-doc-tools libgtk2.0-dev libx11-dev libglib2.0-dev libwnck-3-dev intltool libdbus-glib-1-dev liburi-perl x11-xserver-utils libvte-2.91-dev dbus-x11 strace libgl1-mesa-dev adwaita-icon-theme libwnck-dev adwaita-icon-theme-full cmake libsoup2.4-dev libpcre2-dev exo-utils \
-RUN yum -y update \
- && yum -y install xfce4-appfinder tumbler xfce4-terminal xfce4-clipman-plugin xfce4-screenshooter xfce4-power-manager xfce4-notifyd librsvg2 \
+RUN dnf -y update \
+ && dnf -y install xfce4-appfinder tumbler xfce4-terminal xfce4-clipman-plugin xfce4-screenshooter xfce4-power-manager xfce4-notifyd librsvg2 \
  && dnf -y builddep xfce4-panel Thunar xfce4-settings xfce4-session xfdesktop xfwm4 xfce4-appfinder tumbler xfce4-terminal xfce4-clipman-plugin xfce4-screenshooter \
- && yum clean all
+ && dnf clean all
 
 #needed for LDTP and friends
 RUN /usr/bin/dbus-run-session /usr/bin/gsettings set org.gnome.desktop.interface toolkit-accessibility true
@@ -40,9 +39,9 @@ RUN cd git \
  && python setup.py install
 
 # Install _all_ languages for testing
-RUN yum -y update \
- && yum -y install transifex-client xautomation $(yum search glibc-langpack-|grep -oP "^glibc-langpack-...?(?=.x86)") \
- && rm -rf /var/lib/apt/lists/*
+RUN dnf -y update \
+ && dnf -y install transifex-client xautomation $(dnf search glibc-langpack-|grep -oP "^glibc-langpack-...?(?=.x86)") \
+ && dnf clean all
 
 # Line used to invalidate all git clones
 ARG DOWNLOAD_DATE=give_me_a_date
