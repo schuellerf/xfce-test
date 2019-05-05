@@ -233,7 +233,9 @@ RUN pip install opencv-python
 #RUN locale-gen automate
 #RUN dpkg-reconfigure fontconfig
 
-RUN chown -R test_user /git
+COPY behave /behave_tests
+
+RUN chown -R test_user /git /behave_tests
 
 COPY xfce-test /
 COPY container_scripts /container_scripts
@@ -247,7 +249,5 @@ RUN mkdir -p ~test_user/Desktop
 RUN ln -s /container_scripts ~test_user/Desktop/container_scripts
 
 RUN echo 'if [[ $- =~ "i" ]]; then echo -n "This container includes:\n"; cat ~test_user/version_info.txt; fi' >> ~test_user/.bashrc
-
-COPY behave /behave_tests
 
 CMD [ "/container_scripts/entrypoint.sh" ]
