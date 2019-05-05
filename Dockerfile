@@ -237,8 +237,9 @@ RUN locale-gen automate
 RUN dpkg-reconfigure fontconfig
 
 COPY behave /behave_tests
+RUN mkdir /data
 
-RUN chown -R test_user /git /behave_tests
+RUN chown -R test_user /git /behave_tests /data
 
 COPY xfce-test /
 COPY container_scripts /container_scripts
@@ -253,4 +254,5 @@ RUN ln -s /container_scripts ~test_user/Desktop/container_scripts
 
 RUN echo 'if [[ $- =~ "i" ]]; then echo -n "This container includes:\n"; cat ~test_user/version_info.txt; fi' >> ~test_user/.bashrc
 
+WORKDIR /data
 CMD [ "/container_scripts/entrypoint.sh" ]
