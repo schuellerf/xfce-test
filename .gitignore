@@ -3,7 +3,7 @@
 avocado
 screenshots
 *.txt
-video.ts
-video_log
+*.ts
+*.log
 lang-screenshots
 app_screenshots
