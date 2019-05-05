@@ -7,8 +7,10 @@ ENV DISPLAY ${DISPLAY:-:1}
 # Test specific
 # python-wheel is a missing dependency from behave
 # psmisc for "killall"
-RUN dnf -y update \
- && dnf -y install psmisc xorg-x11-utils procps \
+# ffmpeg is only in "rpmfusion-free"
+RUN dnf -y install https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
+ && dnf -y update \
+ && dnf -y install psmisc xorg-x11-utils procps ffmpeg \
  && dnf -y install dirmngr git ldtp python-pip python-wheel python-dogtail python-psutil vim sudo gdb valgrind cmake \
  && dnf clean all
 
