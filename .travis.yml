@@ -19,8 +19,7 @@ script:
   - "docker exec --detach $(cat .docker_ID) /usr/bin/dbus-run-session /usr/bin/ldtp"
   - sleep 10 # give ldtp some time to start
 
-  - "docker cp behave $(cat .docker_ID):/tmp"
-  - "docker exec $(cat .docker_ID) bash -c \"cd /tmp/behave/; behave \" "
+  - "docker exec $(cat .docker_ID) bash -c \"cd /behave_tests; GUI_TIMEOUT=120 behave \" "
   - "docker exec $(cat .docker_ID) bash -c \"cat ~/version_info.txt\" "
   - "docker exec $(cat .docker_ID) bash -c \"ls -la /tmp/*.log\" "
   - "docker exec $(cat .docker_ID) bash -c \"cat /tmp/*.log\" "

@@ -53,10 +53,17 @@ def step_impl(context):
 def step_impl(context, popupwin, entry, win):
     click_those = l.getobjectlist(win)
     for thing in click_those:
-        l.mouserightclick(win, thing)
-        if l.waittillguiexist(popupwin, entry, 1): return
-        l.generatekeyevent("<esc>") #close possible menus
-        time.sleep(0.5)
+        (x,y,w,h)=l.getobjectsize(win, thing)
+        # expecting the object to consist of square shaped icons
+        # so let's click in the middle of those
+        click_x = x+(h/2)
+        click_y = y+(h/2)
+        while click_x < (x+w):
+            l.generatemouseevent(click_x,click_y, "b3c")
+            if l.waittillguiexist(popupwin, entry, 1): return
+            l.generatekeyevent("<esc>") #close possible menus
+            time.sleep(0.5)
+            click_x += h
     #not found
     assert(False)
 
