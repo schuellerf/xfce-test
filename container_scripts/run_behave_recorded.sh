@@ -7,7 +7,7 @@
 # to _move_ the file to /tmp/video.txt for ffmpeg to properly get it displayed
 cd /behave_tests
 
-GUI_TIMEOUT=120 behave -D DEBUG_ON_ERROR | while read LINE; do
+behave -D DEBUG_ON_ERROR | while read LINE; do
   echo "$LINE" | tee -a /tmp/text_all.txt
   tail -n5 /tmp/text_all.txt > /tmp/text_cut.txt
   mv /tmp/text_cut.txt /tmp/video.txt

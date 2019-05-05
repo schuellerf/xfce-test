@@ -14,12 +14,18 @@ before_script:
   - sleep 3 # give xvfb some time to start
 
 script:
-  - "docker run --detach --env DISPLAY=\":23.0\" --volume /tmp/.X11-unix:/tmp/.X11-unix test-xfce-ubuntu /usr/bin/dbus-run-session /usr/bin/xfce4-session > .docker_ID"
+  - "docker run --detach --env DISPLAY=\":23.0\" --env RESOLUTION=\"800x600\" --volume /tmp/.X11-unix:/tmp/.X11-unix test-xfce-ubuntu /usr/bin/dbus-run-session /usr/bin/xfce4-session > .docker_ID"
   - sleep 10 # give xfce some time to start
   - "docker exec --detach $(cat .docker_ID) /usr/bin/dbus-run-session /usr/bin/ldtp"
   - sleep 10 # give ldtp some time to start
 
-  - "docker exec $(cat .docker_ID) bash -c \"cd /behave_tests; GUI_TIMEOUT=120 behave \" "
+  - "docker exec $(cat .docker_ID) bash -c \"sudo mkdir /data; sudo chown test_user /data \" "
+  - "docker exec $(cat .docker_ID) bash -c \"/container_scripts/run_behave_recorded.sh\" "
+  - "docker exec $(cat .docker_ID) bash -c \"echo ${client_secrets.json} |sudo tee /container_scripts/client_secrets.json > /dev/null \" "
+  - "docker exec $(cat .docker_ID) bash -c \"echo ${upload-video.py-oauth2.json} |sudo tee /container_scripts/upload-video.py-oauth2.json > /dev/null \" "
+  - "docker exec $(cat .docker_ID) bash -c \"ls -la /data \" "
+  - "docker exec $(cat .docker_ID) bash -c \"ls -la /container_scripts \" "
+  - "docker exec $(cat .docker_ID) bash -c \"cd /container_scripts; python upload-video.py --file /data/xfce-test_video_*.ts --title XFCE-Test_Video --noauth_local_webserver\" "
   - "docker exec $(cat .docker_ID) bash -c \"cat ~/version_info.txt\" "
   - "docker exec $(cat .docker_ID) bash -c \"ls -la /tmp/*.log\" "
   - "docker exec $(cat .docker_ID) bash -c \"cat /tmp/*.log\" "

@@ -42,7 +42,7 @@ usage() {
 }
 
 MANUAL_MODES=("start" "pull" "no-session")
-AUTOMATIC_MODES=("screenshots", "behave", "behavevideo")
+AUTOMATIC_MODES=("screenshots" "behave" "behavevideo")
 
 REPO_MODES=("build")
 WORK_MODES=(${MANUAL_MODES[*]} ${AUTOMATIC_MODES[*]})
