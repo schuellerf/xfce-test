@@ -225,7 +225,7 @@ RUN cd git \
   && make install \
   && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
 
-RUN pip install opencv-python
+RUN pip install opencv-python google-api-python-client oauth2client
 
 RUN cp /usr/share/i18n/locales/en_GB /usr/share/i18n/locales/automate
 RUN sed -i -E "s/Language: en/Language: automate/" /usr/share/i18n/locales/automate
