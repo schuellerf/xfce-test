@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 RESOLUTION=${RESOLUTION:-800x600}
 DATE=$(date +%Y%m%d_%H%M%S)

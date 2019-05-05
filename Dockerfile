@@ -223,7 +223,7 @@ RUN cd git \
   && make install \
   && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
 
-RUN pip install opencv-python
+RUN pip install opencv-python google-api-python-client oauth2client
 
 # TBD language generation - it's different than in ubuntu...
 #RUN cp -r /usr/share/locale/en_GB /usr/share/locale/automate
@@ -236,8 +236,9 @@ RUN pip install opencv-python
 #RUN dpkg-reconfigure fontconfig
 
 COPY behave /behave_tests
+RUN mkdir /data
 
-RUN chown -R test_user /git /behave_tests
+RUN chown -R test_user /git /behave_tests /data
 
 COPY xfce-test /
 COPY container_scripts /container_scripts
@@ -252,4 +253,5 @@ RUN ln -s /container_scripts ~test_user/Desktop/container_scripts
 
 RUN echo 'if [[ $- =~ "i" ]]; then echo -n "This container includes:\n"; cat ~test_user/version_info.txt; fi' >> ~test_user/.bashrc
 
+WORKDIR /data
 CMD [ "/container_scripts/entrypoint.sh" ]

@@ -7,3 +7,4 @@ screenshots
 *.log
 lang-screenshots
 app_screenshots
+container_scripts/*.json
