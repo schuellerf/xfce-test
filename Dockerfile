@@ -240,7 +240,7 @@ RUN chown -R test_user /git
 
 COPY xfce-test /
 COPY container_scripts /container_scripts
-RUN chmod a+x /xfce-test /container_scripts/*.sh
+RUN chmod a+x /xfce-test /container_scripts/*.sh /container_scripts/*.py
 
 USER test_user
 ENV HOME /home/test_user

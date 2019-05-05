@@ -4,6 +4,7 @@ import ldtp as l
 import os
 import time
 import sys
+import shutil
 
 basePath="/data/app_screenshots"
 
@@ -11,14 +12,17 @@ if not os.path.exists(basePath):
     os.mkdir(basePath)
 
 def do_screenshot(app, app_name):
-    l.launchapp(app)
-    l.waittillguiexist(app_name)
-    l.imagecapture(app_name, os.path.join(basePath, app + ".png"))
-    l.generatekeyevent("<alt><f4>")
+  print("Doing screenhot for {}".format(app_name))
+  l.launchapp(app)
+  l.waittillguiexist(app_name)
+  l.imagecapture(app_name, os.path.join(basePath, app + ".png"))
+  full_screen=l.imagecapture()
+  shutil.move(full_screen, os.path.join(basePath, "fullscreen-" + app + ".png"))
+  l.generatekeyevent("<alt><f4>")
 
 
 full_screen=l.imagecapture()
-os.rename(full_screen, os.path.join(basePath, "xfce-desktop.png"))
+shutil.move(full_screen, os.path.join(basePath, "xfce-desktop.png"))
 
 # I/O error workaround
 l.launchapp("xfce4-terminal")
@@ -29,14 +33,9 @@ l.generatekeyevent("<alt><f4>")
 # move the mouse away to avoid tool tips
 l.generatemouseevent(800,600, "abs")
 
-# appfinder crashes on imagecapture() - (has to window?)
-l.launchapp("xfce4-appfinder")
-l.waittillguiexist("ApplicationFinder")
-full_screen=l.imagecapture()
-os.rename(full_screen, os.path.join(basePath, "xfce4-appfinder-main.png"))
-l.generatekeyevent("<alt><f4>")
 
-do_screenshot("xfce4-terminal", "Terminal")
+do_screenshot("xfce4-appfinder", "ApplicationFinder")
+do_screenshot("xfce4-terminal", "Terminal*")
 do_screenshot("xfce4-clipman-settings", "Clipman")
 do_screenshot("xfce4-display-settings", "Display")
 do_screenshot("xfce4-keyboard-settings", "Keyboard")
@@ -49,6 +48,6 @@ import psutil
 PROCNAME = "xfce4-appfinder"
 
 for proc in psutil.process_iter():
-    # check whether the process name matches
-    if proc.name() == PROCNAME:
-        proc.kill()
+  # check whether the process name matches
+  if proc.name() == PROCNAME:
+    proc.kill()
