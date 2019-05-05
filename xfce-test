@@ -18,19 +18,25 @@ usage() {
     echo "  Without a command interactive mode is started"
     echo ""
     echo "  command:"
-    echo "      install      Installed the script to ~/.local/bin for"
-    echo "                   easier execution"
     echo "      start        Start the container for testing"
     echo "                   USE THIS IF YOU ARE NOT SURE"
     echo "      pull         Get the latest container"
     echo "      no-session   starts the container without a session"
     echo "                   (this is great if you want to test the session itself ;)"
+    echo "      install      Installed the script to ~/.local/bin for"
+    echo "                   easier execution"
     echo ""
     echo "  -- Commands only working from within the cloned git repository"
     echo "      build        Builds the container locally"
 }
 
-MODES=("start" "pull" "no-session" "build")
+WORK_MODES=("start" "pull" "no-session")
+REPO_MODES=("build")
+MODES=("install" ${WORK_MODES[*]})
+
+if git status > /dev/null; then
+    MODES+=(${REPO_MODES[*]})
+fi
 
 if [ $# -eq 1 ]; then
     case $1 in
@@ -42,7 +48,7 @@ if [ $# -eq 1 ]; then
             usage
             exit 0
         ;;
-        #TBD: change to someting like $(IFS=$'|'; echo "${MODES[*]}")
+        #TBD: change to someting like $(IFS=$'|'; echo "${WORK_MODES[*]}")
         #     ... but working
         start|pull|no-session|build)
             mode=$1
@@ -60,7 +66,7 @@ else
     usage
 
     PS3="Choose option: "
-    select mode in install ${MODES[@]}; do
+    select mode in ${MODES[@]}; do
         case $mode in
             "install")
                 install_me
@@ -73,6 +79,11 @@ else
     done
 fi
 
+TAG=$(git rev-parse --abbrev-ref HEAD 2>/dev/null|tr '/' '_')
+if [[ $TAG != *_* ]]; then
+    TAG=latest
+fi
+echo "You are working with the container: $TAG"
 
 case $mode in
     "pull")
@@ -80,11 +91,6 @@ case $mode in
         exit 0
     ;;
     "build")
-        TAG=$(git rev-parse --abbrev-ref HEAD|tr '/' '_')
-        if [[ $TAG != *_* ]]; then
-            TAG=latest
-        fi
-        echo "Building $TAG"
         docker build --build-arg DOWNLOAD_DATE=$(date +%Y%m%d) --tag schuellerf/xfce-test:$TAG .
         exit 0
     ;;
@@ -143,7 +149,7 @@ docker run --name xfce-test $DETACH $MODES \
            --env SCREENSHOTS=${SCREENSHOTS} \
            --volume ${PWD}:/data \
            --volume /tmp/.X11-unix:/tmp/.X11-unix:z \
-           schuellerf/xfce-test:latest $COMMAND
+           schuellerf/xfce-test:$TAG $COMMAND
 
 if [ -n $DETACH ]; then
     docker exec --tty --interactive xfce-test /bin/bash
