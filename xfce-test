@@ -181,7 +181,7 @@ if [ -n $DETACH ]; then
 fi
 
 # Tear down
-if [ $mode != "no-sessoin" ]; then
+if [ $mode != "no-session" ]; then
     docker exec xfce-test xfce4-session-logout --logout
 fi
 docker stop xfce-test
