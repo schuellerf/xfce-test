@@ -9,7 +9,7 @@ ENV DISPLAY ${DISPLAY:-:1}
 # psmisc for "killall"
 RUN apt-get update \
  && apt-get -y --no-install-recommends install apt-utils psmisc ffmpeg \
- && apt-get -y install dirmngr git python-ldtp ldtp python-pip python-wheel python-dogtail python-psutil vim sudo gdb valgrind \
+ && apt-get -y --no-install-recommends install dirmngr git python-ldtp ldtp python-pip python-wheel python-dogtail python-psutil python-setuptools vim sudo gdb valgrind tmuxinator tmux \
  && rm -rf /var/lib/apt/lists/*
 
 RUN /usr/bin/pip install behave
@@ -19,9 +19,9 @@ RUN sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
 
 # Xfce specific build dependencies
 RUN apt-get update \
- && apt-get -y install gnome-themes-standard libglib2.0-bin build-essential libgtk-3-dev gtk-doc-tools libgtk2.0-dev libx11-dev libglib2.0-dev libwnck-3-dev intltool libdbus-glib-1-dev liburi-perl x11-xserver-utils libvte-2.91-dev dbus-x11 strace libgl1-mesa-dev adwaita-icon-theme libwnck-dev adwaita-icon-theme-full cmake libsoup2.4-dev libpcre2-dev exo-utils \
- && apt-get -y install xfce4 xfce4-appfinder tumbler xfce4-terminal xfce4-clipman-plugin xfce4-screenshooter xfce4-power-manager xfce4-notifyd \
- && apt-get -y build-dep xfce4-panel thunar xfce4-settings xfce4-session xfdesktop4 xfwm4 xfce4-appfinder tumbler xfce4-terminal xfce4-clipman-plugin xfce4-screenshooter \
+ && apt-get -y --no-install-recommends install gnome-themes-standard libglib2.0-bin build-essential libgtk-3-dev gtk-doc-tools libgtk2.0-dev libx11-dev libglib2.0-dev libwnck-3-dev intltool libdbus-glib-1-dev liburi-perl x11-xserver-utils libvte-2.91-dev dbus-x11 strace libgl1-mesa-dev adwaita-icon-theme libwnck-dev adwaita-icon-theme-full cmake libsoup2.4-dev libpcre2-dev exo-utils \
+ && apt-get -y --no-install-recommends install xfce4 xfce4-appfinder tumbler xfce4-terminal xfce4-clipman-plugin xfce4-screenshooter xfce4-power-manager xfce4-notifyd \
+ && apt-get -y --no-install-recommends build-dep xfce4-panel thunar xfce4-settings xfce4-session xfdesktop4 xfwm4 xfce4-appfinder tumbler xfce4-terminal xfce4-clipman-plugin xfce4-screenshooter \
  && rm -rf /var/lib/apt/lists/*
 
 #needed for LDTP and friends
@@ -44,7 +44,7 @@ RUN cd git \
 
 # Install _all_ languages for testing
 RUN apt-get update \
- && apt-get -y install transifex-client xautomation $(apt-cache search language-pack|grep -oP "^language-pack-...?(?= )") \
+ && apt-get -y --no-install-recommends install transifex-client xautomation $(apt-cache search language-pack|grep -oP "^language-pack-...?(?= )") \
  && rm -rf /var/lib/apt/lists/*
 
 # Line used to invalidate all git clones
