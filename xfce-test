@@ -107,8 +107,14 @@ else
                 exit 0
             ;;
             "tag")
-                read -p "Change tag from \"$TAG\" to: " TAG
-                echo "OK - tag changed to $TAG"
+                read -i $TAG -p "Change tag from \"$TAG\" to: " TAG_NEW
+
+                if [ ${#TAG_NEW} -ge 1 ]; then
+                    TAG=$TAG_NEW
+                    echo "OK - tag changed to \"$TAG\""
+                else
+                    echo "OK - tag is still \"$TAG\""
+                fi
             ;;
             *)
                 break
