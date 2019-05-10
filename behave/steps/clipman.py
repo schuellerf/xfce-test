@@ -85,7 +85,10 @@ def step_impl(context, thing):
 @when('we click on {thing} in {win}')
 def step_impl(context, thing, win):
     l.waittillguiexist(win)
-    l.mouseleftclick(win,thing)
+    (x,y,w,h)=l.getobjectsize(win, thing)
+    click_x = x+(w/2)
+    click_y = y+(h/2)
+    l.generatemouseevent(click_x,click_y)
     time.sleep(2) #clicking usually needs a task switch to some UI thread to process it
 
 @when('we type "{text}"')
