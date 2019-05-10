@@ -8,7 +8,7 @@ ENV DISPLAY ${DISPLAY:-:1}
 # python-wheel is a missing dependency from behave
 # psmisc for "killall"
 RUN apt-get update \
- && apt-get -y --no-install-recommends install apt-utils psmisc ffmpeg \
+ && apt-get -y --no-install-recommends install apt-utils psmisc ffmpeg x11-utils \
  && apt-get -y --no-install-recommends install dirmngr git python-ldtp ldtp python-pip python-wheel python-dogtail python-psutil python-setuptools vim sudo gdb valgrind tmuxinator tmux \
  && rm -rf /var/lib/apt/lists/*
 
@@ -239,10 +239,11 @@ RUN dpkg-reconfigure fontconfig
 COPY behave /behave_tests
 RUN mkdir /data
 
-RUN chown -R test_user /git /behave_tests /data
 
 COPY xfce-test /
 COPY container_scripts /container_scripts
+COPY .tmuxinator /home/test_user/.tmuxinator
+RUN chown -R test_user /git /behave_tests /data ~test_user/.tmuxinator
 RUN chmod a+x /xfce-test /container_scripts/*.sh /container_scripts/*.py
 
 USER test_user
@@ -253,6 +254,7 @@ RUN mkdir -p ~test_user/Desktop
 RUN ln -s /container_scripts ~test_user/Desktop/container_scripts
 
 RUN echo 'if [[ $- =~ "i" ]]; then echo -n "This container includes:\n"; cat ~test_user/version_info.txt; fi' >> ~test_user/.bashrc
+RUN echo 'echo "You might want to call \"tmux attach\" if you know what tmux ( https://tmux.github.io ) is and need to go to the internals."' >> ~test_user/.bashrc
 
 WORKDIR /data
 CMD [ "/container_scripts/entrypoint.sh" ]
