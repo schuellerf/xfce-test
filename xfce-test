@@ -17,7 +17,7 @@ usage() {
     echo "Usage:"
     echo "  $0 [command]"
     echo ""
-    echo "  Without a command interactive mode is started"
+    echo "  Without a command, interactive mode is started"
     echo ""
     echo "  command:"
     echo "      start        Start the container for testing"
