@@ -19,7 +19,7 @@ script:
   - "docker exec --detach $(cat .docker_ID) /usr/bin/dbus-run-session /usr/bin/ldtp"
   - sleep 10 # give ldtp some time to start
 
-  - "docker exec $(cat .docker_ID) bash -c \"sudo mkdir /data; sudo chown test_user /data \" "
+  - "docker exec $(cat .docker_ID) bash -c \"sudo mkdir /data; sudo chown xfce-test_user /data \" "
   - "docker exec $(cat .docker_ID) bash -c \"/container_scripts/run_behave_recorded.sh\" "
   - "docker exec $(cat .docker_ID) bash -c \"echo ${client_secrets.json} |sudo tee /container_scripts/client_secrets.json > /dev/null \" "
   - "docker exec $(cat .docker_ID) bash -c \"echo ${upload-video.py-oauth2.json} |sudo tee /container_scripts/upload-video.py-oauth2.json > /dev/null \" "
