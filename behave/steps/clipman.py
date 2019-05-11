@@ -4,10 +4,6 @@ import time
 import os
 import subprocess, signal
 
-def handler(signum, frame):
-  print "Time is over!"
-  raise Exception("It's time to fix those LDTP bugs!")
-
 def app_is_in_ps(app):
     p = subprocess.Popen(['ps', '-A'], stdout=subprocess.PIPE)
     out, err = p.communicate()
@@ -16,8 +12,6 @@ def app_is_in_ps(app):
             #pid = int(line.split(None, 1)[0])
             return True
     return False
-
-
 
 # ---- given
 @given('we have {app:S} started')
@@ -64,10 +58,7 @@ def step_impl(context, popupwin, entry, win):
         click_y = y+(h/2)
         while click_x < (x+w):
             l.generatemouseevent(click_x,click_y, "b3c")
-            signal.signal(signal.SIGALRM, handler)
-            signal.alarm(60)
             if l.waittillguiexist(popupwin, entry, 1): return
-            signal.alarm(0)
             l.generatekeyevent("<esc>") #close possible menus
             time.sleep(0.5)
             click_x += h
@@ -87,17 +78,11 @@ def step_impl(context):
 
 @when('we see {thing:S}')
 def step_impl(context, thing):
-    signal.signal(signal.SIGALRM, handler)
-    signal.alarm(60)
     assert(l.waittillguiexist(thing) == 1)
-    signal.alarm(0)
 
 @when('we click on {thing} in {win}')
 def step_impl(context, thing, win):
-    signal.signal(signal.SIGALRM, handler)
-    signal.alarm(60)
     l.waittillguiexist(win)
-    signal.alarm(0)
     (x,y,w,h)=l.getobjectsize(win, thing)
     click_x = x+(w/2)
     click_y = y+(h/2)
@@ -132,18 +117,12 @@ def step_impl(context):
 @then('we should see {thing:S}')
 def step_impl(context, thing):
     time.sleep(2) # opening usually needs a task switch to some UI thread to process it
-    signal.signal(signal.SIGALRM, handler)
-    signal.alarm(60)
     assert(l.waittillguiexist(thing) == 1)
-    signal.alarm(0)
 
 @then('we should see {thing:S} in {win:S}')
 def step_impl(context, thing, win):
     time.sleep(2) # opening usually needs a task switch to some UI thread to process it
-    signal.signal(signal.SIGALRM, handler)
-    signal.alarm(60)
     assert(l.waittillguiexist(win, thing) == 1)
-    signal.alarm(0)
 
 @then('we should not see {thing:S} in {win:S}')
 def step_impl(context, thing, win):
