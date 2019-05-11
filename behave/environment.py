@@ -40,7 +40,7 @@ def after_step(context, step):
         filename=os.path.join(directory, "{}_{}_{}_{}.png".format( step.filename.replace(".feature",""),step.line, step.step_type, step.name))
         l.imagecapture(None,filename)
 
-    if DEBUG_ON_ERROR and step.status == "failed":
+    if DEBUG_ON_ERROR and step.status == "failed" and os.environ.get("TRAVIS") != "true":
         # -- ENTER DEBUGGER: Zoom in on failure location.
         import pdb
         pdb.set_trace()
