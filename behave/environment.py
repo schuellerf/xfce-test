@@ -29,7 +29,6 @@ def before_step(context, step):
     signal.alarm(60)
 
 def after_step(context, step):
-    signal.alarm(0)
     if os.environ.get("SCREENSHOTS") == "ALWAYS":
         directory=os.path.join(os.path.abspath(os.curdir),"Screenshots",context._stack[1]["feature"].name, 
                   "{}_{}_{}".format(context._stack[0]["scenario"].filename.replace(".feature",""), context._stack[0]["scenario"].line, context._stack[0]["scenario"].name))
@@ -44,3 +43,4 @@ def after_step(context, step):
         # -- ENTER DEBUGGER: Zoom in on failure location.
         import pdb
         pdb.set_trace()
+    signal.alarm(0)
