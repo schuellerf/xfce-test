@@ -4,6 +4,15 @@ DOWNLOAD_DATE=${DOWNLOAD_DATE:-$(date +%Y%m%d)}
 
 install_me() {
   mkdir -p ~/.local/bin
+  cat - > ~/.bash_completion <<EOF
+#!/usr/bin/env bash
+_xfce-test_completions()
+{
+  COMPREPLY=(\$(compgen -W "${WORK_MODES[*]}" "\${COMP_WORDS[1]}"))
+}
+
+complete -F _xfce-test_completions xfce-test
+EOF
   # "fall back"
   cp $0 ~/.local/bin/xfce-test
   echo "Trying to get the latest version"
