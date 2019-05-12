@@ -66,7 +66,7 @@ AUTOMATIC_MODES=("screenshots" "behave" "behavevideo" "fulltestvideo")
 
 REPO_MODES=("build")
 WORK_MODES=(${MANUAL_MODES[*]} ${AUTOMATIC_MODES[*]})
-if git status > /dev/null; then
+if git status > /dev/null 2>&1; then
     WORK_MODES+=(${REPO_MODES[*]})
 fi
 
@@ -188,7 +188,7 @@ killall -q Xephyr
 
 Xephyr :${DISPLAY_NUM} -ac -screen ${RESOLUTION} &
 
-docker rm xfce-test || echo "^ That's ok, just _tried_ to remove existing container"
+docker rm xfce-test 2>/dev/null
 echo ""
 
 #default parameters
@@ -225,7 +225,7 @@ if [ -n $DETACH ]; then
     elif [ $mode == "fulltestvideo" ]; then
         docker exec --tty --interactive xfce-test /container_scripts/full_test_video.sh
     else
-        docker exec --tty --interactive xfce-test bash -c 'echo -n "This container includes:\n";
+        docker exec --tty --interactive xfce-test bash -c 'echo "This container includes:";
             cat ~xfce-test_user/version_info.txt;
             echo "You might want to call \"tmux attach\" if you know what tmux ( https://tmux.github.io ) is and need to go to the internals."'
         docker exec --tty --interactive xfce-test /bin/bash

@@ -10,6 +10,8 @@ The main usecases are:
    translation artefacts and highlighting them within a scenario
    (this functionality is not yet usable)
 
+The automatically created videos are on [my youtube channel](https://www.youtube.com/user/schuellerf) for now.
+
 This is a Xubuntu 18.10, with a build from git sources of all core Xfce components + some apps for testing.
 Other distributions and versions are on other branches!
 

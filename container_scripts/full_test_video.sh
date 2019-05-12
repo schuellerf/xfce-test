@@ -4,12 +4,13 @@ export OVERLAY_FILE=${OVERLAY_FILE:-/tmp/video.txt}
 export VIDEO="true"
 export VIDEO_PREFIX=${VIDEO_PREFIX:-xfce-test_video_}
 
-if [ -n ${TRAVIS_BRANCH} ]; then
+if [ -n "${TRAVIS_BRANCH}" ]; then
     # append the travis branch to the video name
     # but replacing / with _
     export VIDEO_PREFIX="${VIDEO_PREFIX}${TRAVIS_BRANCH//\//_}_"
 fi
 
+source /container_scripts/video_helpers.sh
 /container_scripts/start_recording.sh
 
 echo "Hello World!
