@@ -253,8 +253,7 @@ ENV AUTOGEN_OPTIONS $AUTOGEN_OPTIONS
 RUN mkdir -p ~xfce-test_user/Desktop
 RUN ln -s /container_scripts ~xfce-test_user/Desktop/container_scripts
 
-RUN echo 'if [[ $- =~ "i" ]]; then echo -n "This container includes:\n"; cat ~xfce-test_user/version_info.txt; fi' >> ~xfce-test_user/.bashrc
-RUN echo 'echo "You might want to call \"tmux attach\" if you know what tmux ( https://tmux.github.io ) is and need to go to the internals."' >> ~xfce-test_user/.bashrc
+#RUN echo 'if [[ $- =~ "i" ]]; then echo -n "This container includes:\n"; cat ~xfce-test_user/version_info.txt; fi' >> ~xfce-test_user/.bashrc
 
 WORKDIR /data
 CMD [ "/container_scripts/entrypoint.sh" ]
