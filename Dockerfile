@@ -8,7 +8,7 @@ ENV DISPLAY ${DISPLAY:-:1}
 # python-wheel is a missing dependency from behave
 # psmisc for "killall"
 RUN apt-get update \
- && apt-get -y --no-install-recommends install apt-utils psmisc ffmpeg x11-utils \
+ && apt-get -y --no-install-recommends install apt-utils psmisc ffmpeg x11-utils libxrandr-dev \
  && apt-get -y --no-install-recommends install dirmngr git python-ldtp ldtp python-pip python-wheel python-dogtail python-psutil python-setuptools vim sudo gdb valgrind tmuxinator tmux \
  && rm -rf /var/lib/apt/lists/*
 
