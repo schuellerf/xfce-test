@@ -167,7 +167,7 @@ export RESOLUTION=1024x768
 export DISPLAY_NUM=1
 
 # set SCREENSHOTS to ALWAYS to get screenshots during behave tests
-export SCREENSHOTS=NONE
+export SCREENSHOTS=${SCREENSHOTS:-NONE}
 
 # quit on errors
 set +e
