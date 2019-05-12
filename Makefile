@@ -88,11 +88,11 @@ run-manual-session:
 
 run-behave-tests:
 	docker exec --tty xfce-test bash -c "cd /data/behave;behave"
-	docker exec --tty xfce-test bash -c "cat ~test_user/version_info.txt"
+	docker exec --tty xfce-test bash -c "cat ~xfce-test_user/version_info.txt"
 
 debug-behave-tests:
 	docker exec --tty xfce-test bash -c "cd /data/behave;behave -D DEBUG_ON_ERROR"
-	docker exec --tty xfce-test bash -c "cat ~test_user/version_info.txt"
+	docker exec --tty xfce-test bash -c "cat ~xfce-test_user/version_info.txt"
 
 $(FFMPEG_CMD):
 	echo Please install ffmpeg
@@ -124,7 +124,7 @@ endif
 # internal function - call screenshots instead
 do-screenshots:
 	docker exec --tty xfce-test bash -c "cd /data/behave; behave -i screenshots"
-	docker exec --tty xfce-test bash -c "cat ~test_user/version_info.txt"
+	docker exec --tty xfce-test bash -c "cat ~xfce-test_user/version_info.txt"
 	docker exec xfce-test xfce4-session-logout --logout
 
 screenshots: test-setup do-screenshots test-teardown

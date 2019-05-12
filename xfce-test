@@ -4,20 +4,39 @@ DOWNLOAD_DATE=${DOWNLOAD_DATE:-$(date +%Y%m%d)}
 
 install_me() {
   mkdir -p ~/.local/bin
-  # "fall back"
-  cp $0 ~/.local/bin/xfce-test
-  echo "Trying to get the latest version"
-  curl -o ~/.local/bin/xfce-test https://raw.githubusercontent.com/schuellerf/xfce-test/master/xfce-test || echo "... well I tried to."
-  chmod u+x ~/.local/bin/xfce-test
-  echo "Installed 'xfce-test' to $(readlink -f ~/.local/bin/xfce-test)"
-  echo "You can just call it with 'xfce-test'"
+  # bash autocomplete
+  BASH_COMPLETION="#begin-xfce-test
+_xfce-test_completions()
+{
+  COMPREPLY=(\$(compgen -W \"${WORK_MODES[*]}\" \"\${COMP_WORDS[1]}\"))
+}
+
+complete -F _xfce-test_completions xfce-test
+#end-xfce-test
+"
+    if [ ! -f ~/.bash_completion ]; then
+        echo "$BASH_COMPLETION" >> ~/.bash_completion
+    else
+        if grep "#begin-xfce-test" ~/.bash_completion > /dev/null; then
+            sed -i "/#begin-xfce-test/,/#end-xfce-test/d" ~/.bash_completion
+        fi
+        echo "$BASH_COMPLETION" >> ~/.bash_completion
+    fi
+
+    # "fall back"
+    cp $0 ~/.local/bin/xfce-test
+    echo "Trying to get the latest version"
+    curl -o ~/.local/bin/xfce-test https://raw.githubusercontent.com/schuellerf/xfce-test/master/xfce-test || echo "... well I tried to."
+    chmod u+x ~/.local/bin/xfce-test
+    echo "Installed 'xfce-test' to $(readlink -f ~/.local/bin/xfce-test)"
+    echo "You can just call it with 'xfce-test'"
 }
 
 usage() {
     echo "Usage:"
     echo "  $0 [command]"
     echo ""
-    echo "  Without a command interactive mode is started"
+    echo "  Without a command, interactive mode is started"
     echo ""
     echo "  command:"
     echo "      start        Start the container for testing"
@@ -32,6 +51,7 @@ usage() {
     echo "     screenshots   Creating just a screenshot of each 'main' xfce app"
     echo "     behave        Run all behave tests"
     echo "     behavevideo   Run all behave tests while recording them"
+    echo "     fulltestvideo Create a demo video - this is the one done by travis"
     echo ""
     echo "  -- Commands only working from within the cloned git repository"
     echo "      build        Builds the container locally"
@@ -42,7 +62,7 @@ usage() {
 }
 
 MANUAL_MODES=("start" "pull" "no-session")
-AUTOMATIC_MODES=("screenshots" "behave" "behavevideo")
+AUTOMATIC_MODES=("screenshots" "behave" "behavevideo" "fulltestvideo")
 
 REPO_MODES=("build")
 WORK_MODES=(${MANUAL_MODES[*]} ${AUTOMATIC_MODES[*]})
@@ -147,7 +167,7 @@ export RESOLUTION=1024x768
 export DISPLAY_NUM=1
 
 # set SCREENSHOTS to ALWAYS to get screenshots during behave tests
-export SCREENSHOTS=NONE
+export SCREENSHOTS=${SCREENSHOTS:-NONE}
 
 # quit on errors
 set +e
@@ -185,26 +205,29 @@ if [ $mode == "no-session" ]; then
 fi
 
 echo -n "Starting container: "
-docker run --name xfce-test $DETACH $DOCKER_MODES \
+docker run --tty --interactive --name xfce-test $DETACH $DOCKER_MODES \
            --env DISPLAY=":${DISPLAY_NUM}" \
            --env LDTP_DEBUG=2 \
-           --env SCREENSHOTS=${SCREENSHOTS} \
-           --env RESOLUTION=${RESOLUTION} \
+           --env SCREENSHOTS \
+           --env RESOLUTION \
            --volume ${PWD}:/data \
            --volume /tmp/.X11-unix:/tmp/.X11-unix:z \
            schuellerf/xfce-test:$TAG $COMMAND
 
 if [ -n $DETACH ]; then
-    # always start ldtp 
-    docker exec --detach xfce-test /usr/bin/dbus-run-session /usr/bin/ldtp
-    sleep 3
+    sleep 3 # give ldtp and the session some time
     if [ $mode == "screenshots" ]; then
         docker exec --tty --interactive xfce-test /container_scripts/make_screenshots.py
     elif [ $mode == "behave" ]; then
         docker exec --tty --interactive xfce-test bash -c "cd /behave_tests; GUI_TIMEOUT=120 behave"
     elif [ $mode == "behavevideo" ]; then
         docker exec --tty --interactive xfce-test /container_scripts/run_behave_recorded.sh
+    elif [ $mode == "fulltestvideo" ]; then
+        docker exec --tty --interactive xfce-test /container_scripts/full_test_video.sh
     else
+        docker exec --tty --interactive xfce-test bash -c 'echo -n "This container includes:\n";
+            cat ~xfce-test_user/version_info.txt;
+            echo "You might want to call \"tmux attach\" if you know what tmux ( https://tmux.github.io ) is and need to go to the internals."'
         docker exec --tty --interactive xfce-test /bin/bash
     fi
 fi
