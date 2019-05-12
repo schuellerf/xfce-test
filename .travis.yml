@@ -2,19 +2,16 @@ sudo: required
 
 language: python
 
+dist: xenial
 services:
   - docker
+  - xvfb
 
 before_install:
   - docker build --tag test-xfce-ubuntu:latest .
 
-before_script:
-  - "export DISPLAY=:23.0"
-  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_23.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :23 -ac -screen 0 800x600x24"
-  - sleep 3 # give xvfb some time to start
-
 script:
-  - "docker run --detach --env TRAVIS --env TRAVIS_BRANCH --env DISPLAY=\":23.0\" --env RESOLUTION=\"800x600\" --volume /tmp/.X11-unix:/tmp/.X11-unix test-xfce-ubuntu /usr/bin/dbus-run-session /usr/bin/xfce4-session > .docker_ID"
+  - "docker run --detach --env TRAVIS --env TRAVIS_BRANCH --env DISPLAY --env RESOLUTION=\"1024x768\" --volume /tmp/.X11-unix:/tmp/.X11-unix test-xfce-ubuntu /usr/bin/dbus-run-session /usr/bin/xfce4-session > .docker_ID"
   - sleep 10 # give xfce some time to start
   - "docker exec --detach $(cat .docker_ID) /usr/bin/dbus-run-session /usr/bin/ldtp"
   - sleep 10 # give ldtp some time to start

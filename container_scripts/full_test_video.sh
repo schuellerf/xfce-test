@@ -10,6 +10,7 @@ if [ -n "${TRAVIS_BRANCH}" ]; then
     export VIDEO_PREFIX="${VIDEO_PREFIX}${TRAVIS_BRANCH//\//_}_"
 fi
 
+source /container_scripts/video_helpers.sh
 /container_scripts/start_recording.sh
 
 echo "Hello World!
