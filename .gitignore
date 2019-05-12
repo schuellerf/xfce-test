@@ -4,6 +4,7 @@ avocado
 screenshots
 *.txt
 *.ts
+*.mp4
 *.log
 lang-screenshots
 app_screenshots

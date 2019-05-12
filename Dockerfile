@@ -26,9 +26,9 @@ RUN dnf -y update \
 RUN /usr/bin/dbus-run-session /usr/bin/gsettings set org.gnome.desktop.interface toolkit-accessibility true
 
 # Create the directory for version_info.txt
-RUN useradd -ms /bin/bash test_user
+RUN useradd -ms /bin/bash xfce-test_user
 
-RUN usermod test_user -G wheel
+RUN usermod xfce-test_user -G wheel
 RUN sed -i "s/^%wheel.*/%wheel ALL=(ALL) NOPASSWD:ALL/" /etc/sudoers
 
 # Group all repos here
@@ -60,7 +60,7 @@ ARG AUTOGEN_OPTIONS="--disable-debug --enable-maintainer-mode --host=x86_64-linu
 #  && ./autogen.sh $AUTOGEN_OPTIONS \
 #  && make \
 #  && make install \
-#  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt \
+#  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt \
 #  && ldconfig
 
 ## Grab libxfce4util from master
@@ -70,7 +70,7 @@ ARG AUTOGEN_OPTIONS="--disable-debug --enable-maintainer-mode --host=x86_64-linu
 #  && ./autogen.sh $AUTOGEN_OPTIONS \
 #  && make \
 #  && make install \
-#  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt \
+#  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt \
 #  && ldconfig
 
 ## Grab xfconf from master
@@ -80,7 +80,7 @@ ARG AUTOGEN_OPTIONS="--disable-debug --enable-maintainer-mode --host=x86_64-linu
 #  && ./autogen.sh $AUTOGEN_OPTIONS \
 #  && make \
 #  && make install \
-#  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt \
+#  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt \
 #  && ldconfig
 
 ## Grab libxfce4ui from master
@@ -90,7 +90,7 @@ ARG AUTOGEN_OPTIONS="--disable-debug --enable-maintainer-mode --host=x86_64-linu
 #  && ./autogen.sh $AUTOGEN_OPTIONS \
 #  && make \
 #  && make install \
-#  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt \
+#  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt \
 #  && ldconfig
 
 ## Grab garcon from master
@@ -100,7 +100,7 @@ ARG AUTOGEN_OPTIONS="--disable-debug --enable-maintainer-mode --host=x86_64-linu
 #  && ./autogen.sh $AUTOGEN_OPTIONS \
 #  && make \
 #  && make install \
-#  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt \
+#  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt \
 #  && ldconfig
 
 ## Grab exo from master
@@ -110,7 +110,7 @@ ARG AUTOGEN_OPTIONS="--disable-debug --enable-maintainer-mode --host=x86_64-linu
 #  && ./autogen.sh $AUTOGEN_OPTIONS \
 #  && make \
 #  && make install \
-#  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt \
+#  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt \
 #  && ldconfig
 
 # Grab xfce4-panel
@@ -120,7 +120,7 @@ RUN cd git \
   && ./autogen.sh $AUTOGEN_OPTIONS \
   && make \
   && make install \
-  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
+  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
 
 # Grab thunar
 RUN cd git \
@@ -129,7 +129,7 @@ RUN cd git \
   && ./autogen.sh $AUTOGEN_OPTIONS \
   && make \
   && make install \
-  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
+  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
 
 # Grab xfce4-settings
 RUN cd git \
@@ -138,7 +138,7 @@ RUN cd git \
   && ./autogen.sh $AUTOGEN_OPTIONS \
   && make \
   && make install \
-  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
+  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
 
 
 # Grab xfce4-session
@@ -148,7 +148,7 @@ RUN cd git \
   && ./autogen.sh $AUTOGEN_OPTIONS \
   && make \
   && make install \
-  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
+  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
 
 # Grab xfdesktop
 RUN cd git \
@@ -157,7 +157,7 @@ RUN cd git \
   && ./autogen.sh $AUTOGEN_OPTIONS \
   && make \
   && make install \
-  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
+  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
 
 # Grab xfwm4
 RUN cd git \
@@ -166,7 +166,7 @@ RUN cd git \
   && ./autogen.sh $AUTOGEN_OPTIONS \
   && make \
   && make install \
-  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
+  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
 
 # Grab xfce4-appfinder
 RUN cd git \
@@ -175,7 +175,7 @@ RUN cd git \
   && ./autogen.sh $AUTOGEN_OPTIONS \
   && make \
   && make install \
-  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
+  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
 
 # Grab tumbler
 RUN cd git \
@@ -184,7 +184,7 @@ RUN cd git \
   && ./autogen.sh $AUTOGEN_OPTIONS \
   && make \
   && make install \
-  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
+  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
 
 # Grab xfce4-terminal
 RUN cd git \
@@ -193,7 +193,7 @@ RUN cd git \
   && ./autogen.sh $AUTOGEN_OPTIONS \
   && make \
   && make install \
-  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
+  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
 
 # Grab xfce4-whiskermenu-plugin
 RUN cd git \
@@ -203,7 +203,7 @@ RUN cd git \
   && cmake -DCMAKE_INSTALL_PREFIX=/usr .. \
   && make \
   && make install \
-  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
+  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
 
 # Grab xfce4-clipman
 RUN cd git \
@@ -212,7 +212,7 @@ RUN cd git \
   && ./autogen.sh $AUTOGEN_OPTIONS \
   && make \
   && make install \
-  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
+  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
 
 # Grab xfce4-screenshooter
 RUN cd git \
@@ -221,7 +221,7 @@ RUN cd git \
   && ./autogen.sh $AUTOGEN_OPTIONS \
   && make \
   && make install \
-  && echo "$(pwd): $(git describe)" >> ~test_user/version_info.txt
+  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
 
 RUN pip install opencv-python google-api-python-client oauth2client
 
@@ -238,20 +238,21 @@ RUN pip install opencv-python google-api-python-client oauth2client
 COPY behave /behave_tests
 RUN mkdir /data
 
-RUN chown -R test_user /git /behave_tests /data
 
 COPY xfce-test /
 COPY container_scripts /container_scripts
+COPY .tmuxinator /home/xfce-test_user/.tmuxinator
+RUN chown -R xfce-test_user /git /behave_tests /data ~xfce-test_user/.tmuxinator
 RUN chmod a+x /xfce-test /container_scripts/*.sh /container_scripts/*.py
 
-USER test_user
-ENV HOME /home/test_user
+USER xfce-test_user
+ENV HOME /home/xfce-test_user
 ENV AUTOGEN_OPTIONS $AUTOGEN_OPTIONS
 
-RUN mkdir -p ~test_user/Desktop
-RUN ln -s /container_scripts ~test_user/Desktop/container_scripts
+RUN mkdir -p ~xfce-test_user/Desktop
+RUN ln -s /container_scripts ~xfce-test_user/Desktop/container_scripts
 
-RUN echo 'if [[ $- =~ "i" ]]; then echo -n "This container includes:\n"; cat ~test_user/version_info.txt; fi' >> ~test_user/.bashrc
+#RUN echo 'if [[ $- =~ "i" ]]; then echo -n "This container includes:\n"; cat ~xfce-test_user/version_info.txt; fi' >> ~xfce-test_user/.bashrc
 
 WORKDIR /data
 CMD [ "/container_scripts/entrypoint.sh" ]

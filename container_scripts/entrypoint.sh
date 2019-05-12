@@ -2,7 +2,8 @@
 
 if xprop -root >/dev/null; then
   cd /data
-  xfce4-session
+  tmuxinator start xfce-test-tmux --no-attach
+  tmux wait xfce-test-tmux
 else
   echo "-------------------"
   cat /xfce-test
