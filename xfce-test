@@ -2,10 +2,16 @@
 
 DOWNLOAD_DATE=${DOWNLOAD_DATE:-$(date +%Y%m%d)}
 
+
 install_me() {
-  mkdir -p ~/.local/bin
-  # bash autocomplete
-  BASH_COMPLETION="#begin-xfce-test
+    if grep "^ID=arch" /etc/*-release >/dev/null 2>&1; then
+        INSTALL_TARGET=/usr/local/bin/xfce-test
+    else
+        INSTALL_TARGET=~/.local/bin/xfce-test
+        mkdir -p ~/.local/bin
+    fi
+    # bash autocomplete
+    BASH_COMPLETION="#begin-xfce-test
 _xfce-test_completions()
 {
   COMPREPLY=(\$(compgen -W \"${WORK_MODES[*]}\" \"\${COMP_WORDS[1]}\"))
@@ -23,12 +29,12 @@ complete -F _xfce-test_completions xfce-test
         echo "$BASH_COMPLETION" >> ~/.bash_completion
     fi
 
-    # "fall back"
-    cp $0 ~/.local/bin/xfce-test
-    echo "Trying to get the latest version"
-    curl -o ~/.local/bin/xfce-test https://raw.githubusercontent.com/schuellerf/xfce-test/master/xfce-test || echo "... well I tried to."
-    chmod u+x ~/.local/bin/xfce-test
-    echo "Installed 'xfce-test' to $(readlink -f ~/.local/bin/xfce-test)"
+    cp $0 ${INSTALL_TARGET} || sudo cp $0 ${INSTALL_TARGET}
+    # not sure if this is really the best idea:
+    # echo "Trying to get the latest version"
+    # curl -o ${INSTALL_TARGET} https://raw.githubusercontent.com/schuellerf/xfce-test/master/xfce-test || echo "... well I tried to."
+    chmod u+x ${INSTALL_TARGET} || sudo chmod u+x ${INSTALL_TARGET}
+    echo "Installed 'xfce-test' to $(readlink -f ${INSTALL_TARGET})"
     echo "You can just call it with 'xfce-test'"
 }
 
