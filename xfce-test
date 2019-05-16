@@ -229,6 +229,9 @@ if [ $mode == "no-session" ]; then
     DOCKER_MODES="--tty --interactive"
 fi
 
+DOCKER_MODES="${DOCKER_MODES} --volume /etc/timezone:/etc/timezone"
+DOCKER_MODES="${DOCKER_MODES} --volume /etc/localtime:/etc/localtime"
+
 echo -n "Starting container: "
 docker run --tty --interactive --name xfce-test $DETACH $DOCKER_MODES \
            --env DISPLAY=":${DISPLAY_NUM}" \
