@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
 DOWNLOAD_DATE=${DOWNLOAD_DATE:-$(date +%Y%m%d)}
+RUN_AS=
 
 
 install_me() {
     if grep "^ID=arch" /etc/*-release >/dev/null 2>&1; then
         INSTALL_TARGET=/usr/local/bin/xfce-test
+        RUN_AS="sudo"
     else
         INSTALL_TARGET=~/.local/bin/xfce-test
         mkdir -p ~/.local/bin
@@ -29,11 +31,13 @@ complete -F _xfce-test_completions xfce-test
         echo "$BASH_COMPLETION" >> ~/.bash_completion
     fi
 
-    cp $0 ${INSTALL_TARGET} || sudo cp $0 ${INSTALL_TARGET}
-    # not sure if this is really the best idea:
-    # echo "Trying to get the latest version"
-    # curl -o ${INSTALL_TARGET} https://raw.githubusercontent.com/schuellerf/xfce-test/master/xfce-test || echo "... well I tried to."
-    chmod u+x ${INSTALL_TARGET} || sudo chmod u+x ${INSTALL_TARGET}
+    # "fall back"
+    $RUN_AS cp $0 ${INSTALL_TARGET}
+
+    echo "Trying to get the latest version"
+    $RUN_AS curl -o ${INSTALL_TARGET} https://raw.githubusercontent.com/schuellerf/xfce-test/master/xfce-test || echo "... well I tried to."
+    $RUN_AS chmod u+x ${INSTALL_TARGET}
+
     echo "Installed 'xfce-test' to $(readlink -f ${INSTALL_TARGET})"
     echo "You can just call it with 'xfce-test'"
 }
