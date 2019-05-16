@@ -234,6 +234,7 @@ DOCKER_MODES="${DOCKER_MODES} --volume /etc/localtime:/etc/localtime"
 
 echo -n "Starting container: "
 docker run --tty --interactive --name xfce-test $DETACH $DOCKER_MODES \
+           --cap-add=SYS_PTRACE \
            --env DISPLAY=":${DISPLAY_NUM}" \
            --env LDTP_DEBUG=2 \
            --env SCREENSHOTS \
