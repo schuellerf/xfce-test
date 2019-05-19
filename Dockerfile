@@ -1,4 +1,4 @@
-FROM ubuntu:18.10
+FROM ubuntu:18.04
 MAINTAINER Florian Schüller <florian.schueller@gmail.com>
 
 ENV DEBIAN_FRONTEND noninteractive

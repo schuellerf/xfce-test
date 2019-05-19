@@ -83,7 +83,7 @@ for tuple in "${REPOS[@]}"; do
     BRANCH=$1
     URL=$2
     NAME=$3
-    echo "--- Building $NAME ---"
+    echo "--- Building $NAME ($BRANCH) ---"
     cd /git
     git clone --branch $BRANCH $URL
     cd $NAME
