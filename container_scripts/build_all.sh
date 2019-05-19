@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
 
-XFCE_BASE=git://git.xfce.org/xfce
+XFCE_BASE=git://git.xfce.org
 
 # (BRANCH URL NAME) tuples:
-REPOS=( "master ${XFCE_BASE}/xfce4-panel xfce4-panel")
-REPOS+=("master ${XFCE_BASE}/thunar thunar")
-REPOS+=("master ${XFCE_BASE}/xfce4-settings xfce4-settings")
-REPOS+=("master ${XFCE_BASE}/xfce4-session xfce4-session")
-REPOS+=("master ${XFCE_BASE}/xfdesktop xfdesktop")
-REPOS+=("master ${XFCE_BASE}/xfwm4 xfwm4")
-REPOS+=("master ${XFCE_BASE}/xfce4-appfinder xfce4-appfinder")
-REPOS+=("master ${XFCE_BASE}/tumbler tumbler")
-REPOS+=("master ${XFCE_BASE}/xfce4-terminal xfce4-terminal")
-REPOS+=("master ${XFCE_BASE}/xfce4-whiskermenu-plugin xfce4-whiskermenu-plugin")
-REPOS+=("master ${XFCE_BASE}/xfce4-clipman xfce4-clipman")
-REPOS+=("master ${XFCE_BASE}/xfce4-screenshooter xfce4-screenshooter")
+REPOS=( "master ${XFCE_BASE}/xfce/xfce4-panel xfce4-panel")
+REPOS+=("master ${XFCE_BASE}/xfce/thunar thunar")
+REPOS+=("master ${XFCE_BASE}/xfce/xfce4-settings xfce4-settings")
+REPOS+=("master ${XFCE_BASE}/xfce/xfce4-session xfce4-session")
+REPOS+=("master ${XFCE_BASE}/xfce/xfdesktop xfdesktop")
+REPOS+=("master ${XFCE_BASE}/xfce/xfwm4 xfwm4")
+REPOS+=("master ${XFCE_BASE}/xfce/xfce4-appfinder xfce4-appfinder")
+REPOS+=("master ${XFCE_BASE}/xfce/tumbler tumbler")
+REPOS+=("master ${XFCE_BASE}/apps/xfce4-terminal xfce4-terminal")
+REPOS+=("master ${XFCE_BASE}/apps/xfce4-screenshooter xfce4-screenshooter")
+REPOS+=("master ${XFCE_BASE}/panel-plugins/xfce4-whiskermenu-plugin xfce4-whiskermenu-plugin")
+REPOS+=("master ${XFCE_BASE}/panel-plugins/xfce4-clipman-plugin xfce4-clipman-plugin")
 
 ## TBD...
 ## Grab xfce4-dev-tools from master
