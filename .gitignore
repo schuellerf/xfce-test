@@ -9,3 +9,4 @@ screenshots
 lang-screenshots
 app_screenshots
 container_scripts/*.json
+.xfce4-session.verbose-log

@@ -47,184 +47,6 @@ RUN apt-get update \
  && apt-get -y --no-install-recommends install transifex-client xautomation $(apt-cache search language-pack|grep -oP "^language-pack-...?(?= )") \
  && rm -rf /var/lib/apt/lists/*
 
-# Line used to invalidate all git clones
-ARG DOWNLOAD_DATE=give_me_a_date
-ENV DOWNLOAD_DATE=$DOWNLOAD_DATE
-RUN echo "Newly cloning all repos as date-flag changed to ${DOWNLOAD_DATE}"
-ARG AUTOGEN_OPTIONS="--disable-debug --enable-maintainer-mode --host=x86_64-linux-gnu \
-                    --build=x86_64-linux-gnu --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu \
-                    --libexecdir=/usr/lib/x86_64-linux-gnu --sysconfdir=/etc --localstatedir=/var --enable-gtk3 --enable-gtk-doc"
-
-## Grab xfce4-dev-tools from master
-#RUN cd git \
-#  && git clone git://git.xfce.org/xfce/xfce4-dev-tools \
-#  && cd xfce4-dev-tools \
-#  && ./autogen.sh $AUTOGEN_OPTIONS \
-#  && make \
-#  && make install \
-#  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt \
-#  && ldconfig
-
-## Grab libxfce4util from master
-#RUN cd git \
-#  && git clone git://git.xfce.org/xfce/libxfce4util \
-#  && cd libxfce4util \
-#  && ./autogen.sh $AUTOGEN_OPTIONS \
-#  && make \
-#  && make install \
-#  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt \
-#  && ldconfig
-
-## Grab xfconf from master
-#RUN cd git \
-#  && git clone git://git.xfce.org/xfce/xfconf \
-#  && cd xfconf \
-#  && ./autogen.sh $AUTOGEN_OPTIONS \
-#  && make \
-#  && make install \
-#  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt \
-#  && ldconfig
-
-## Grab libxfce4ui from master
-#RUN cd git \
-#  && git clone git://git.xfce.org/xfce/libxfce4ui \
-#  && cd libxfce4ui \
-#  && ./autogen.sh $AUTOGEN_OPTIONS \
-#  && make \
-#  && make install \
-#  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt \
-#  && ldconfig
-
-## Grab garcon from master
-#RUN cd git \
-#  && git clone git://git.xfce.org/xfce/garcon \
-#  && cd garcon \
-#  && ./autogen.sh $AUTOGEN_OPTIONS \
-#  && make \
-#  && make install \
-#  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt \
-#  && ldconfig
-
-## Grab exo from master
-#RUN cd git \
-#  && git clone git://git.xfce.org/xfce/exo \
-#  && cd exo \
-#  && ./autogen.sh $AUTOGEN_OPTIONS \
-#  && make \
-#  && make install \
-#  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt \
-#  && ldconfig
-
-# Grab xfce4-panel
-RUN cd git \
-  && git clone git://git.xfce.org/xfce/xfce4-panel \
-  && cd xfce4-panel \
-  && ./autogen.sh $AUTOGEN_OPTIONS \
-  && make \
-  && make install \
-  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
-
-# Grab thunar
-RUN cd git \
-  && git clone git://git.xfce.org/xfce/thunar \
-  && cd thunar \
-  && ./autogen.sh $AUTOGEN_OPTIONS \
-  && make \
-  && make install \
-  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
-
-# Grab xfce4-settings
-RUN cd git \
-  && git clone git://git.xfce.org/xfce/xfce4-settings \
-  && cd xfce4-settings \
-  && ./autogen.sh $AUTOGEN_OPTIONS \
-  && make \
-  && make install \
-  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
-
-
-# Grab xfce4-session
-RUN cd git \
-  && git clone git://git.xfce.org/xfce/xfce4-session \
-  && cd xfce4-session \
-  && ./autogen.sh $AUTOGEN_OPTIONS \
-  && make \
-  && make install \
-  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
-
-# Grab xfdesktop
-RUN cd git \
-  && git clone git://git.xfce.org/xfce/xfdesktop \
-  && cd xfdesktop \
-  && ./autogen.sh $AUTOGEN_OPTIONS \
-  && make \
-  && make install \
-  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
-
-# Grab xfwm4
-RUN cd git \
-  && git clone git://git.xfce.org/xfce/xfwm4 \
-  && cd xfwm4 \
-  && ./autogen.sh $AUTOGEN_OPTIONS \
-  && make \
-  && make install \
-  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
-
-# Grab xfce4-appfinder
-RUN cd git \
-  && git clone git://git.xfce.org/xfce/xfce4-appfinder \
-  && cd xfce4-appfinder \
-  && ./autogen.sh $AUTOGEN_OPTIONS \
-  && make \
-  && make install \
-  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
-
-# Grab tumbler
-RUN cd git \
-  && git clone git://git.xfce.org/xfce/tumbler \
-  && cd tumbler \
-  && ./autogen.sh $AUTOGEN_OPTIONS \
-  && make \
-  && make install \
-  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
-
-# Grab xfce4-terminal
-RUN cd git \
-  && git clone git://git.xfce.org/apps/xfce4-terminal \
-  && cd xfce4-terminal \
-  && ./autogen.sh $AUTOGEN_OPTIONS \
-  && make \
-  && make install \
-  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
-
-# Grab xfce4-whiskermenu-plugin
-RUN cd git \
-  && git clone git://git.xfce.org/panel-plugins/xfce4-whiskermenu-plugin \
-  && cd xfce4-whiskermenu-plugin \
-  && mkdir build && cd build \
-  && cmake -DCMAKE_INSTALL_PREFIX=/usr .. \
-  && make \
-  && make install \
-  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
-
-# Grab xfce4-clipman
-RUN cd git \
-  && git clone git://git.xfce.org/panel-plugins/xfce4-clipman-plugin \
-  && cd xfce4-clipman-plugin \
-  && ./autogen.sh $AUTOGEN_OPTIONS \
-  && make \
-  && make install \
-  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
-
-# Grab xfce4-screenshooter
-RUN cd git \
-  && git clone git://git.xfce.org/apps/xfce4-screenshooter \
-  && cd xfce4-screenshooter \
-  && ./autogen.sh $AUTOGEN_OPTIONS \
-  && make \
-  && make install \
-  && echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
-
 RUN pip install opencv-python google-api-python-client oauth2client
 
 RUN cp /usr/share/i18n/locales/en_GB /usr/share/i18n/locales/automate
@@ -236,19 +58,30 @@ RUN echo "automate UTF-8" > /var/lib/locales/supported.d/automate
 RUN locale-gen automate
 RUN dpkg-reconfigure fontconfig
 
+# Line used to invalidate all git clones
+ARG DOWNLOAD_DATE=give_me_a_date
+ENV DOWNLOAD_DATE=$DOWNLOAD_DATE
+RUN echo "Newly cloning all repos as date-flag changed to ${DOWNLOAD_DATE}"
+ARG AUTOGEN_OPTIONS="--disable-debug --enable-maintainer-mode --host=x86_64-linux-gnu \
+                    --build=x86_64-linux-gnu --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu \
+                    --libexecdir=/usr/lib/x86_64-linux-gnu --sysconfdir=/etc --localstatedir=/var --enable-gtk3 --enable-gtk-doc"
+ENV AUTOGEN_OPTIONS $AUTOGEN_OPTIONS
+
+COPY container_scripts /container_scripts
+RUN chmod a+x /container_scripts/*.sh /container_scripts/*.py
+
+RUN /container_scripts/build_all.sh
+
 COPY behave /behave_tests
 RUN mkdir /data
 
-
 COPY xfce-test /
-COPY container_scripts /container_scripts
+RUN chmod a+x /xfce-test
 COPY .tmuxinator /home/xfce-test_user/.tmuxinator
 RUN chown -R xfce-test_user /git /behave_tests /data ~xfce-test_user/.tmuxinator
-RUN chmod a+x /xfce-test /container_scripts/*.sh /container_scripts/*.py
 
 USER xfce-test_user
 ENV HOME /home/xfce-test_user
-ENV AUTOGEN_OPTIONS $AUTOGEN_OPTIONS
 
 RUN mkdir -p ~xfce-test_user/Desktop
 RUN ln -s /container_scripts ~xfce-test_user/Desktop/container_scripts

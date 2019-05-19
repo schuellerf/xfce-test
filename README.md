@@ -1,5 +1,7 @@
 # XFCE Test
 
+![GitHub Logo](main_screenshot.png)
+
 XFCE Test is a setup of a Dockercontainer with [Behave](https://github.com/behave/behave) tests and an interactive bash helper `xfce-test`.
 The main usecases are:
 

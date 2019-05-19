@@ -1,11 +1,19 @@
 #!/usr/bin/env bash
 
 DOWNLOAD_DATE=${DOWNLOAD_DATE:-$(date +%Y%m%d)}
+RUN_AS=
+
 
 install_me() {
-  mkdir -p ~/.local/bin
-  # bash autocomplete
-  BASH_COMPLETION="#begin-xfce-test
+    if grep "^ID=arch" /etc/*-release >/dev/null 2>&1; then
+        INSTALL_TARGET=/usr/local/bin/xfce-test
+        RUN_AS="sudo"
+    else
+        INSTALL_TARGET=~/.local/bin/xfce-test
+        mkdir -p ~/.local/bin
+    fi
+    # bash autocomplete
+    BASH_COMPLETION="#begin-xfce-test
 _xfce-test_completions()
 {
   COMPREPLY=(\$(compgen -W \"${WORK_MODES[*]}\" \"\${COMP_WORDS[1]}\"))
@@ -24,11 +32,13 @@ complete -F _xfce-test_completions xfce-test
     fi
 
     # "fall back"
-    cp $0 ~/.local/bin/xfce-test
+    $RUN_AS cp $0 ${INSTALL_TARGET}
+
     echo "Trying to get the latest version"
-    curl -o ~/.local/bin/xfce-test https://raw.githubusercontent.com/schuellerf/xfce-test/master/xfce-test || echo "... well I tried to."
-    chmod u+x ~/.local/bin/xfce-test
-    echo "Installed 'xfce-test' to $(readlink -f ~/.local/bin/xfce-test)"
+    $RUN_AS curl -o ${INSTALL_TARGET} https://raw.githubusercontent.com/schuellerf/xfce-test/master/xfce-test || echo "... well I tried to."
+    $RUN_AS chmod u+x ${INSTALL_TARGET}
+
+    echo "Installed 'xfce-test' to $(readlink -f ${INSTALL_TARGET})"
     echo "You can just call it with 'xfce-test'"
 }
 
@@ -39,26 +49,31 @@ usage() {
     echo "  Without a command, interactive mode is started"
     echo ""
     echo "  command:"
-    echo "      start        Start the container for testing"
-    echo "                   USE THIS IF YOU ARE NOT SURE"
-    echo "      pull         Get the latest container"
-    echo "      no-session   starts the container without a session"
-    echo "                   (this is great if you want to test the session itself ;)"
-    echo "      install      Installed the script to ~/.local/bin for"
-    echo "                   easier execution"
+    echo "      start          Start the container for testing"
+    echo "                     USE THIS IF YOU ARE NOT SURE"
+    echo "      pull           Get the latest container"
+    echo "      no-session     starts the container without a session"
+    echo "                     (this is great if you want to test the session itself ;)"
+    echo "      install        Installed the script to ~/.local/bin for"
+    echo "                     easier execution"
     echo ""
     echo "  -- Commands doing some automatic stuff"
-    echo "     screenshots   Creating just a screenshot of each 'main' xfce app"
-    echo "     behave        Run all behave tests"
-    echo "     behavevideo   Run all behave tests while recording them"
-    echo "     fulltestvideo Create a demo video - this is the one done by travis"
+    echo "      screenshots    Creating just a screenshot of each 'main' xfce app"
+    echo "      behave         Run all behave tests"
+    echo "      behavevideo    Run all behave tests while recording them"
+    echo "      fulltestvideo  Create a demo video - this is the one done by travis"
     echo ""
     echo "  -- Commands only working from within the cloned git repository"
-    echo "      build        Builds the container locally"
-    echo "                   Environment variable:"
-    echo "                   DOWNLOAD_DATE defines if all source code should be"
+    echo "      build          Builds the container locally"
+    echo "                     Environment variable:"
+    echo "                     DOWNLOAD_DATE defines if all source code should be"
     echo "                                 newly cloned and rebuilt"
-    echo "                   default: ${DOWNLOAD_DATE}"
+    echo "                     default: ${DOWNLOAD_DATE}"
+    echo "  Environment variables:"
+    echo "     (useful environment variables you might want to set)"
+    echo "      XFSM_VERBOSE   set to \"1\" to get a log file in ~/.xfce4-session.verbose-log"
+    echo "                     default: \"${XFSM_VERBOSE}\""
+
 }
 
 MANUAL_MODES=("start" "pull" "no-session")
@@ -111,12 +126,13 @@ else
     usage
 
     
-    MODES=(${MODES[*]} "tag")
+    MODES=(${MODES[*]} "tag" "XFSM_VERBOSE")
 
     echo ""
     echo "  -- Commands only for interactive mode"
     echo "      tag          changes docker \"TAG\" to work with (e.g. ubuntu_19.04)"
     echo "                   (only for the current execution of $0)"
+    echo "      XFSM_VERBOSE change verbosity of xfce4-session"
     echo ""
 
     PS3="Choose option: "
@@ -134,6 +150,15 @@ else
                     echo "OK - tag changed to \"$TAG\""
                 else
                     echo "OK - tag is still \"$TAG\""
+                fi
+            ;;
+            "XFSM_VERBOSE")
+                if [ "x${XFSM_VERBOSE}" != "x1" ]; then
+                    echo "Enabled debug output..."
+                    export XFSM_VERBOSE=1
+                else
+                    echo "Disabled debug output..."
+                    unset XFSM_VERBOSE
                 fi
             ;;
             *)
@@ -186,7 +211,7 @@ fi
 # kill an already running instance if still running from the last test
 killall -q Xephyr
 
-Xephyr :${DISPLAY_NUM} -ac -screen ${RESOLUTION} &
+Xephyr :${DISPLAY_NUM} -resizeable -ac -screen ${RESOLUTION} &
 
 docker rm xfce-test 2>/dev/null
 echo ""
@@ -204,12 +229,17 @@ if [ $mode == "no-session" ]; then
     DOCKER_MODES="--tty --interactive"
 fi
 
+DOCKER_MODES="${DOCKER_MODES} --volume /etc/timezone:/etc/timezone"
+DOCKER_MODES="${DOCKER_MODES} --volume /etc/localtime:/etc/localtime"
+
 echo -n "Starting container: "
 docker run --tty --interactive --name xfce-test $DETACH $DOCKER_MODES \
+           --cap-add=SYS_PTRACE \
            --env DISPLAY=":${DISPLAY_NUM}" \
            --env LDTP_DEBUG=2 \
            --env SCREENSHOTS \
            --env RESOLUTION \
+           --env XFSM_VERBOSE \
            --volume ${PWD}:/data \
            --volume /tmp/.X11-unix:/tmp/.X11-unix:z \
            schuellerf/xfce-test:$TAG $COMMAND
@@ -231,6 +261,9 @@ if [ -n $DETACH ]; then
         docker exec --tty --interactive xfce-test /bin/bash
     fi
 fi
+
+# Copy out the debug file if it exists
+docker cp xfce-test:/home/xfce-test_user/.xfce4-session.verbose-log . || echo ""
 
 # Tear down
 if [ $mode != "no-session" ]; then

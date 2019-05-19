@@ -9,6 +9,11 @@ import time
 
 LANG = "en_GB"
 APP = ["xfce4-display-settings"]
+OUTPUT_DIR="/data/lang-screenshots"
+
+if not os.path.exists(OUTPUT_DIR):
+    os.makedirs(OUTPUT_DIR)
+
 # maps translation to window/object (currently unused)
 translation = {}
 
@@ -62,7 +67,7 @@ def capture_translations(app="app",lang="unknown"):
                 if size:
                     img = cv2.imread(img_name)
                     new_img = cv2.rectangle(img, (size[0], size[1]), (size[0] + size[2], size[1] + size[3]), (0,0,255), 3)
-                    cv2.imwrite('/tmp/translation_{}_{}_{}_{}.png'.format(app, lang, id_num, o), new_img)
+                    cv2.imwrite('{}/translation_{}_{}_{}_{}.png'.format(OUTPUT_DIR, app, lang, id_num, o), new_img)
 
 
 env = os.environ
