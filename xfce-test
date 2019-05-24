@@ -7,6 +7,7 @@ RUN_AS=
 install_me() {
     if grep "^ID=arch" /etc/*-release >/dev/null 2>&1; then
         INSTALL_TARGET=/usr/local/bin/xfce-test
+        echo "I might need the sudo password for installation..."
         RUN_AS="sudo"
     else
         INSTALL_TARGET=~/.local/bin/xfce-test
@@ -203,6 +204,7 @@ if [ -f /etc/lsb-release ] && grep Ubuntu /etc/lsb-release >/dev/null; then
 
   for package in ${UBUNTU_PACKAGES}; do
     if ! apt list --installed 2>/dev/null|grep "^$package" >/dev/null; then
+      echo "I might need the sudo password to install the necessary packages..."
       sudo apt install -y $package
     fi
   done
