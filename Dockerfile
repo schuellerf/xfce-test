@@ -17,11 +17,12 @@ RUN /usr/bin/pip install behave
 # Enable source repositories
 RUN sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
 
-# Xfce specific build dependencies
+# Xfce specific build dependencies and default panel plugins
 RUN apt-get update \
  && apt-get -y --no-install-recommends install gnome-themes-standard libglib2.0-bin build-essential libgtk-3-dev gtk-doc-tools libgtk2.0-dev libx11-dev libglib2.0-dev libwnck-3-dev intltool libdbus-glib-1-dev liburi-perl x11-xserver-utils libvte-2.91-dev dbus-x11 strace libgl1-mesa-dev adwaita-icon-theme libwnck-dev adwaita-icon-theme-full cmake libsoup2.4-dev libpcre2-dev exo-utils \
- && apt-get -y --no-install-recommends install xfce4 \
+ && apt-get -y --no-install-recommends install xfce4 xfce4-appfinder tumbler xfce4-terminal xfce4-clipman-plugin xfce4-screenshooter xfce4-power-manager xfce4-notifyd \
  && apt-get -y --no-install-recommends build-dep xfce4-panel thunar xfce4-settings xfce4-session xfdesktop4 xfwm4 xfce4-appfinder tumbler xfce4-terminal xfce4-clipman-plugin xfce4-screenshooter \
+ && apt-get -y --no-install-recommends install xfce4-pulseaudio-plugin xfce4-statusnotifier-plugin \
  && rm -rf /var/lib/apt/lists/*
 
 #needed for LDTP and friends
