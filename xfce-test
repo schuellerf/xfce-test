@@ -7,6 +7,7 @@ RUN_AS=
 install_me() {
     if grep "^ID=arch" /etc/*-release >/dev/null 2>&1; then
         INSTALL_TARGET=/usr/local/bin/xfce-test
+        echo "I might need the sudo password for installation..."
         RUN_AS="sudo"
     else
         INSTALL_TARGET=~/.local/bin/xfce-test
@@ -73,6 +74,8 @@ usage() {
     echo "     (useful environment variables you might want to set)"
     echo "      XFSM_VERBOSE   set to \"1\" to get a log file in ~/.xfce4-session.verbose-log"
     echo "                     default: \"${XFSM_VERBOSE}\""
+    echo "      LANG           choose language for the session"
+    echo "                     default: \"${LANG}\""
 
 }
 
@@ -126,13 +129,14 @@ else
     usage
 
     
-    MODES=(${MODES[*]} "tag" "XFSM_VERBOSE")
+    MODES=(${MODES[*]} "tag" "XFSM_VERBOSE" "LANG")
 
     echo ""
     echo "  -- Commands only for interactive mode"
     echo "      tag          changes docker \"TAG\" to work with (e.g. ubuntu_19.04)"
     echo "                   (only for the current execution of $0)"
     echo "      XFSM_VERBOSE change verbosity of xfce4-session"
+    echo "      LANG         change the language for the session (default: $LANG)"
     echo ""
 
     PS3="Choose option: "
@@ -161,14 +165,37 @@ else
                     unset XFSM_VERBOSE
                 fi
             ;;
+            "LANG")
+                ALL_LANGS="$(docker run --rm schuellerf/xfce-test:$TAG locale -a)"
+                select l in ${ALL_LANGS}; do
+                  case $l in
+                    *) if [ ${#l} -ge 1 ]; then
+                        LANG=$l
+                        echo "OK - language changed to \"$LANG\""
+                      else
+                        echo "OK - language is still \"$LANG\""
+                      fi
+                    break
+                    ;;
+                  esac
+                  echo "Choose Language:"
+                done
+
+            ;;
             *)
                 break
             ;;
         esac
+        echo "-- Main Menu --"
     done
 fi
 
-echo "You are working with the container: $TAG"
+if [ ${#mode} -ge 1 ]; then
+  echo "You are working with the container: $TAG"
+else
+  echo "Nothing valid selected - exiting"
+  exit 1
+fi
 
 case $mode in
     "pull")
@@ -203,6 +230,7 @@ if [ -f /etc/lsb-release ] && grep Ubuntu /etc/lsb-release >/dev/null; then
 
   for package in ${UBUNTU_PACKAGES}; do
     if ! apt list --installed 2>/dev/null|grep "^$package" >/dev/null; then
+      echo "I might need the sudo password to install the necessary packages..."
       sudo apt install -y $package
     fi
   done
@@ -240,6 +268,7 @@ docker run --tty --interactive --name xfce-test $DETACH $DOCKER_MODES \
            --env SCREENSHOTS \
            --env RESOLUTION \
            --env XFSM_VERBOSE \
+           --env LANG \
            --volume ${PWD}:/data \
            --volume /tmp/.X11-unix:/tmp/.X11-unix:z \
            schuellerf/xfce-test:$TAG $COMMAND
