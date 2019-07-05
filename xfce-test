@@ -183,7 +183,7 @@ else
                 select l in ${ALL_LANGS}; do
                   case $l in
                     *) if [ ${#l} -ge 1 ]; then
-                        LANG=$l
+                        LANG=$(echo $l|grep -Po "^[^ ]+")
                         echo "OK - language changed to \"$LANG\""
                       else
                         echo "OK - language is still \"$LANG\""
