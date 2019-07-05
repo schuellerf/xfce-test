@@ -166,7 +166,20 @@ else
                 fi
             ;;
             "LANG")
-                ALL_LANGS="$(docker run --rm schuellerf/xfce-test:$TAG locale -a)"
+                # getting all languages with title out of the container
+                ALL_LANGS="$(docker run --rm schuellerf/xfce-test:$TAG locale -av |
+                   while read LINE; do
+                      if [[ $LINE =~ ^locale:.* ]]; then
+                        LOC=$(echo "$LINE"|grep -Po "(?<=locale: )[^ ]*");
+                      fi;
+                      if [[ $LINE =~ title ]]; then
+                        T=$(echo "$LINE"|grep -Po "(?<=title \| ).*");
+                        echo "$LOC ($T)";
+                      fi;
+                    done)"
+
+                OLD_IFS=${IFS}
+                IFS=$'\n'
                 select l in ${ALL_LANGS}; do
                   case $l in
                     *) if [ ${#l} -ge 1 ]; then
@@ -180,6 +193,7 @@ else
                   esac
                   echo "Choose Language:"
                 done
+                IFS=${OLD_IFS}
 
             ;;
             *)
