@@ -19,10 +19,64 @@ REPOS+=("master ${XFCE_BASE}/xfce/xfdesktop xfdesktop")
 REPOS+=("master ${XFCE_BASE}/xfce/xfwm4 xfwm4")
 REPOS+=("master ${XFCE_BASE}/xfce/xfce4-appfinder xfce4-appfinder")
 REPOS+=("master ${XFCE_BASE}/xfce/tumbler tumbler")
-REPOS+=("master ${XFCE_BASE}/apps/xfce4-terminal xfce4-terminal")
-REPOS+=("master ${XFCE_BASE}/apps/xfce4-screenshooter xfce4-screenshooter")
-REPOS+=("master ${XFCE_BASE}/panel-plugins/xfce4-whiskermenu-plugin xfce4-whiskermenu-plugin")
-REPOS+=("master ${XFCE_BASE}/panel-plugins/xfce4-clipman-plugin xfce4-clipman-plugin")
+
+APPS="catfish
+gigolo
+mousepad
+parole
+ristretto
+xfburn
+xfce4-dict
+xfce4-mixer
+xfce4-notifyd
+xfce4-panel-profiles
+xfce4-screensaver
+xfce4-screenshooter
+xfce4-taskmanager
+xfce4-terminal
+xfce4-volumed-pulse
+xfmpc"
+
+for a in $APPS; do
+    REPOS+=("master ${XFCE_BASE}/apps/$a $a")
+done
+
+panelplugins="
+xfce4-battery-plugin
+xfce4-calculator-plugin
+xfce4-clipman-plugin
+xfce4-cpufreq-plugin
+xfce4-cpugraph-plugin
+xfce4-datetime-plugin
+xfce4-diskperf-plugin
+xfce4-fsguard-plugin
+xfce4-genmon-plugin
+xfce4-indicator-plugin
+xfce4-mailwatch-plugin
+xfce4-netload-plugin
+xfce4-netload-plugin
+xfce4-places-plugin
+xfce4-sensors-plugin
+xfce4-smartbookmark-plugin
+xfce4-systemload-plugin
+xfce4-timer-plugin
+xfce4-verve-plugin
+xfce4-wavelan-plugin
+xfce4-weather-plugin
+xfce4-whiskermenu-plugin
+xfce4-xkb-plugin
+xfce4-mpc-plugin"
+
+for a in $panelplugins; do
+    REPOS+=("master ${XFCE_BASE}/panel-plugins/$a $a")
+done
+
+thunarplugins="thunar-archive-plugin
+thunar-media-tags-plugin"
+
+for a in $thunarplugins; do
+    REPOS+=("master ${XFCE_BASE}/thunar-plugins/$a $a")
+done
 
 
 for tuple in "${REPOS[@]}"; do
