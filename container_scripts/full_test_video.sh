@@ -13,6 +13,18 @@ fi
 source /container_scripts/video_helpers.sh
 /container_scripts/start_recording.sh
 
+# Remove possible "PowerManager" error
+python -c "
+import ldtp as l
+if 'dlgQuestion' in l.getwindowlist() and 'btnRemove' in l.getobjectlist('dlgQuestion') and filter(lambda element: 'PowerManagerPlugin' in element, l.getobjectlist('dlgQuestion')):
+        win='dlgQuestion'
+        thing='btnRemove'
+        (x,y,w,h)=l.getobjectsize(win, thing)
+        click_x = x+(w/2)
+        click_y = y+(h/2)
+        l.generatemouseevent(click_x,click_y)
+"
+
 echo "Hello World!
 
 This is an automatically created XFCE Test video.
