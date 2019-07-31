@@ -2,23 +2,25 @@
 
 XFCE_BASE=git://git.xfce.org
 
+MAIN_BRANCH=master
+
 # (BRANCH URL NAME) tuples:
-REPOS=( "master ${XFCE_BASE}/xfce/libxfce4ui libxfce4ui")
-REPOS+=("master ${XFCE_BASE}/xfce/libxfce4util libxfce4util")
-REPOS+=("master ${XFCE_BASE}/xfce/exo exo")
-REPOS+=("master ${XFCE_BASE}/xfce/xfce4-dev-tools xfce4-dev-tools")
-REPOS+=("master ${XFCE_BASE}/xfce/xfce4-panel xfce4-panel")
-REPOS+=("master ${XFCE_BASE}/xfce/garcon garcon")
-REPOS+=("master ${XFCE_BASE}/xfce/thunar thunar")
-REPOS+=("master ${XFCE_BASE}/xfce/thunar-volman thunar-volman")
-REPOS+=("master ${XFCE_BASE}/xfce/xfce4-power-manager xfce4-power-manager")
-REPOS+=("master ${XFCE_BASE}/xfce/xfce4-settings xfce4-settings")
-REPOS+=("master ${XFCE_BASE}/xfce/xfce4-session xfce4-session")
-REPOS+=("master ${XFCE_BASE}/xfce/xfconf xfconf")
-REPOS+=("master ${XFCE_BASE}/xfce/xfdesktop xfdesktop")
-REPOS+=("master ${XFCE_BASE}/xfce/xfwm4 xfwm4")
-REPOS+=("master ${XFCE_BASE}/xfce/xfce4-appfinder xfce4-appfinder")
-REPOS+=("master ${XFCE_BASE}/xfce/tumbler tumbler")
+REPOS=( "${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4ui libxfce4ui")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4util libxfce4util")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/exo exo")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-dev-tools xfce4-dev-tools")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-panel xfce4-panel")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/garcon garcon")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/thunar thunar")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/thunar-volman thunar-volman")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-power-manager xfce4-power-manager")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-settings xfce4-settings")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-session xfce4-session")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfconf xfconf")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfdesktop xfdesktop")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfwm4 xfwm4")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-appfinder xfce4-appfinder")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/tumbler tumbler")
 
 APPS="catfish
 gigolo
@@ -38,7 +40,7 @@ xfce4-volumed-pulse
 xfmpc"
 
 for a in $APPS; do
-    REPOS+=("master ${XFCE_BASE}/apps/$a $a")
+    REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/apps/$a $a")
 done
 
 panelplugins="
@@ -68,14 +70,14 @@ xfce4-xkb-plugin
 xfce4-mpc-plugin"
 
 for a in $panelplugins; do
-    REPOS+=("master ${XFCE_BASE}/panel-plugins/$a $a")
+    REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/panel-plugins/$a $a")
 done
 
 thunarplugins="thunar-archive-plugin
 thunar-media-tags-plugin"
 
 for a in $thunarplugins; do
-    REPOS+=("master ${XFCE_BASE}/thunar-plugins/$a $a")
+    REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/thunar-plugins/$a $a")
 done
 
 
