@@ -2,27 +2,83 @@
 
 XFCE_BASE=git://git.xfce.org
 
+MAIN_BRANCH=master
+
 # (BRANCH URL NAME) tuples:
-REPOS=( "master ${XFCE_BASE}/xfce/libxfce4ui libxfce4ui")
-REPOS+=("master ${XFCE_BASE}/xfce/libxfce4util libxfce4util")
-REPOS+=("master ${XFCE_BASE}/xfce/exo exo")
-REPOS+=("master ${XFCE_BASE}/xfce/xfce4-dev-tools xfce4-dev-tools")
-REPOS+=("master ${XFCE_BASE}/xfce/xfce4-panel xfce4-panel")
-REPOS+=("master ${XFCE_BASE}/xfce/garcon garcon")
-REPOS+=("master ${XFCE_BASE}/xfce/thunar thunar")
-REPOS+=("master ${XFCE_BASE}/xfce/thunar-volman thunar-volman")
-REPOS+=("master ${XFCE_BASE}/xfce/xfce4-power-manager xfce4-power-manager")
-REPOS+=("master ${XFCE_BASE}/xfce/xfce4-settings xfce4-settings")
-REPOS+=("master ${XFCE_BASE}/xfce/xfce4-session xfce4-session")
-REPOS+=("master ${XFCE_BASE}/xfce/xfconf xfconf")
-REPOS+=("master ${XFCE_BASE}/xfce/xfdesktop xfdesktop")
-REPOS+=("master ${XFCE_BASE}/xfce/xfwm4 xfwm4")
-REPOS+=("master ${XFCE_BASE}/xfce/xfce4-appfinder xfce4-appfinder")
-REPOS+=("master ${XFCE_BASE}/xfce/tumbler tumbler")
-REPOS+=("master ${XFCE_BASE}/apps/xfce4-terminal xfce4-terminal")
-REPOS+=("master ${XFCE_BASE}/apps/xfce4-screenshooter xfce4-screenshooter")
-REPOS+=("master ${XFCE_BASE}/panel-plugins/xfce4-whiskermenu-plugin xfce4-whiskermenu-plugin")
-REPOS+=("master ${XFCE_BASE}/panel-plugins/xfce4-clipman-plugin xfce4-clipman-plugin")
+REPOS=( "${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4ui libxfce4ui")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4util libxfce4util")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/exo exo")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-dev-tools xfce4-dev-tools")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-panel xfce4-panel")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/garcon garcon")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/thunar thunar")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/thunar-volman thunar-volman")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-power-manager xfce4-power-manager")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-settings xfce4-settings")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-session xfce4-session")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfconf xfconf")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfdesktop xfdesktop")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfwm4 xfwm4")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-appfinder xfce4-appfinder")
+REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/tumbler tumbler")
+
+APPS="catfish
+gigolo
+mousepad
+parole
+ristretto
+xfburn
+xfce4-dict
+xfce4-mixer
+xfce4-notifyd
+xfce4-panel-profiles
+xfce4-screensaver
+xfce4-screenshooter
+xfce4-taskmanager
+xfce4-terminal
+xfce4-volumed-pulse
+xfmpc"
+
+for a in $APPS; do
+    REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/apps/$a $a")
+done
+
+panelplugins="
+xfce4-battery-plugin
+xfce4-calculator-plugin
+xfce4-clipman-plugin
+xfce4-cpufreq-plugin
+xfce4-cpugraph-plugin
+xfce4-datetime-plugin
+xfce4-diskperf-plugin
+xfce4-fsguard-plugin
+xfce4-genmon-plugin
+xfce4-indicator-plugin
+xfce4-mailwatch-plugin
+xfce4-netload-plugin
+xfce4-netload-plugin
+xfce4-places-plugin
+xfce4-sensors-plugin
+xfce4-smartbookmark-plugin
+xfce4-systemload-plugin
+xfce4-timer-plugin
+xfce4-verve-plugin
+xfce4-wavelan-plugin
+xfce4-weather-plugin
+xfce4-whiskermenu-plugin
+xfce4-xkb-plugin
+xfce4-mpc-plugin"
+
+for a in $panelplugins; do
+    REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/panel-plugins/$a $a")
+done
+
+thunarplugins="thunar-archive-plugin
+thunar-media-tags-plugin"
+
+for a in $thunarplugins; do
+    REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/thunar-plugins/$a $a")
+done
 
 
 for tuple in "${REPOS[@]}"; do
