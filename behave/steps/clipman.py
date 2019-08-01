@@ -3,6 +3,7 @@ import ldtp as l
 import time
 import os
 import subprocess, signal
+import math
 
 def app_is_in_ps(app):
     p = subprocess.Popen(['ps', '-A'], stdout=subprocess.PIPE)
@@ -86,7 +87,17 @@ def step_impl(context, thing, win):
     (x,y,w,h)=l.getobjectsize(win, thing)
     click_x = x+(w/2)
     click_y = y+(h/2)
+    start_x=getattr(context,'last_mouse_x',0)
+    start_y=getattr(context,'last_mouse_y',0)
+    try:
+        timing=1/math.sqrt(math.pow(math.fabs(start_x-click_x),2)+math.pow(math.fabs(start_y-click_y),2))
+    except:
+        timing=0.01
+    l.simulatemousemove(start_x, start_y, click_x, click_y, timing)
+    time.sleep(1)
     l.generatemouseevent(click_x,click_y)
+    context.last_mouse_x=click_x
+    context.last_mouse_y=click_y
     time.sleep(2) #clicking usually needs a task switch to some UI thread to process it
 
 @when('we type "{text}"')

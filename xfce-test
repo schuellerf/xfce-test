@@ -253,7 +253,7 @@ fi
 # kill an already running instance if still running from the last test
 killall -q Xephyr
 
-Xephyr :${DISPLAY_NUM} -resizeable -ac -screen ${RESOLUTION} &
+Xephyr :${DISPLAY_NUM} -sw-cursor -softCursor -resizeable -ac -screen ${RESOLUTION} &
 
 docker rm xfce-test 2>/dev/null
 echo ""
