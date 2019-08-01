@@ -1,4 +1,7 @@
 import behave
+import ldtp as l
+import time
+import math
 
 def _reTextify(thing):
     """ return text of step or scenario as if it was
@@ -18,6 +21,16 @@ def _get_scenario(context, scenario):
         ret += _reTextify(step) + u"\n"
     return ret
 
+# ---- given
 @given(u'we repeat "{scenario}"')
 def step_impl(context, scenario):
     context.execute_steps(_get_scenario(context, scenario))
+
+# ---- when
+@when('we click on {thing} in {win}')
+def step_impl(context, thing, win):
+    l.waittillguiexist(win)
+    (x,y,w,h)=l.getobjectsize(win, thing)
+    click_x = x+(w/2)
+    click_y = y+(h/2)
+    context._root["_click_animated"](context, click_x, click_y)

@@ -58,7 +58,7 @@ def step_impl(context, popupwin, entry, win):
         click_x = x+(h/2)
         click_y = y+(h/2)
         while click_x < (x+w):
-            l.generatemouseevent(click_x,click_y, "b3c")
+            context._root["_click_animated"](context, click_x, click_y, button="b3c", delay=0)
             if l.waittillguiexist(popupwin, entry, 1): return
             l.generatekeyevent("<esc>") #close possible menus
             time.sleep(0.5)
@@ -80,25 +80,6 @@ def step_impl(context):
 @when('we see {thing:S}')
 def step_impl(context, thing):
     assert(l.waittillguiexist(thing) == 1)
-
-@when('we click on {thing} in {win}')
-def step_impl(context, thing, win):
-    l.waittillguiexist(win)
-    (x,y,w,h)=l.getobjectsize(win, thing)
-    click_x = x+(w/2)
-    click_y = y+(h/2)
-    start_x=getattr(context,'last_mouse_x',0)
-    start_y=getattr(context,'last_mouse_y',0)
-    try:
-        timing=1/math.sqrt(math.pow(math.fabs(start_x-click_x),2)+math.pow(math.fabs(start_y-click_y),2))
-    except:
-        timing=0.01
-    l.simulatemousemove(start_x, start_y, click_x, click_y, timing)
-    time.sleep(1)
-    l.generatemouseevent(click_x,click_y)
-    context.last_mouse_x=click_x
-    context.last_mouse_y=click_y
-    time.sleep(2) #clicking usually needs a task switch to some UI thread to process it
 
 @when('we type "{text}"')
 def step_impl(context, text):
