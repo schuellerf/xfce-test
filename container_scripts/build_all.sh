@@ -44,6 +44,7 @@ for a in $APPS; do
 done
 
 panelplugins="
+xfce4-notes-plugin
 xfce4-battery-plugin
 xfce4-calculator-plugin
 xfce4-clipman-plugin
