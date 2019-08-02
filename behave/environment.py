@@ -3,6 +3,7 @@ DEBUG_ON_ERROR = False
 import os
 import ldtp as l
 import signal
+import time
 
 def handler(signum, frame):
     print "Time is over!"
