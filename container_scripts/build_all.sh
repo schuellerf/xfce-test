@@ -4,23 +4,23 @@ XFCE_BASE=git://git.xfce.org
 
 MAIN_BRANCH=master
 
-# (BRANCH URL NAME) tuples:
-REPOS=( "${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4ui libxfce4ui")
-REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4util libxfce4util")
-REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/exo exo")
-REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-dev-tools xfce4-dev-tools")
-REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-panel xfce4-panel")
-REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/garcon garcon")
-REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/thunar thunar")
-REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/thunar-volman thunar-volman")
-REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-power-manager xfce4-power-manager")
-REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-settings xfce4-settings")
-REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-session xfce4-session")
-REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfconf xfconf")
-REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfdesktop xfdesktop")
-REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfwm4 xfwm4")
-REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-appfinder xfce4-appfinder")
-REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/xfce/tumbler tumbler")
+# (BUILD_TYPE BRANCH URL NAME) tuples:
+REPOS=( "autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4ui libxfce4ui")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4util libxfce4util")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/exo exo")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-dev-tools xfce4-dev-tools")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-panel xfce4-panel")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/garcon garcon")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/thunar thunar")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/thunar-volman thunar-volman")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-power-manager xfce4-power-manager")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-settings xfce4-settings")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-session xfce4-session")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfconf xfconf")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfdesktop xfdesktop")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfwm4 xfwm4")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-appfinder xfce4-appfinder")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/tumbler tumbler")
 
 APPS="catfish
 gigolo
@@ -40,7 +40,7 @@ xfce4-volumed-pulse
 xfmpc"
 
 for a in $APPS; do
-    REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/apps/$a $a")
+    REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/apps/$a $a")
 done
 
 panelplugins="
@@ -66,35 +66,51 @@ xfce4-timer-plugin
 xfce4-verve-plugin
 xfce4-wavelan-plugin
 xfce4-weather-plugin
-xfce4-whiskermenu-plugin
 xfce4-xkb-plugin
 xfce4-mpc-plugin"
 
 for a in $panelplugins; do
-    REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/panel-plugins/$a $a")
+    REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/panel-plugins/$a $a")
 done
+
+REPOS+=("cmake ${MAIN_BRANCH} ${XFCE_BASE}/panel-plugins/xfce4-whiskermenu-plugin xfce4-whiskermenu-plugin")
 
 thunarplugins="thunar-archive-plugin
 thunar-media-tags-plugin"
 
 for a in $thunarplugins; do
-    REPOS+=("${MAIN_BRANCH} ${XFCE_BASE}/thunar-plugins/$a $a")
+    REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/thunar-plugins/$a $a")
 done
 
 
 for tuple in "${REPOS[@]}"; do
     set -- $tuple
-    BRANCH=$1
-    URL=$2
-    NAME=$3
+    BUILD_TYPE=$1
+    BRANCH=$2
+    URL=$3
+    NAME=$4
     echo "--- Building $NAME ($BRANCH) ---"
     cd /git
     git clone $URL
     cd $NAME
     git checkout $BRANCH || echo "Branch $BRANCH not found - leaving default"
-    ./autogen.sh $AUTOGEN_OPTIONS
-    make -j8
-    make install
+    case $BUILD_TYPE in
+        "autogen")
+            ./autogen.sh $AUTOGEN_OPTIONS
+            make -j8
+            make install
+        ;;
+        "cmake")
+            mkdir build && cd build
+            cmake ..
+            make -j8
+            make install
+        ;;
+        *)
+            echo "Unknown build type: >$1<"
+        ;;
+    esac
+
     echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
 done
 
