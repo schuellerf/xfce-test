@@ -49,8 +49,11 @@ behave -D DEBUG_ON_ERROR | while read LINE; do
   echo "$LINE" | tee -a /tmp/text_all.txt
   tail -n5 /tmp/text_all.txt > /tmp/text_cut.txt
   mv /tmp/text_cut.txt ${OVERLAY_FILE}
-  # speaking out without the comments
-  espeak -v${ESPEAK_VOICE} "$(echo $LINE|cut -f1 -d'#')"
+  # speaking out only Feature and Scenario for now
+  # as 'behave' does not wait for us
+  if [[ "$LINE" =~ ^Feature|^Scenario ]]; then
+    espeak -v${ESPEAK_VOICE} "$(echo $LINE|cut -f1 -d'#')"
+  fi
 done
 
 /container_scripts/stop_recording.sh
