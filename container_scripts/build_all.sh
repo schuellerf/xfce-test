@@ -22,8 +22,7 @@ REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfwm4 xfwm4")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-appfinder xfce4-appfinder")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/tumbler tumbler")
 
-APPS="catfish
-gigolo
+APPS="gigolo
 mousepad
 parole
 ristretto
@@ -31,7 +30,6 @@ xfburn
 xfce4-dict
 xfce4-mixer
 xfce4-notifyd
-xfce4-panel-profiles
 xfce4-screensaver
 xfce4-screenshooter
 xfce4-taskmanager
@@ -42,6 +40,9 @@ xfmpc"
 for a in $APPS; do
     REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/apps/$a $a")
 done
+
+REPOS+=("make ${MAIN_BRANCH} ${XFCE_BASE}/apps/xfce4-panel-profiles xfce4-panel-profiles")
+REPOS+=("python ${MAIN_BRANCH} ${XFCE_BASE}/apps/catfish catfish")
 
 panelplugins="
 xfce4-notes-plugin
@@ -100,11 +101,19 @@ for tuple in "${REPOS[@]}"; do
             make -j8
             make install
         ;;
+        "make")
+            ./configure $AUTOGEN_OPTIONS
+            make -j8
+            make install
+        ;;
         "cmake")
             mkdir build && cd build
             cmake ..
             make -j8
             make install
+        ;;
+        "python")
+            python setup.py install
         ;;
         *)
             echo "Unknown build type: >$1<"
