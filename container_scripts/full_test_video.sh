@@ -4,6 +4,7 @@ export OVERLAY_FILE=${OVERLAY_FILE:-/tmp/video.txt}
 export VIDEO="true"
 export VIDEO_PREFIX=${VIDEO_PREFIX:-xfce-test_video_}
 export ESPEAK_VOICE=${ESPEAK_VOICE:-en-us+f5}
+export ESPEAK_SPEED=${ESPEAK_SPEED:-110}
 
 if [ -n "${TRAVIS_BRANCH}" ]; then
     # append the travis branch to the video name
@@ -52,7 +53,7 @@ behave -D DEBUG_ON_ERROR | while read LINE; do
   # speaking out only Feature and Scenario for now
   # as 'behave' does not wait for us
   if [[ "$LINE" =~ ^Feature|^Scenario ]]; then
-    espeak -v${ESPEAK_VOICE} "$(echo $LINE|cut -f1 -d'#')"
+    espeak -s ${ESPEAK_SPEED} -v${ESPEAK_VOICE} "$(echo $LINE|cut -f1 -d'#')"
   fi
 done
 

@@ -7,6 +7,7 @@ video_time() {
 
 show_n_speak() {
     ESPEAK_VOICE=${ESPEAK_VOICE:-en-us+f5}
+    ESPEAK_SPEED=${ESPEAK_SPEED:-110}
     echo "$1" > ${2:-${OVERLAY_FILE}}
-    espeak -v${ESPEAK_VOICE} "$1"
+    espeak -s ${ESPEAK_SPEED} -v${ESPEAK_VOICE} "$1"
 }
