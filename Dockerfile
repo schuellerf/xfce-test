@@ -25,6 +25,11 @@ RUN apt-get update \
  && apt-get -y --no-install-recommends install xfce4-pulseaudio-plugin xfce4-statusnotifier-plugin \
  && rm -rf /var/lib/apt/lists/*
 
+# audio specific
+RUN apt-get update \
+ && apt-get -y --no-install-recommends install paprefs pavucontrol espeak \
+ && rm -rf /var/lib/apt/lists/*
+
 #needed for LDTP and friends
 RUN /usr/bin/dbus-run-session /usr/bin/gsettings set org.gnome.desktop.interface toolkit-accessibility true
 

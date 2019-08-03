@@ -3,6 +3,7 @@
 export OVERLAY_FILE=${OVERLAY_FILE:-/tmp/video.txt}
 export VIDEO="true"
 export VIDEO_PREFIX=${VIDEO_PREFIX:-xfce-test_video_}
+export ESPEAK_VOICE=${ESPEAK_VOICE:-en-us+f5}
 
 if [ -n "${TRAVIS_BRANCH}" ]; then
     # append the travis branch to the video name
@@ -25,24 +26,19 @@ if 'dlgQuestion' in l.getwindowlist() and 'btnRemove' in l.getobjectlist('dlgQue
         l.generatemouseevent(click_x,click_y)
 "
 
-echo "Hello World!
+show_n_speak "Hello World!
 
 This is an automatically created XFCE Test video.
-It shows features of XFCE and tests some functionality" > ${OVERLAY_FILE}
+It shows features of XFCE and tests some functionality"
 
-sleep 8
+show_n_speak "First we'll see only the main window
+of some applications"
 
-echo "First we'll see only the main window
-of some applications" > ${OVERLAY_FILE}
+# /container_scripts/make_screenshots.py
 
-sleep 3
+show_n_speak "Now let's start the 'behave' tests
 
-/container_scripts/make_screenshots.py
-
-echo "Now let's start the 'behave' tests
-
-(Fully automated GUI testing described in natural language)" > ${OVERLAY_FILE}
-sleep 5
+(Fully automated GUI testing described in natural language)"
 
 # This creates a logfile for behave (/tmp/text_all.txt)
 # cuts the last 5 lines to a new file (/tmp/text_cut.txt) and has
@@ -53,6 +49,8 @@ behave -D DEBUG_ON_ERROR | while read LINE; do
   echo "$LINE" | tee -a /tmp/text_all.txt
   tail -n5 /tmp/text_all.txt > /tmp/text_cut.txt
   mv /tmp/text_cut.txt ${OVERLAY_FILE}
+  # speaking out without the comments
+  espeak -v${ESPEAK_VOICE} "$(echo $LINE|cut -f1 -d'#')"
 done
 
 /container_scripts/stop_recording.sh

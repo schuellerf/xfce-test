@@ -34,3 +34,5 @@ windows:
   - bash:
   - xfce-session: xfce4-session
   - LDTP: /usr/bin/dbus-run-session /usr/bin/ldtp
+  - PulseAudio: /container_scripts/start_pulseaudio.sh
+
