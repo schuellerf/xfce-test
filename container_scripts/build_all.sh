@@ -30,7 +30,6 @@ xfburn
 xfce4-dict
 xfce4-mixer
 xfce4-notifyd
-xfce4-panel-profiles
 xfce4-screensaver
 xfce4-screenshooter
 xfce4-taskmanager
@@ -42,6 +41,7 @@ for a in $APPS; do
     REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/apps/$a $a")
 done
 
+REPOS+=("make ${MAIN_BRANCH} ${XFCE_BASE}/apps/xfce4-panel-profiles xfce4-panel-profiles")
 REPOS+=("python ${MAIN_BRANCH} ${XFCE_BASE}/apps/catfish catfish")
 
 panelplugins="
@@ -98,6 +98,11 @@ for tuple in "${REPOS[@]}"; do
     case $BUILD_TYPE in
         "autogen")
             ./autogen.sh $AUTOGEN_OPTIONS
+            make -j8
+            make install
+        ;;
+        "make")
+            ./configure $AUTOGEN_OPTIONS
             make -j8
             make install
         ;;
