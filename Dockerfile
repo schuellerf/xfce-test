@@ -23,6 +23,7 @@ RUN apt-get update \
  && apt-get -y --no-install-recommends install xfce4 \
  && apt-get -y --no-install-recommends build-dep xfce4-panel thunar xfce4-settings xfce4-session xfdesktop4 xfwm4 xfce4-appfinder tumbler xfce4-terminal xfce4-clipman-plugin xfce4-screenshooter \
  && apt-get -y --no-install-recommends install xfce4-pulseaudio-plugin xfce4-statusnotifier-plugin \
+ && apt-get -y --no-install-recommends install python-distutils-extra \
  && rm -rf /var/lib/apt/lists/*
 
 #needed for LDTP and friends
