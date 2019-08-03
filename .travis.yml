@@ -14,6 +14,7 @@ script:
   - "docker run --detach --env TRAVIS --env TRAVIS_BRANCH --env DISPLAY --env RESOLUTION=\"1024x768\" --volume /tmp/.X11-unix:/tmp/.X11-unix test-xfce-ubuntu /usr/bin/dbus-run-session /usr/bin/xfce4-session > .docker_ID"
   - sleep 10 # give xfce some time to start
   - "docker exec --detach $(cat .docker_ID) /usr/bin/dbus-run-session /usr/bin/ldtp"
+  - "docker exec --detach $(cat .docker_ID) /container_scripts/start_pulseaudio.sh"
   - sleep 10 # give ldtp some time to start
 
   - "docker exec $(cat .docker_ID) bash -c \"sudo mkdir -p /data; sudo chown xfce-test_user /data \" "
