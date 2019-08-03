@@ -219,6 +219,8 @@ case $mode in
     "build")
         echo "DOWNLOAD_DATE is set to ${DOWNLOAD_DATE}"
         docker build --build-arg DOWNLOAD_DATE=${DOWNLOAD_DATE} --tag schuellerf/xfce-test:$TAG .
+        # easier to rebuild if we know the DOWNLOAD_DATE
+        docker tag schuellerf/xfce-test:$TAG schuellerf/xfce-test:${TAG}-${DOWNLOAD_DATE}
         exit 0
     ;;
 esac
