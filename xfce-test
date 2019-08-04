@@ -225,12 +225,40 @@ esac
 
 # This starts the container for manual or semi automated tests
 
+get-free-display(){
+    declare -a displays
+    # find all Xephyr instances and loop through them
+    while read line; do
+        # this lists the actual command that is running, and replaces
+        # the \x00 with a space
+        var="$(cat /proc/$line/cmdline | sed -e 's/\x00/ /g'; echo)"
+        # loop through the string
+        for word in $var; do
+            # if it matches a regex, output the number of the display
+            if [[ $word =~ ^:[0-9] ]]; then
+                displays+=("${word/:/}")
+            fi
+        done
+    done <<< "$(pgrep -f Xephyr)"
+    # the initial one
+    display=1
+    while true; do
+        for d in "${displays[@]}"; do
+            if [[ "$display" == "$d" ]]; then
+                display=$(( $display + 1 ))
+            fi
+        done
+        echo $display
+        return 0
+    done
+}
+
 # resolution of the test X server
 # TBD: define what the minimal supported resolution is
 export RESOLUTION=1024x768
 
 # use this X display number for the tests
-export DISPLAY_NUM=1
+export DISPLAY_NUM=$(get-free-display)
 
 # set SCREENSHOTS to ALWAYS to get screenshots during behave tests
 export SCREENSHOTS=${SCREENSHOTS:-NONE}
@@ -250,12 +278,9 @@ if [ -f /etc/lsb-release ] && grep Ubuntu /etc/lsb-release >/dev/null; then
   done
 fi
 
-# kill an already running instance if still running from the last test
-killall -q Xephyr
-
 Xephyr :${DISPLAY_NUM} -sw-cursor -softCursor -resizeable -ac -screen ${RESOLUTION} &
 
-docker rm xfce-test 2>/dev/null
+docker rm "xfce-test-$DISPLAY_NUM" 2>/dev/null
 echo ""
 
 #default parameters
@@ -275,7 +300,7 @@ DOCKER_MODES="${DOCKER_MODES} --volume /etc/timezone:/etc/timezone"
 DOCKER_MODES="${DOCKER_MODES} --volume /etc/localtime:/etc/localtime"
 
 echo -n "Starting container: "
-docker run --tty --interactive --name xfce-test $DETACH $DOCKER_MODES \
+docker run --tty --interactive --name "xfce-test-$DISPLAY_NUM" $DETACH $DOCKER_MODES \
            --cap-add=SYS_PTRACE \
            --env DISPLAY=":${DISPLAY_NUM}" \
            --env LDTP_DEBUG=2 \
@@ -290,30 +315,42 @@ docker run --tty --interactive --name xfce-test $DETACH $DOCKER_MODES \
 if [ -n $DETACH ]; then
     sleep 3 # give ldtp and the session some time
     if [ $mode == "screenshots" ]; then
-        docker exec --tty --interactive xfce-test /container_scripts/make_screenshots.py
+        docker exec --tty --interactive "xfce-test-$DISPLAY_NUM" /container_scripts/make_screenshots.py
     elif [ $mode == "behave" ]; then
-        docker exec --tty --interactive xfce-test bash -c "cd /behave_tests; GUI_TIMEOUT=120 behave"
+        docker exec --tty --interactive "xfce-test-$DISPLAY_NUM" bash -c "cd /behave_tests; GUI_TIMEOUT=120 behave"
     elif [ $mode == "behavevideo" ]; then
-        docker exec --tty --interactive xfce-test /container_scripts/run_behave_recorded.sh
+        docker exec --tty --interactive "xfce-test-$DISPLAY_NUM" /container_scripts/run_behave_recorded.sh
     elif [ $mode == "fulltestvideo" ]; then
-        docker exec --tty --interactive xfce-test /container_scripts/full_test_video.sh
+        docker exec --tty --interactive "xfce-test-$DISPLAY_NUM" /container_scripts/full_test_video.sh
     else
-        docker exec --tty --interactive xfce-test bash -c 'echo "This container includes:";
+        docker exec --tty --interactive "xfce-test-$DISPLAY_NUM" bash -c 'echo "This container includes:";
             cat ~xfce-test_user/version_info.txt;
             echo "You might want to call \"tmux attach\" if you know what tmux ( https://tmux.github.io ) is and need to go to the internals."'
-        docker exec --tty --interactive xfce-test /bin/bash
+        docker exec --tty --interactive "xfce-test-$DISPLAY_NUM" /bin/bash
     fi
 fi
 
 # Copy out the debug file if it exists
-docker cp xfce-test:/home/xfce-test_user/.xfce4-session.verbose-log . || echo ""
+docker cp "xfce-test-$DISPLAY_NUM":/home/xfce-test_user/.xfce4-session.verbose-log . || echo ""
 
 # Tear down
 if [ $mode != "no-session" ]; then
-    docker exec xfce-test xfce4-session-logout --logout
+    docker exec "xfce-test-$DISPLAY_NUM" xfce4-session-logout --logout
 fi
-docker stop xfce-test
-docker rm xfce-test
-killall -q Xephyr
+docker stop "xfce-test-$DISPLAY_NUM"
+docker rm "xfce-test-$DISPLAY_NUM"
+
+# terminate only the current display
+while read line; do
+    var="$(cat /proc/$line/cmdline | sed -e 's/\x00/ /g'; echo)"
+    for word in $var; do
+        if [[ $word =~ ^:[0-9] ]]; then
+            if [[ "${word/:/}" == "$DISPLAY_NUM" ]]; then
+                kill "$line"
+            fi
+        fi
+    done
+done <<< "$(pgrep -f Xephyr)"
+
 rm -rf /tmp/.X11-unix/X${DISPLAY_NUM} /tmp/.X${DISPLAY_NUM}-lock
 
