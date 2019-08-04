@@ -9,7 +9,7 @@ For details see https://github.com/schuellerf/xfce-test/
 
 The versions of the applications in the video are the following:
 $(cat ~xfce-test_user/version_info.txt)"
-    sudo chmod a+r /container_scripts/client_secrets.json
-    sudo chmod a+r /container_scripts/upload-video.py-oauth2.json
+    sudo chmod a+rw /container_scripts/client_secrets.json
+    sudo chmod a+rw /container_scripts/upload-video.py-oauth2.json
     python upload-video.py --file $f --title "${TITLE}"  --description "${DESCRIPTION}" --noauth_local_webserver
 done
