@@ -4,7 +4,7 @@ export OVERLAY_FILE=${OVERLAY_FILE:-/tmp/video.txt}
 export VIDEO="true"
 export VIDEO_PREFIX=${VIDEO_PREFIX:-xfce-test_video_}
 export ESPEAK_VOICE=${ESPEAK_VOICE:-en-us+f5}
-export ESPEAK_SPEED=${ESPEAK_SPEED:-110}
+export ESPEAK_SPEED=${ESPEAK_SPEED:-140}
 
 if [ -n "${TRAVIS_BRANCH}" ]; then
     # append the travis branch to the video name
