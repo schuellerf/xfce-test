@@ -246,9 +246,6 @@ get-free-display(){
         for d in "${displays[@]}"; do
             if [[ "$display" == "$d" ]]; then
                 display=$(( $display + 1 ))
-            else
-                echo $display
-                return 0
             fi
         done
         echo $display
