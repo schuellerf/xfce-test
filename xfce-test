@@ -57,6 +57,8 @@ usage() {
     echo "                     (this is great if you want to test the session itself ;)"
     echo "      install        Installed the script to ~/.local/bin for"
     echo "                     easier execution"
+    echo "      call [...]     Call the given commands in the container (without Xephyr)"
+    echo "                     can be used to compile the local folder but in the context of the container"
     echo ""
     echo "  -- Commands doing some automatic stuff"
     echo "      screenshots    Creating just a screenshot of each 'main' xfce app"
@@ -88,7 +90,7 @@ if git status > /dev/null 2>&1; then
     WORK_MODES+=(${REPO_MODES[*]})
 fi
 
-MODES=("install" ${WORK_MODES[*]})
+MODES=("install" "call" ${WORK_MODES[*]})
 
 
 # prepare all available modes in a bash-case syntax
@@ -103,7 +105,7 @@ if [ -z $TAG ]; then
     fi
 fi
 
-if [ $# -eq 1 ]; then
+if [ $# -ge 1 ]; then
     case $1 in
         "install")
             install_me
@@ -112,6 +114,16 @@ if [ $# -eq 1 ]; then
         --help|help|-h)
             usage
             exit 0
+        ;;
+        "call")
+            if [ $# -eq 1 ]; then
+                echo "Please add some commands to 'call' within the container"
+                exit 1
+            fi
+            remaining_args=$(( $# - 1 ))
+
+            call_args="${@:2:$remaining_args}"
+            mode=$1
         ;;
         $MODES_FOR_CASE )
             mode=$1
@@ -145,6 +157,10 @@ else
             "install")
                 install_me
                 exit 0
+            ;;
+            "call")
+                read -p "Command to call in the container: " call_args
+                break
             ;;
             "tag")
                 read -i $TAG -p "Change tag from \"$TAG\" to: " TAG_NEW
@@ -278,7 +294,9 @@ if [ -f /etc/lsb-release ] && grep Ubuntu /etc/lsb-release >/dev/null; then
   done
 fi
 
-Xephyr :${DISPLAY_NUM} -sw-cursor -softCursor -resizeable -ac -screen ${RESOLUTION} &
+if [ $mode != "call" ]; then
+    Xephyr :${DISPLAY_NUM} -sw-cursor -softCursor -resizeable -ac -screen ${RESOLUTION} &
+fi
 
 docker rm "xfce-test-$DISPLAY_NUM" 2>/dev/null
 echo ""
@@ -294,13 +312,19 @@ if [ $mode == "no-session" ]; then
     # don't detach:
     DETACH=""
     DOCKER_MODES="--tty --interactive"
+elif [ $mode == "call" ]; then
+    COMMAND=$call_args
+    DETACH=""
+    DOCKER_MODES="--tty --interactive"
 fi
 
 DOCKER_MODES="${DOCKER_MODES} --volume /etc/timezone:/etc/timezone"
 DOCKER_MODES="${DOCKER_MODES} --volume /etc/localtime:/etc/localtime"
 
-echo -n "Starting container: "
-docker run --tty --interactive --name "xfce-test-$DISPLAY_NUM" $DETACH $DOCKER_MODES \
+if [ -n "$DETACH" ]; then
+    echo -n "Starting container: "
+fi
+docker run --name "xfce-test-$DISPLAY_NUM" $DETACH $DOCKER_MODES \
            --cap-add=SYS_PTRACE \
            --env DISPLAY=":${DISPLAY_NUM}" \
            --env LDTP_DEBUG=2 \
@@ -312,7 +336,7 @@ docker run --tty --interactive --name "xfce-test-$DISPLAY_NUM" $DETACH $DOCKER_M
            --volume /tmp/.X11-unix:/tmp/.X11-unix:z \
            schuellerf/xfce-test:$TAG $COMMAND
 
-if [ -n $DETACH ]; then
+if [ -n "$DETACH" ]; then
     sleep 3 # give ldtp and the session some time
     if [ $mode == "screenshots" ]; then
         docker exec --tty --interactive "xfce-test-$DISPLAY_NUM" /container_scripts/make_screenshots.py
@@ -331,26 +355,31 @@ if [ -n $DETACH ]; then
 fi
 
 # Copy out the debug file if it exists
-docker cp "xfce-test-$DISPLAY_NUM":/home/xfce-test_user/.xfce4-session.verbose-log . || echo ""
+docker cp "xfce-test-$DISPLAY_NUM":/home/xfce-test_user/.xfce4-session.verbose-log . 2>/dev/null|| echo ""
 
 # Tear down
-if [ $mode != "no-session" ]; then
+if [ $mode != "no-session" ] && [ $mode != "call" ]; then
     docker exec "xfce-test-$DISPLAY_NUM" xfce4-session-logout --logout
 fi
+
+echo -n "Stopping: "
 docker stop "xfce-test-$DISPLAY_NUM"
+echo -n "Removing: "
 docker rm "xfce-test-$DISPLAY_NUM"
 
-# terminate only the current display
-while read line; do
-    var="$(cat /proc/$line/cmdline | sed -e 's/\x00/ /g'; echo)"
-    for word in $var; do
-        if [[ $word =~ ^:[0-9] ]]; then
-            if [[ "${word/:/}" == "$DISPLAY_NUM" ]]; then
-                kill "$line"
+if [ $mode != "call" ]; then
+    # terminate only the current display
+    while read line; do
+        var="$(cat /proc/$line/cmdline | sed -e 's/\x00/ /g'; echo)"
+        for word in $var; do
+            if [[ $word =~ ^:[0-9] ]]; then
+                if [[ "${word/:/}" == "$DISPLAY_NUM" ]]; then
+                    kill "$line"
+                fi
             fi
-        fi
-    done
-done <<< "$(pgrep -f Xephyr)"
+        done
+    done <<< "$(pgrep -f Xephyr)"
 
-rm -rf /tmp/.X11-unix/X${DISPLAY_NUM} /tmp/.X${DISPLAY_NUM}-lock
+    rm -rf /tmp/.X11-unix/X${DISPLAY_NUM} /tmp/.X${DISPLAY_NUM}-lock
+fi
 
