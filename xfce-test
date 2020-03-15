@@ -52,7 +52,8 @@ usage() {
     echo "  command:"
     echo "      start          Start the container for testing"
     echo "                     USE THIS IF YOU ARE NOT SURE"
-    echo "      pull           Get the latest container"
+    echo "      list           List all docker-tags available online (on hub.docker.com)"
+    echo "      pull [tag]     Get the latest (or the given) container-tag"
     echo "      no-session     starts the container without a session"
     echo "                     (this is great if you want to test the session itself ;)"
     echo "      install        Installed the script to ~/.local/bin for"
@@ -81,7 +82,7 @@ usage() {
 
 }
 
-MANUAL_MODES=("start" "pull" "no-session")
+MANUAL_MODES=("start" "no-session" "list")
 AUTOMATIC_MODES=("screenshots" "behave" "behavevideo" "fulltestvideo")
 
 REPO_MODES=("build")
@@ -90,8 +91,22 @@ if git status > /dev/null 2>&1; then
     WORK_MODES+=(${REPO_MODES[*]})
 fi
 
-MODES=("install" "call" ${WORK_MODES[*]})
+MODES=("install" "call" "pull" ${WORK_MODES[*]})
 
+# quit on errors
+set +e
+
+# TBD replace by nicer check
+if [ -f /etc/lsb-release ] && grep Ubuntu /etc/lsb-release >/dev/null; then
+  UBUNTU_PACKAGES="xserver-xephyr docker.io xvfb ffmpeg jq curl"
+
+  for package in ${UBUNTU_PACKAGES}; do
+    if ! apt list --installed 2>/dev/null|grep "^$package" >/dev/null; then
+      echo "I might need the sudo password to install '$package' ..."
+      sudo apt install -y $package
+    fi
+  done
+fi
 
 # prepare all available modes in a bash-case syntax
 MODES_FOR_CASE=$(IFS=$'|'; echo "${WORK_MODES[*]}")
@@ -124,6 +139,12 @@ if [ $# -ge 1 ]; then
 
             call_args="${@:2:$remaining_args}"
             mode=$1
+        ;;
+        "pull")
+            if [ -n "$2" ]; then
+                TAG=$2
+            fi
+	    mode=$1
         ;;
         $MODES_FOR_CASE )
             mode=$1
@@ -232,6 +253,13 @@ case $mode in
         docker pull schuellerf/xfce-test:${TAG}
         exit 0
     ;;
+    "list")
+        tags=$(curl https://registry.hub.docker.com/v1/repositories/schuellerf/xfce-test/tags)
+	echo "---"
+	echo "All tags available to pull:"
+	echo $tags|jq ".[].name"|tr -d '"'
+	exit 0
+    ;;
     "build")
         echo "DOWNLOAD_DATE is set to ${DOWNLOAD_DATE}"
         docker build --build-arg DOWNLOAD_DATE=${DOWNLOAD_DATE} --tag schuellerf/xfce-test:$TAG .
@@ -279,20 +307,6 @@ export DISPLAY_NUM=$(get-free-display)
 # set SCREENSHOTS to ALWAYS to get screenshots during behave tests
 export SCREENSHOTS=${SCREENSHOTS:-NONE}
 
-# quit on errors
-set +e
-
-# TBD replace by nicer check
-if [ -f /etc/lsb-release ] && grep Ubuntu /etc/lsb-release >/dev/null; then
-  UBUNTU_PACKAGES="xserver-xephyr docker.io xvfb ffmpeg"
-
-  for package in ${UBUNTU_PACKAGES}; do
-    if ! apt list --installed 2>/dev/null|grep "^$package" >/dev/null; then
-      echo "I might need the sudo password to install the necessary packages..."
-      sudo apt install -y $package
-    fi
-  done
-fi
 
 if [ $mode != "call" ]; then
     Xephyr :${DISPLAY_NUM} -sw-cursor -softCursor -resizeable -ac -screen ${RESOLUTION} &
