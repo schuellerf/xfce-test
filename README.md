@@ -49,6 +49,11 @@ For ubuntu those prerequisites are automatically installed by `xfce-test`
 
 There is no direct _need_ to install XFCE Test but for convenience you can install the script and the bash autocompletion functions with `./xfce-test install`
 
+If you did not clone all the source code of xfce-test already you can boot-strap easily with:
+```
+curl --fail --location -o /tmp/xfce-test https://github.com/schuellerf/xfce-test/raw/master/xfce-test && chmod u+x /tmp/xfce-test && /tmp/xfce-test install
+```
+
 # Usage
 
 Just start `xfce-test` to get an interactive menu for possible options or call `xfce-test --help`
