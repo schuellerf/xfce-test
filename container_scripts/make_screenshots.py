@@ -48,12 +48,14 @@ l.generatemouseevent(800,600, "abs")
 
 do_screenshot("xfce4-appfinder", "ApplicationFinder")
 do_screenshot("xfce4-terminal", "Terminal*")
+do_screenshot("thunar", "*File Manager")
 do_screenshot("xfce4-clipman-settings", "Clipman")
 do_screenshot("xfce4-display-settings", "Display")
 do_screenshot("xfce4-keyboard-settings", "Keyboard")
 do_screenshot("xfce4-mime-settings", "MIME Type Editor")
 do_screenshot("xfce4-mouse-settings", "Mouse and Touchpad")
 do_screenshot("xfce4-settings-manager", "Settings")
+do_screenshot("xfce4-taskmanager", "Task Manager")
 
 
 import psutil

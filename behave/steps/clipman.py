@@ -3,6 +3,7 @@ import ldtp as l
 import time
 import os
 import subprocess, signal
+import math
 
 def app_is_in_ps(app):
     p = subprocess.Popen(['ps', '-A'], stdout=subprocess.PIPE)
@@ -57,7 +58,7 @@ def step_impl(context, popupwin, entry, win):
         click_x = x+(h/2)
         click_y = y+(h/2)
         while click_x < (x+w):
-            l.generatemouseevent(click_x,click_y, "b3c")
+            context._root["_click_animated"](context, click_x, click_y, button="b3c", delay=0)
             if l.waittillguiexist(popupwin, entry, 1): return
             l.generatekeyevent("<esc>") #close possible menus
             time.sleep(0.5)
@@ -79,15 +80,6 @@ def step_impl(context):
 @when('we see {thing:S}')
 def step_impl(context, thing):
     assert(l.waittillguiexist(thing) == 1)
-
-@when('we click on {thing} in {win}')
-def step_impl(context, thing, win):
-    l.waittillguiexist(win)
-    (x,y,w,h)=l.getobjectsize(win, thing)
-    click_x = x+(w/2)
-    click_y = y+(h/2)
-    l.generatemouseevent(click_x,click_y)
-    time.sleep(2) #clicking usually needs a task switch to some UI thread to process it
 
 @when('we type "{text}"')
 def step_impl(context, text):
