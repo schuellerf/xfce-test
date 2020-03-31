@@ -17,7 +17,7 @@ install_me() {
     BASH_COMPLETION="#begin-xfce-test
 _xfce-test_completions()
 {
-  COMPREPLY=(\$(compgen -W \"${WORK_MODES[*]}\" \"\${COMP_WORDS[1]}\"))
+  COMPREPLY=(\$(compgen -W \"${MODES[*]}\" \"\${COMP_WORDS[1]}\"))
 }
 
 complete -F _xfce-test_completions xfce-test
