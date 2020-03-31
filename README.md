@@ -83,3 +83,24 @@ So when you started the container with `xfce-test start` or `xfce-test no-sessio
 ## Sources
 As the applications of the container are built from source _all_ developer packages and many developer tools are pre-installed. Also the sourcecode is available in the folder `/git` within the container
 
+## Examples
+An advanced example if you want to check a command in all docker images you have locally:
+```
+xfce-test list_local|xargs -n1 -I XYZ bash -c "TAG=XYZ xfce-test call apt search gtk-3-dev 2>&1 | egrep gtk-3\|working ; echo '----' "
+```
+
+This results in:
+```
+You are working with the container: latest
+libgtk-3-dev/now 3.24.12-1ubuntu1 amd64 [installed,local]
+----
+You are working with the container: ubuntu_19.04
+libgtk-3-dev/now 3.24.8-1ubuntu1 amd64 [installed,local]
+----
+You are working with the container: audio_test
+libgtk-3-dev/now 3.24.8-1ubuntu1 amd64 [installed,local]
+----
+You are working with the container: ubuntu_18.04
+libgtk-3-dev/now 3.22.30-1ubuntu4 amd64 [installed,local]
+---- 
+```
