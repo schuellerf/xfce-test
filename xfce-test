@@ -53,6 +53,7 @@ usage() {
     echo "      start          Start the container for testing"
     echo "                     USE THIS IF YOU ARE NOT SURE"
     echo "      list           List all docker-tags available online (on hub.docker.com)"
+    echo "      list_local     List all docker-tags available locally (already built or pulled)"
     echo "      pull [tag]     Get the latest (or the given) container-tag"
     echo "      no-session     starts the container without a session"
     echo "                     (this is great if you want to test the session itself ;)"
@@ -82,7 +83,7 @@ usage() {
 
 }
 
-MANUAL_MODES=("start" "no-session" "list")
+MANUAL_MODES=("start" "no-session" "list" "list_local")
 AUTOMATIC_MODES=("screenshots" "behave" "behavevideo" "fulltestvideo")
 
 REPO_MODES=("build")
@@ -241,31 +242,44 @@ else
     done
 fi
 
-if [ ${#mode} -ge 1 ]; then
-  echo "You are working with the container: $TAG"
-else
+if [ ${#mode} -lt 1 ]; then
   echo "Nothing valid selected - exiting"
   exit 1
 fi
 
+START_TIME=$(date +%s)
+
+leave() {
+    STOP_TIME=$(date +%s)
+    echo "Execution took $(( STOP_TIME -START_TIME)) seconds"
+    exit $1
+}
+
 case $mode in
     "pull")
         docker pull schuellerf/xfce-test:${TAG}
-        exit 0
+        leave 0
     ;;
     "list")
         tags=$(curl https://registry.hub.docker.com/v1/repositories/schuellerf/xfce-test/tags)
 	echo "---"
 	echo "All tags available to pull:"
 	echo $tags|jq ".[].name"|tr -d '"'
+	leave 0
+    ;;
+    "list_local")
+        docker images --format "{{.Tag}}" schuellerf/xfce-test
 	exit 0
     ;;
     "build")
+        echo "You are building the container: $TAG"
         echo "DOWNLOAD_DATE is set to ${DOWNLOAD_DATE}"
         docker build --build-arg DOWNLOAD_DATE=${DOWNLOAD_DATE} --tag schuellerf/xfce-test:$TAG .
-        exit 0
+        leave 0
     ;;
 esac
+
+echo "You are working with the container: $TAG"
 
 # This starts the container for manual or semi automated tests
 
@@ -329,7 +343,7 @@ if [ $mode == "no-session" ]; then
 elif [ $mode == "call" ]; then
     COMMAND=$call_args
     DETACH=""
-    DOCKER_MODES="--tty --interactive"
+    DOCKER_MODES=""
 fi
 
 DOCKER_MODES="${DOCKER_MODES} --volume /etc/timezone:/etc/timezone"
@@ -396,4 +410,6 @@ if [ $mode != "call" ]; then
 
     rm -rf /tmp/.X11-unix/X${DISPLAY_NUM} /tmp/.X${DISPLAY_NUM}-lock
 fi
+
+leave 0
 
