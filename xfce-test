@@ -354,6 +354,7 @@ if [ -n "$DETACH" ]; then
 fi
 docker run --name "xfce-test-$DISPLAY_NUM" $DETACH $DOCKER_MODES \
            --cap-add=SYS_PTRACE \
+	   --security-opt seccomp=unconfined \
            --env DISPLAY=":${DISPLAY_NUM}" \
            --env LDTP_DEBUG=2 \
            --env SCREENSHOTS \
