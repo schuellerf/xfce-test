@@ -25,6 +25,8 @@ RUN apt-get update \
  && apt-get -y --no-install-recommends build-dep xfce4-panel thunar xfce4-settings xfce4-session xfdesktop4 xfwm4 xfce4-appfinder tumbler xfce4-terminal xfce4-clipman-plugin xfce4-screenshooter \
  && apt-get -y --no-install-recommends install xfce4-pulseaudio-plugin xfce4-statusnotifier-plugin \
  && apt-get -y --no-install-recommends install python-distutils-extra \
+ && apt-get -y --no-install-recommends install libxss-dev \
+ && apt-get -y --no-install-recommends install libindicator3-dev \
  && rm -rf /var/lib/apt/lists/*
 
 #needed for LDTP and friends
@@ -35,15 +37,6 @@ RUN useradd -ms /bin/bash xfce-test_user
 
 RUN adduser xfce-test_user sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-
-# Group all repos here
-RUN mkdir /git
-
-# Rather use my patched version
-RUN cd git \
- && git clone https://github.com/schuellerf/ldtp2.git \
- && cd ldtp2 \
- && python setup.py install
 
 # Install _all_ languages for testing
 RUN apt-get update \
@@ -56,9 +49,9 @@ RUN cp /usr/share/i18n/locales/en_GB /usr/share/i18n/locales/automate
 RUN sed -i -E "s/Language: en/Language: automate/" /usr/share/i18n/locales/automate
 RUN sed -i -E "s/lang_lib +\"eng\"/lang_lib    \"automate\"/" /usr/share/i18n/locales/automate
 RUN sed -i -E "s/lang_name +\"English\"/lang_name     \"Automate\"/" /usr/share/i18n/locales/automate
-RUN bash -c "cd /usr/share/i18n/locales;localedef -i automate -f UTF-8 automate.UTF-8 -c -v || echo Ignoring warnings..."
-RUN echo "automate UTF-8" > /var/lib/locales/supported.d/automate
-RUN locale-gen automate
+RUN bash -c "cd /usr/share/i18n/locales;localedef -i automate -f UTF-8 automate.UTF-8 -c -v || echo Ignoring warnings..." \
+ && echo "automate UTF-8" > /var/lib/locales/supported.d/automate \
+ && locale-gen automate
 RUN dpkg-reconfigure fontconfig
 
 # Line used to invalidate all git clones
@@ -70,21 +63,31 @@ ARG AUTOGEN_OPTIONS="--disable-debug --enable-maintainer-mode --host=x86_64-linu
                     --libexecdir=/usr/lib/x86_64-linux-gnu --sysconfdir=/etc --localstatedir=/var --enable-gtk3 --enable-gtk-doc"
 ENV AUTOGEN_OPTIONS $AUTOGEN_OPTIONS
 
-COPY container_scripts /container_scripts
+USER xfce-test_user
+ENV HOME /home/xfce-test_user
+
+# Group all repos here
+RUN sudo mkdir /git && sudo chown xfce-test_user /git
+
+# Rather use my patched version
+RUN cd git \
+ && git clone https://github.com/schuellerf/ldtp2.git \
+ && cd ldtp2 \
+ && python setup.py build \
+ && sudo python setup.py install
+
+COPY --chown=xfce-test_user container_scripts /container_scripts
 RUN chmod a+x /container_scripts/*.sh /container_scripts/*.py
 
 RUN /container_scripts/build_all.sh
 
-COPY behave /behave_tests
-RUN mkdir /data
 
-COPY xfce-test /
+COPY --chown=xfce-test_user behave /behave_tests
+RUN sudo mkdir /data && sudo chown xfce-test_user /data
+
+COPY --chown=xfce-test_user xfce-test /
 RUN chmod a+x /xfce-test
 COPY .tmuxinator /home/xfce-test_user/.tmuxinator
-RUN chown -R xfce-test_user /git /behave_tests /data ~xfce-test_user/.tmuxinator
-
-USER xfce-test_user
-ENV HOME /home/xfce-test_user
 
 RUN mkdir -p ~xfce-test_user/Desktop
 RUN ln -s /container_scripts ~xfce-test_user/Desktop/container_scripts

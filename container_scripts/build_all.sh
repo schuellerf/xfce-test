@@ -99,21 +99,22 @@ for tuple in "${REPOS[@]}"; do
         "autogen")
             ./autogen.sh $AUTOGEN_OPTIONS
             make -j8
-            make install
+            sudo make install
         ;;
         "make")
             ./configure $AUTOGEN_OPTIONS
             make -j8
-            make install
+            sudo make install
         ;;
         "cmake")
             mkdir build && cd build
             cmake ..
             make -j8
-            make install
+            sudo make install
         ;;
         "python")
-            python setup.py install
+            python setup.py build
+            sudo python setup.py install
         ;;
         *)
             echo "Unknown build type: >$1<"
