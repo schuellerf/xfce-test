@@ -30,6 +30,7 @@ RUN apt-get update \
  && apt-get -y --no-install-recommends install libxmu-dev \
  && apt-get -y --no-install-recommends install libburn-dev libisofs-dev \
  && apt-get -y --no-install-recommends install libpulse-dev libkeybinder-3.0-dev \
+ && apt-get -y --no-install-recommends install libmpd-dev valac \
  && rm -rf /var/lib/apt/lists/*
 
 #needed for LDTP and friends
