@@ -27,6 +27,7 @@ RUN apt-get update \
  && apt-get -y --no-install-recommends install python-distutils-extra \
  && apt-get -y --no-install-recommends install libxss-dev \
  && apt-get -y --no-install-recommends install libindicator3-dev \
+ && apt-get -y --no-install-recommends install libxmu-dev \
  && rm -rf /var/lib/apt/lists/*
 
 #needed for LDTP and friends
