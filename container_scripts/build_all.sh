@@ -4,6 +4,10 @@ XFCE_BASE=git://git.xfce.org
 
 MAIN_BRANCH=master
 
+VERSION_FILE="/home/xfce-test_user/version_info.txt"
+
+echo "# The OK marks if building this component in the current container was successful" >> $VERSION_FILE
+
 # (BUILD_TYPE BRANCH URL NAME) tuples:
 REPOS=( "autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4ui libxfce4ui")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4util libxfce4util")
@@ -99,28 +103,37 @@ for tuple in "${REPOS[@]}"; do
         "autogen")
             ./autogen.sh $AUTOGEN_OPTIONS
             make -j8
+            RET=$?
             sudo make install
         ;;
         "make")
             ./configure $AUTOGEN_OPTIONS
             make -j8
+            RET=$?
             sudo make install
         ;;
         "cmake")
             mkdir build && cd build
             cmake ..
             make -j8
+            RET=$?
             sudo make install
         ;;
         "python")
             python setup.py build
+            RET=$?
             sudo python setup.py install
         ;;
         *)
             echo "Unknown build type: >$1<"
+            RET=1
         ;;
     esac
-
-    echo "$(pwd): $(git describe)" >> ~xfce-test_user/version_info.txt
+    if [ $RET -eq 0 ]; then
+        echo -n "    OK: " >> $VERSION_FILE
+    else
+        echo -n "NOT OK: " >> $VERSION_FILE
+    fi
+    echo "$(pwd): $(git describe)" >> $VERSION_FILE
 done
 

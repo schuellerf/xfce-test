@@ -91,6 +91,7 @@ COPY .tmuxinator /home/xfce-test_user/.tmuxinator
 
 RUN mkdir -p ~xfce-test_user/Desktop
 RUN ln -s /container_scripts ~xfce-test_user/Desktop/container_scripts
+RUN ln -s ~xfce-test_user/version_info.txt ~xfce-test_user/Desktop
 
 #RUN echo 'if [[ $- =~ "i" ]]; then echo -n "This container includes:\n"; cat ~xfce-test_user/version_info.txt; fi' >> ~xfce-test_user/.bashrc
 
