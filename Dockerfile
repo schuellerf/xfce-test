@@ -30,7 +30,7 @@ RUN apt-get update \
  && apt-get -y --no-install-recommends install libxmu-dev \
  && apt-get -y --no-install-recommends install libburn-dev libisofs-dev \
  && apt-get -y --no-install-recommends install libpulse-dev libkeybinder-3.0-dev \
- && apt-get -y --no-install-recommends install libmpd-dev valac \
+ && apt-get -y --no-install-recommends install libmpd-dev valac gobject-introspection libgirepository1.0-dev \
  && rm -rf /var/lib/apt/lists/*
 
 #needed for LDTP and friends
@@ -64,7 +64,8 @@ ENV DOWNLOAD_DATE=$DOWNLOAD_DATE
 RUN echo "Newly cloning all repos as date-flag changed to ${DOWNLOAD_DATE}"
 ARG AUTOGEN_OPTIONS="--disable-debug --enable-maintainer-mode --host=x86_64-linux-gnu \
                     --build=x86_64-linux-gnu --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu \
-                    --libexecdir=/usr/lib/x86_64-linux-gnu --sysconfdir=/etc --localstatedir=/var --enable-gtk3 --enable-gtk-doc"
+                    --libexecdir=/usr/lib/x86_64-linux-gnu --sysconfdir=/etc --localstatedir=/var --enable-gtk3 --enable-gtk-doc\
+                    --enable-vala=yes --enable-introspection=yes"
 ENV AUTOGEN_OPTIONS $AUTOGEN_OPTIONS
 
 USER xfce-test_user
