@@ -10,9 +10,13 @@ echo "# The OK marks if building this component in the current container was suc
 
 # (BUILD_TYPE BRANCH URL NAME) tuples:
 REPOS=( "autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4util libxfce4util")
+REPOS+=("sync")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4ui libxfce4ui")
+REPOS+=("sync")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/exo exo")
+REPOS+=("sync")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-dev-tools xfce4-dev-tools")
+REPOS+=("sync")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-panel xfce4-panel")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/garcon garcon")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/thunar thunar")
@@ -88,8 +92,7 @@ for a in $thunarplugins; do
 done
 
 
-for tuple in "${REPOS[@]}"; do
-    set -- $tuple
+build() {
     BUILD_TYPE=$1
     BRANCH=$2
     URL=$3
@@ -138,11 +141,38 @@ for tuple in "${REPOS[@]}"; do
             RET=1
         ;;
     esac
+    flock -x $LOCK_FD
     if [ $RET -eq 0 ]; then
         echo -n "    OK: " >> $VERSION_FILE
     else
         echo -n "NOT OK: " >> $VERSION_FILE
     fi
     echo "$(pwd): $(git describe)" >> $VERSION_FILE
+    flock -u $LOCK_FD
+}
+
+LOCKFILE=/tmp/$$.lock
+touch $LOCKFILE
+exec {LOCK_FD}<>$LOCKFILE
+
+export LOCK_FD
+echo "Building $PARALLEL_BUILDS in parallel"
+i=0
+for tuple in "${REPOS[@]}"; do
+    set -- $tuple
+    BUILD_TYPE=$1
+    BRANCH=$2
+    URL=$3
+    NAME=$4
+    if [ "$BUILD_TYPE" == "sync" ]; then
+        wait
+        continue
+    fi
+    if [ $(jobs -p |wc -w) -ge $PARALLEL_BUILDS ]; then
+        wait -n
+    fi
+    i=$(( $i + 1 ))
+    build $BUILD_TYPE $BRANCH $URL $NAME | xargs -n1 -d '\n' echo "$NAME (${i}/${#REPOS[@]}): " &
 done
 
+wait

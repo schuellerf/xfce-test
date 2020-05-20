@@ -3,6 +3,8 @@
 DOWNLOAD_DATE=${DOWNLOAD_DATE:-$(date +%Y%m%d)}
 RUN_AS=
 
+LOG=${LOG:-/dev/stdout}
+PARALLEL_BUILDS=${PARALLEL_BUILDS:-0}
 
 install_me() {
     if grep "^ID=arch" /etc/*-release >/dev/null 2>&1; then
@@ -80,6 +82,11 @@ usage() {
     echo "                     default: \"${XFSM_VERBOSE}\""
     echo "      LANG           choose language for the session"
     echo "                     default: \"${LANG}\""
+    echo "      LOG            Logfile to save container build output"
+    echo "                     default: \"${LOG}\""
+    echo "      PARALLEL_BUILDS Start more than one module build in parallel"
+    echo "                     Use very carefully!"
+    echo "                     default: \"${PARALLEL_BUILDS}\""
 
 }
 
@@ -163,7 +170,7 @@ else
     usage
 
     
-    MODES=(${MODES[*]} "tag" "XFSM_VERBOSE" "LANG")
+    MODES=(${MODES[*]} "tag" "XFSM_VERBOSE" "LANG" "LOG" "PARALLEL_BUILDS")
 
     echo ""
     echo "  -- Commands only for interactive mode"
@@ -171,6 +178,8 @@ else
     echo "                   (only for the current execution of $0)"
     echo "      XFSM_VERBOSE change verbosity of xfce4-session"
     echo "      LANG         change the language for the session (default: $LANG)"
+    echo "      LOG          change the logfile (default: $LOG)"
+    echo "      PARALLEL_BUILDS change the number of parallel builds (default: $PARALLEL_BUILDS)"
     echo ""
 
     PS3="Choose option: "
@@ -234,6 +243,26 @@ else
                 IFS=${OLD_IFS}
 
             ;;
+            "LOG")
+                read -i $LOG -p "Change logfile from \"$LOG\" to: " LOG_NEW
+
+                if [ ${#LOG_NEW} -ge 1 ]; then
+                    LOG=$LOG_NEW
+                    echo "OK - logfile changed to \"$LOG\""
+                else
+                    echo "OK - logfile is still \"$LOG\""
+                fi
+            ;;
+            "PARALLEL_BUILDS")
+                read -i $PARALLEL_BUILDS -p "Change number of builds from \"$PARALLEL_BUILDS\" to: " PARALLEL_BUILDS_NEW 
+
+                if [ ${#PARALLEL_BUILDS_NEW} -ge 1 ]; then
+                    PARALLEL_BUILDS=$PARALLEL_BUILDS_NEW
+                    echo "OK - changed to \"$PARALLEL_BUILDS\""
+                else
+                    echo "OK - still \"$PARALLEL_BUILDS\""
+                fi
+            ;;
             *)
                 break
             ;;
@@ -274,7 +303,8 @@ case $mode in
     "build")
         echo "You are building the container: $TAG"
         echo "DOWNLOAD_DATE is set to ${DOWNLOAD_DATE}"
-        docker build --build-arg DOWNLOAD_DATE=${DOWNLOAD_DATE} --tag schuellerf/xfce-test:$TAG .
+        echo "Output of the build is written to ${LOG}"
+        docker build --build-arg PARALLEL_BUILDS=${PARALLEL_BUILDS} --build-arg DOWNLOAD_DATE=${DOWNLOAD_DATE} --tag schuellerf/xfce-test:$TAG . > ${LOG}
         leave 0
     ;;
 esac
@@ -361,6 +391,7 @@ docker run --name "xfce-test-$DISPLAY_NUM" $DETACH $DOCKER_MODES \
            --env RESOLUTION \
            --env XFSM_VERBOSE \
            --env LANG \
+           --env PARALLEL_BUILDS \
            --volume ${PWD}:/data \
            --volume /tmp/.X11-unix:/tmp/.X11-unix:z \
            schuellerf/xfce-test:$TAG $COMMAND

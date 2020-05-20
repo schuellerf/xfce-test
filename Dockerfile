@@ -59,6 +59,8 @@ RUN bash -c "cd /usr/share/i18n/locales;localedef -i automate -f UTF-8 automate.
 RUN dpkg-reconfigure fontconfig
 
 # Line used to invalidate all git clones
+ARG PARALLEL_BUILDS=0
+ENV PARALLEL_BUILDS=$PARALLEL_BUILDS
 ARG DOWNLOAD_DATE=give_me_a_date
 ENV DOWNLOAD_DATE=$DOWNLOAD_DATE
 RUN echo "Newly cloning all repos as date-flag changed to ${DOWNLOAD_DATE}"
