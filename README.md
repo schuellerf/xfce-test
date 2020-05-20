@@ -64,6 +64,20 @@ To see the container in action and play around with the "master" versions of XFC
 
 To inspect stuff inside the docker to help create more tests you might want to start `sniff` which will help you identify the windows and buttons for LDTP.
 
+# Building
+
+You don't need to build the container you can just pull one to work with. If you really want to build the container locally you can just call
+
+```
+xfce-test build
+```
+
+If you have enough RAM, let's say more than 10G, you can build all components in parallel like so:
+```
+LOG=build.log PARALLEL_BUILDS=8 ./xfce-test build
+```
+This drasically reduces the container build time.
+
 # Screenshots
 
 When you want to make screenshots for each test step just set the variable `SCREENSHOTS` to `ALWAYS`

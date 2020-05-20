@@ -49,7 +49,7 @@ for a in $APPS; do
     REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/apps/$a $a")
 done
 
-REPOS+=("make ${MAIN_BRANCH} ${XFCE_BASE}/apps/xfce4-panel-profiles xfce4-panel-profiles")
+REPOS+=("make ${MAIN_BRANCH} ${XFCE_BASE}/apps/xfce4-panel-profiles xfce4-panel-profiles --prefix=/usr")
 REPOS+=("python ${MAIN_BRANCH} ${XFCE_BASE}/apps/catfish catfish")
 
 panelplugins="
@@ -97,6 +97,7 @@ build() {
     BRANCH=$2
     URL=$3
     NAME=$4
+    PARAMS=$5
     echo "--- Building $NAME ($BRANCH) ---"
     cd /git
     git clone $URL
@@ -104,7 +105,7 @@ build() {
     git checkout $BRANCH || echo "Branch $BRANCH not found - leaving default"
     case $BUILD_TYPE in
         "autogen")
-            ./autogen.sh $AUTOGEN_OPTIONS
+            ./autogen.sh $PARAMS
             make -j8
             RET=$?
 
@@ -119,7 +120,7 @@ build() {
             sudo make install
         ;;
         "make")
-            ./configure $AUTOGEN_OPTIONS
+            ./configure $PARAMS
             make -j8
             RET=$?
 
@@ -165,6 +166,7 @@ for tuple in "${REPOS[@]}"; do
     BRANCH=$2
     URL=$3
     NAME=$4
+    PARAMS=${5:-$AUTOGEN_OPTIONS}
     if [ "$BUILD_TYPE" == "sync" ]; then
         wait
         continue
@@ -173,7 +175,7 @@ for tuple in "${REPOS[@]}"; do
         wait -n
     fi
     i=$(( $i + 1 ))
-    build $BUILD_TYPE $BRANCH $URL $NAME 2>&1 | xargs -n1 -d '\n' echo "$NAME (${i}/${#REPOS[@]}): " &
+    build $BUILD_TYPE $BRANCH $URL $NAME $PARAMS 2>&1 | xargs -n1 -d '\n' echo "$NAME (${i}/${#REPOS[@]}): " &
 done
 
 wait
