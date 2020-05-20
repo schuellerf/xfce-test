@@ -107,12 +107,6 @@ build() {
             ./autogen.sh $AUTOGEN_OPTIONS
             make -j8
             RET=$?
-            sudo make install
-        ;;
-        "make")
-            ./configure $AUTOGEN_OPTIONS
-            make -j8
-            RET=$?
 
             # Workaround as the introspection does not find it's own library on a totally clean system
             if [ "$NAME" == "libxfce4ui" ]; then
@@ -121,6 +115,13 @@ build() {
                 make -j8
                 RET=$?
             fi
+
+            sudo make install
+        ;;
+        "make")
+            ./configure $AUTOGEN_OPTIONS
+            make -j8
+            RET=$?
 
             sudo make install
         ;;
