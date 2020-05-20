@@ -110,6 +110,15 @@ for tuple in "${REPOS[@]}"; do
             ./configure $AUTOGEN_OPTIONS
             make -j8
             RET=$?
+
+            # Workaround as the introspection does not find it's own library on a totally clean system
+            if [ "$NAME" == "libxfce4ui" ]; then
+                sudo make install
+                sudo chown -R xfce-test_user .
+                make -j8
+                RET=$?
+            fi
+
             sudo make install
         ;;
         "cmake")
