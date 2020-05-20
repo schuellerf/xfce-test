@@ -17,6 +17,9 @@ REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/exo exo")
 REPOS+=("sync")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-dev-tools xfce4-dev-tools")
 REPOS+=("sync")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfconf xfconf")
+REPOS+=("sync")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/bindings/xfce4-vala xfce4-vala")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-panel xfce4-panel")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/garcon garcon")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/thunar thunar")
@@ -24,7 +27,6 @@ REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/thunar-volman thunar-volman")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-power-manager xfce4-power-manager")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-settings xfce4-settings")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-session xfce4-session")
-REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfconf xfconf")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfdesktop xfdesktop")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfwm4 xfwm4")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-appfinder xfce4-appfinder")
@@ -103,6 +105,11 @@ build() {
     git clone $URL
     cd $NAME
     git checkout $BRANCH || echo "Branch $BRANCH not found - leaving default"
+
+    #WORKAROUNDS
+    if [ "$NAME" == "xfce4-vala" ]; then
+        sed -i "s/vala_api='0...'/vala_api='0.44'/" configure.ac.in
+    fi
     case $BUILD_TYPE in
         "autogen")
             ./autogen.sh $PARAMS

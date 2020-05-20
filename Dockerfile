@@ -31,6 +31,7 @@ RUN apt-get update \
  && apt-get -y --no-install-recommends install libburn-dev libisofs-dev \
  && apt-get -y --no-install-recommends install libpulse-dev libkeybinder-3.0-dev \
  && apt-get -y --no-install-recommends install libmpd-dev valac gobject-introspection libgirepository1.0-dev \
+ && apt-get -y --no-install-recommends install libvala-0.44-dev librsvg2-dev libtagc0-dev \
  && rm -rf /var/lib/apt/lists/*
 
 #needed for LDTP and friends
