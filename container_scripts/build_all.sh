@@ -9,8 +9,8 @@ VERSION_FILE="/home/xfce-test_user/version_info.txt"
 echo "# The OK marks if building this component in the current container was successful" >> $VERSION_FILE
 
 # (BUILD_TYPE BRANCH URL NAME) tuples:
-REPOS=( "autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4ui libxfce4ui")
-REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4util libxfce4util")
+REPOS=( "autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4util libxfce4util")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4ui libxfce4ui")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/exo exo")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-dev-tools xfce4-dev-tools")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-panel xfce4-panel")
