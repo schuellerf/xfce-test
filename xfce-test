@@ -188,8 +188,7 @@ else
 
     echo ""
     echo "  -- Commands only for interactive mode"
-    echo "      tag          changes docker \"TAG\" to work with (e.g. ubuntu_19.04)"
-    echo "                   (only for the current execution of $0)"
+    echo "      tag          changes docker \"TAG\" to work with (default: $TAG)"
     echo "      XFSM_VERBOSE change verbosity of xfce4-session"
     echo "      LANG         change the language for the session (default: $LANG)"
     echo "      LOG          change the logfile (default: $LOG)"
