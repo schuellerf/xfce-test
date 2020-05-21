@@ -32,6 +32,7 @@ RUN apt-get update \
  && apt-get -y --no-install-recommends install libmpd-dev valac gobject-introspection libgirepository1.0-dev \
  && apt-get -y --no-install-recommends install libvala-0.44-dev librsvg2-dev libtagc0-dev \
  && apt-get -y --no-install-recommends install libdbusmenu-gtk3-dev \
+ && apt-get -y --no-install-recommends install libgtop2-dev \
  && apt-get -y remove libxfce4ui-1-0 libxfce4ui-2-0 \
  && rm -rf /var/lib/apt/lists/*
 
