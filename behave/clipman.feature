@@ -38,10 +38,11 @@ Feature: Some tests with clipman
   Scenario: enable selection copy
      Given we have xfce4-clipman started
        and we have xfce4-clipman-settings started
-      when we click on chkIgnoreselections in dlgClipman
-      then we think chkIgnoreselections of dlgClipman is unchecked
+      when we click on ptabHistory in dlgClipmanSettings
+       and we click on chkIgnoremouseselections in dlgClipmanSettings
+      then we think chkIgnoremouseselections of dlgClipmanSettings is unchecked
       when we click on btnClose in dlgClipman
-      then dlgClipman is gone
+      then dlgClipmanSettings is gone
 
   Scenario: Clear clipman list
      Given we repeat "Clipman popup is not empty"
