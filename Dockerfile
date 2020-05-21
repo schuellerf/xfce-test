@@ -89,6 +89,10 @@ RUN chmod a+x /container_scripts/*.sh /container_scripts/*.py
 
 RUN /container_scripts/build_all.sh
 
+# only available after building exo:
+RUN sudo apt-get update \
+ && sudo apt-get -y --no-install-recommends install exo-utils \
+ && sudo rm -rf /var/lib/apt/lists/*
 
 COPY --chown=xfce-test_user behave /behave_tests
 RUN sudo mkdir /data && sudo chown xfce-test_user /data

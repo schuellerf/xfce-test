@@ -69,6 +69,8 @@ xfce4-indicator-plugin
 xfce4-mailwatch-plugin
 xfce4-netload-plugin
 xfce4-netload-plugin
+xfce4-pulseaudio-plugin
+xfce4-statusnotifier-plugin
 xfce4-places-plugin
 xfce4-sensors-plugin
 xfce4-smartbookmark-plugin
