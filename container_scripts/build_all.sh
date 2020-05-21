@@ -80,6 +80,9 @@ xfce4-weather-plugin
 xfce4-xkb-plugin
 xfce4-mpc-plugin"
 
+# xfce4-verve-plugin - not yet compatible with libxfce4panel-2 and libxfce4ui-2
+# xfce4-notes-plugin - not yet compatible with new xfconf and libxfce4ui interfaces
+
 for a in $panelplugins; do
     REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/panel-plugins/$a $a")
 done
@@ -116,14 +119,6 @@ build() {
             make -j8
             RET=$?
 
-            # Workaround as the introspection does not find it's own library on a totally clean system
-            if [ "$NAME" == "libxfce4ui" ]; then
-                sudo make install
-                sudo chown -R xfce-test_user .
-                make -j8
-                RET=$?
-            fi
-
             sudo make install
         ;;
         "make")
@@ -138,11 +133,13 @@ build() {
             cmake ..
             make -j8
             RET=$?
+
             sudo make install
         ;;
         "python")
             python setup.py build
             RET=$?
+
             sudo python setup.py install
         ;;
         *)
@@ -151,6 +148,7 @@ build() {
         ;;
     esac
     flock -x $LOCK_FD
+    sudo ldconfig
     if [ $RET -eq 0 ]; then
         echo -n "    OK: " >> $VERSION_FILE
     else
