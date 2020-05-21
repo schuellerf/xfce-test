@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-XFCE_BASE=git://git.xfce.org
+XFCE_BASE=https://gitlab.xfce.org
 
 MAIN_BRANCH=master
 
@@ -9,28 +9,28 @@ VERSION_FILE="/home/xfce-test_user/version_info.txt"
 echo "# The OK marks if building this component in the current container was successful" >> $VERSION_FILE
 
 # (BUILD_TYPE BRANCH URL NAME) tuples:
-REPOS=( "autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4util libxfce4util")
+REPOS=( "autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4util.git libxfce4util")
 REPOS+=("sync")
-REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4ui libxfce4ui")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4ui.git libxfce4ui")
 REPOS+=("sync")
-REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/exo exo")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/exo.git exo")
 REPOS+=("sync")
-REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-dev-tools xfce4-dev-tools")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-dev-tools.git xfce4-dev-tools")
 REPOS+=("sync")
-REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfconf xfconf")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfconf.git xfconf")
 REPOS+=("sync")
-REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/bindings/xfce4-vala xfce4-vala")
-REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-panel xfce4-panel")
-REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/garcon garcon")
-REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/thunar thunar")
-REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/thunar-volman thunar-volman")
-REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-power-manager xfce4-power-manager")
-REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-settings xfce4-settings")
-REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-session xfce4-session")
-REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfdesktop xfdesktop")
-REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfwm4 xfwm4")
-REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-appfinder xfce4-appfinder")
-REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/tumbler tumbler")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/bindings/xfce4-vala.git xfce4-vala")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-panel.git xfce4-panel")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/garcon.git garcon")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/thunar.git thunar")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/thunar-volman.git thunar-volman")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-power-manager.git xfce4-power-manager")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-settings.git xfce4-settings")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-session.git xfce4-session")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfdesktop.git xfdesktop")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfwm4.git xfwm4")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-appfinder.git xfce4-appfinder")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/tumbler.git tumbler")
 
 APPS="gigolo
 mousepad
@@ -48,11 +48,11 @@ xfce4-volumed-pulse
 xfmpc"
 
 for a in $APPS; do
-    REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/apps/$a $a")
+    REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/apps/$a.git $a")
 done
 
-REPOS+=("make ${MAIN_BRANCH} ${XFCE_BASE}/apps/xfce4-panel-profiles xfce4-panel-profiles --prefix=/usr")
-REPOS+=("python ${MAIN_BRANCH} ${XFCE_BASE}/apps/catfish catfish")
+REPOS+=("make ${MAIN_BRANCH} ${XFCE_BASE}/apps/xfce4-panel-profiles.git xfce4-panel-profiles --prefix=/usr")
+REPOS+=("python ${MAIN_BRANCH} ${XFCE_BASE}/apps/catfish.git catfish")
 
 panelplugins="
 xfce4-notes-plugin
@@ -84,16 +84,16 @@ xfce4-mpc-plugin"
 # xfce4-notes-plugin - not yet compatible with new xfconf and libxfce4ui interfaces
 
 for a in $panelplugins; do
-    REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/panel-plugins/$a $a")
+    REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/panel-plugins/$a.git $a")
 done
 
-REPOS+=("cmake ${MAIN_BRANCH} ${XFCE_BASE}/panel-plugins/xfce4-whiskermenu-plugin xfce4-whiskermenu-plugin")
+REPOS+=("cmake ${MAIN_BRANCH} ${XFCE_BASE}/panel-plugins/xfce4-whiskermenu-plugin.git xfce4-whiskermenu-plugin")
 
 thunarplugins="thunar-archive-plugin
 thunar-media-tags-plugin"
 
 for a in $thunarplugins; do
-    REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/thunar-plugins/$a $a")
+    REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/thunar-plugins/$a.git $a")
 done
 
 
