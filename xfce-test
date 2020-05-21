@@ -90,6 +90,20 @@ usage() {
 
 }
 
+leave() {
+    STOP_TIME=$(date +%s)
+    echo "Execution took $(( STOP_TIME -START_TIME)) seconds"
+    exit $1
+}
+
+get_tags() {
+  tags=$(curl https://registry.hub.docker.com/v1/repositories/schuellerf/xfce-test/tags)
+  echo $tags|jq ".[].name"|tr -d '"'
+}
+get_local_tags() {
+  docker images --format "{{.Tag}}" schuellerf/xfce-test
+}
+
 MANUAL_MODES=("start" "no-session" "list" "list_local")
 AUTOMATIC_MODES=("screenshots" "behave" "behavevideo" "fulltestvideo")
 
@@ -194,7 +208,12 @@ else
                 break
             ;;
             "tag")
-                read -i $TAG -p "Change tag from \"$TAG\" to: " TAG_NEW
+                PS3_TMP=$PS3
+                PS3="Change tag from \"$TAG\" to: "
+                select TAG_NEW in $(get_local_tags); do
+                  break
+                done
+                PS3=$PS3_TMP
 
                 if [ ${#TAG_NEW} -ge 1 ]; then
                     TAG=$TAG_NEW
@@ -278,28 +297,22 @@ fi
 
 START_TIME=$(date +%s)
 
-leave() {
-    STOP_TIME=$(date +%s)
-    echo "Execution took $(( STOP_TIME -START_TIME)) seconds"
-    exit $1
-}
-
 case $mode in
-    "pull")
-        docker pull schuellerf/xfce-test:${TAG}
-        leave 0
-    ;;
-    "list")
-        tags=$(curl https://registry.hub.docker.com/v1/repositories/schuellerf/xfce-test/tags)
-	echo "---"
-	echo "All tags available to pull:"
-	echo $tags|jq ".[].name"|tr -d '"'
-	leave 0
-    ;;
-    "list_local")
-        docker images --format "{{.Tag}}" schuellerf/xfce-test
-	exit 0
-    ;;
+  "pull")
+    docker pull schuellerf/xfce-test:${TAG}
+    leave 0
+  ;;
+  "list")
+    tags=$(get_tags)
+	  echo "---"
+	  echo "All tags available to pull:"
+	  echo "$tags"
+	  leave 0
+  ;;
+  "list_local")
+    echo "$(get_local_tags)"
+	  exit 0
+  ;;
     "build")
         echo "You are building the container: $TAG"
         echo "DOWNLOAD_DATE is set to ${DOWNLOAD_DATE}"
