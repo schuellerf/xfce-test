@@ -78,6 +78,11 @@ export DISPLAY_NUM=$(get-free-display)
 
 CONTAINER_NAME=${CONTAINER_NAME:-xfce-test-${DISPLAY_NUM}}
 
+# resolution of the test X server
+# TBD: define what the minimal supported resolution is for compatibility tests
+export RESOLUTION=${RESOLUTION:-1024x768}
+
+
 usage() {
     echo "Usage:"
     echo "  $0 [command]"
@@ -125,6 +130,8 @@ usage() {
     echo "      CONTAINER_NAME   define a container name useful to continue work later"
     echo "                       setting KEEP to 1 is mandatory here"
     echo "                       default: \"${CONTAINER_NAME}\""
+    echo "      RESOLUTION       Resolution of Xephyr"
+    echo "                       default: \"${RESOLUTION}\""
 
 }
 
@@ -233,6 +240,7 @@ else
     echo "      PARALLEL_BUILDS  change the number of parallel builds (default: $PARALLEL_BUILDS)"
     echo "      KEEP             keep the container (don't delete after usage)"
     echo "      CONTAINER_NAME   Set a container name to keep and continue"
+    echo "      RESOLUTION       Set the screen resolution of Xephyr"
     echo ""
 
     PS3="Choose option: "
@@ -354,9 +362,13 @@ else
                 fi
             ;;
             "CONTAINER_NAME")
-                read -p "Name for the container: " CONTAINER_NAME
+                read -i "${CONTAINER_NAME}" -p "Name for the container: " CONTAINER_NAME
                 echo "Name set to \"${CONTAINER_NAME}\" - I also set KEEP=1 automatically now"
                 export KEEP=1
+            ;;
+            "RESOLUTION")
+                read -i ${RESOLUTION} -p "Screen resolution: " RESOLUTION
+                echo "Resolution set to ${RESOLUTION}"
             ;;
 
             *)
@@ -403,10 +415,6 @@ echo "You are working with the container: $TAG"
 
 # This starts the container for manual or semi automated tests
 
-
-# resolution of the test X server
-# TBD: define what the minimal supported resolution is
-export RESOLUTION=1024x768
 
 
 # set SCREENSHOTS to ALWAYS to get screenshots during behave tests
