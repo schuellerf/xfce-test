@@ -207,6 +207,29 @@ else
                 read -p "Command to call in the container: " call_args
                 break
             ;;
+          "pull")
+                tags=$(get_tags)
+                echo ""
+                echo "Locally you have:"
+                echo $(get_local_tags)
+                echo "---"
+                echo "Now, pull from docker hub: "
+
+                PS3_TMP=$PS3
+                PS3="Pull tag number: "
+                select TAG_NEW in $tags; do
+                  break
+                done
+                PS3=$PS3_TMP
+                if [ ${#TAG_NEW} -ge 1 ]; then
+                    TAG=$TAG_NEW
+                    echo "OK - pulling ${TAG}"
+                    break
+                else
+                  echo "Pull canceled"
+                fi
+            ;;
+
             "tag")
                 PS3_TMP=$PS3
                 PS3="Change tag from \"$TAG\" to: "
@@ -286,7 +309,7 @@ else
                 break
             ;;
         esac
-        echo "-- Main Menu --"
+        echo "-- Main Menu (${TAG}) --"
     done
 fi
 
