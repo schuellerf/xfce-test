@@ -41,7 +41,7 @@ Feature: Some tests with clipman
       when we click on ptabHistory in dlgClipmanSettings
        and we click on chkIgnoremouseselections in dlgClipmanSettings
       then we think chkIgnoremouseselections of dlgClipmanSettings is unchecked
-      when we click on btnClose in dlgClipman
+      when we click on btnClose in dlgClipmanSettings
       then dlgClipmanSettings is gone
 
   Scenario: Clear clipman list
