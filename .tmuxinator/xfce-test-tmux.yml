@@ -33,4 +33,4 @@ root: /data
 windows:
   - bash:
   - xfce-session: xfce4-session
-  - LDTP: /usr/bin/dbus-run-session /usr/bin/ldtp
+  - LDTP: /usr/bin/dbus-run-session /usr/local/bin/ldtp

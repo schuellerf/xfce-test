@@ -33,6 +33,7 @@ RUN apt-get update \
  && apt-get -y --no-install-recommends install libvala-0.48-dev librsvg2-dev libtagc0-dev \
  && apt-get -y --no-install-recommends install libdbusmenu-gtk3-dev \
  && apt-get -y --no-install-recommends install libgtop2-dev \
+ && apt-get -y --no-install-recommends install libpython3.8-dev \
  && apt-get -y remove libxfce4ui-1-0 libxfce4ui-2-0 \
  && rm -rf /var/lib/apt/lists/*
 
@@ -81,10 +82,9 @@ RUN sudo mkdir /git && sudo chown xfce-test_user /git
 
 # Rather use my patched version
 RUN cd git \
- && git clone https://github.com/schuellerf/ldtp2.git \
+ && git clone -b python3 https://github.com/schuellerf/ldtp2.git \
  && cd ldtp2 \
- && python3 setup.py build \
- && sudo python3 setup.py install
+ && sudo pip3 install -e .
 
 COPY --chown=xfce-test_user container_scripts /container_scripts
 RUN chmod a+x /container_scripts/*.sh /container_scripts/*.py

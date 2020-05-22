@@ -6,7 +6,7 @@ import signal
 import time
 
 def handler(signum, frame):
-    print "Time is over!"
+    print("Time is over!")
     raise Exception("It's time to fix those LDTP bugs!")
 
 def before_scenario(context, scenario):
