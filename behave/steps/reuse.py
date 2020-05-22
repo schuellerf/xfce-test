@@ -8,9 +8,9 @@ def _reTextify(thing):
         in a feature file
     """
     if type(thing) is behave.model.Scenario:
-	return unicode(thing.name)
+        return unicode(thing.name)
     if type(thing) is behave.model.Step:
-	return u"{0} {1}".format(thing.step_type,thing.name)
+        return u"{0} {1}".format(thing.step_type,thing.name)
     raise NotImplementedError(u'I don\'t know how to _reTextify ' + str(type(thing)))
 
 def _get_scenario(context, scenario):
