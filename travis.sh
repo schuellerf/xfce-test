@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-docker run --detach --env TRAVIS --env TRAVIS_BRANCH --env DISPLAY --env RESOLUTION="1024x768" --volume /tmp/.X11-unix:/tmp/.X11-unix test-xfce-ubuntu /usr/bin/dbus-run-session /usr/bin/xfce4-session > .docker_ID
+docker run --detach --env TRAVIS --env TRAVIS_BRANCH --env DISPLAY --env RESOLUTION="1024x768" --volume /tmp/.X11-unix:/tmp/.X11-unix test-xfce-ubuntu /usr/bin/dbus-run-session /usr/local/bin/xfce4-session > .docker_ID
 sleep 10 # give xfce some time to start
 
 docker exec $(cat .docker_ID) bash -c "cat ~/version_info.txt"

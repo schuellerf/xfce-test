@@ -6,6 +6,7 @@ screenshots
 *.ts
 *.mp4
 *.log
+*.pyc
 lang-screenshots
 app_screenshots
 container_scripts/*.json
