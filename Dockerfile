@@ -1,4 +1,4 @@
-FROM ubuntu:19.10
+FROM ubuntu:20.04
 MAINTAINER Florian Schüller <florian.schueller@gmail.com>
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -9,10 +9,10 @@ ENV DISPLAY ${DISPLAY:-:1}
 # psmisc for "killall"
 RUN apt-get update \
  && apt-get -y --no-install-recommends install apt-utils psmisc ffmpeg x11-utils libxrandr-dev \
- && apt-get -y --no-install-recommends install dirmngr git python-ldtp ldtp python-pip python-wheel python3-dogtail python-psutil python-setuptools vim sudo gdb valgrind tmuxinator tmux ltrace \
+ && apt-get -y --no-install-recommends install dirmngr git python3-pip python3-dogtail python3-psutil vim sudo gdb valgrind tmuxinator tmux ltrace \
  && rm -rf /var/lib/apt/lists/*
 
-RUN /usr/bin/pip install behave
+RUN /usr/bin/pip3 install behave
 
 # Enable source repositories
 RUN sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
@@ -30,7 +30,7 @@ RUN apt-get update \
  && apt-get -y --no-install-recommends install libburn-dev libisofs-dev \
  && apt-get -y --no-install-recommends install libpulse-dev libkeybinder-3.0-dev \
  && apt-get -y --no-install-recommends install libmpd-dev valac gobject-introspection libgirepository1.0-dev \
- && apt-get -y --no-install-recommends install libvala-0.44-dev librsvg2-dev libtagc0-dev \
+ && apt-get -y --no-install-recommends install libvala-0.48-dev librsvg2-dev libtagc0-dev \
  && apt-get -y --no-install-recommends install libdbusmenu-gtk3-dev \
  && apt-get -y --no-install-recommends install libgtop2-dev \
  && apt-get -y remove libxfce4ui-1-0 libxfce4ui-2-0 \
@@ -50,7 +50,7 @@ RUN apt-get update \
  && apt-get -y --no-install-recommends install transifex-client xautomation $(apt-cache search language-pack|grep -oP "^language-pack-...?(?= )") \
  && rm -rf /var/lib/apt/lists/*
 
-RUN pip install opencv-python google-api-python-client oauth2client
+RUN pip3 install opencv-python google-api-python-client oauth2client
 
 RUN cp /usr/share/i18n/locales/en_GB /usr/share/i18n/locales/automate
 RUN sed -i -E "s/Language: en/Language: automate/" /usr/share/i18n/locales/automate
@@ -83,8 +83,8 @@ RUN sudo mkdir /git && sudo chown xfce-test_user /git
 RUN cd git \
  && git clone https://github.com/schuellerf/ldtp2.git \
  && cd ldtp2 \
- && python setup.py build \
- && sudo python setup.py install
+ && python3 setup.py build \
+ && sudo python3 setup.py install
 
 COPY --chown=xfce-test_user container_scripts /container_scripts
 RUN chmod a+x /container_scripts/*.sh /container_scripts/*.py
