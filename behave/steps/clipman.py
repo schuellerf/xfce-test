@@ -87,8 +87,7 @@ def step_impl(context, text):
 
 @when('we wiggle the mouse')
 def step_impl(context):
-    l.simulatemousemove(0,0,100,100)
-    l.generatemouseevent(200,200) # There shouldn't be anything
+    context._root["_click_animated"](context, 50, 50, button="abs", delay=0)
 
 @when('we kill {app}')
 def step_impl(context, app):
