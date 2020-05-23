@@ -174,14 +174,15 @@ for tuple in "${REPOS[@]}"; do
     URL=$3
     NAME=$4
     PARAMS=${5:-$AUTOGEN_OPTIONS}
+    i=$(( $i + 1 ))
     if [ "$BUILD_TYPE" == "sync" ]; then
         wait
+        echo " --- (${i}/${#REPOS[@]}) sync step for builds ---"
         continue
     fi
     if [ $(jobs -p |wc -w) -ge $PARALLEL_BUILDS ]; then
         wait -n
     fi
-    i=$(( $i + 1 ))
     build $BUILD_TYPE $BRANCH $URL $NAME $PARAMS 2>&1 | xargs -n1 -d '\n' echo "$NAME (${i}/${#REPOS[@]}): " &
 done
 
