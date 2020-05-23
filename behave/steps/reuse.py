@@ -34,3 +34,22 @@ def step_impl(context, thing, win):
     click_x = x+(w/2)
     click_y = y+(h/2)
     context._root["_click_animated"](context, click_x, click_y)
+
+@when('we click on {thing} somewhere')
+def step_impl(context, thing):
+    time.sleep(1)
+    win = None
+    for w in l.getwindowlist():
+        objs = l.getobjectlist(w)
+        if thing in objs:
+            win = w
+            break
+    if not win:
+        print(f"Failed to find {thing}")
+        return
+    print("Parent:")
+    print(l.getobjectproperty(win,thing,'parent'))
+    (x,y,w,h)=l.getobjectsize(win, thing)
+    click_x = x+(w/2)
+    click_y = y+(h/2)
+    context._root["_click_animated"](context, click_x, click_y)

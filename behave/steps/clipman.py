@@ -115,6 +115,26 @@ def step_impl(context, thing, win):
     time.sleep(2) # opening usually needs a task switch to some UI thread to process it
     assert(l.waittillguiexist(win, thing) == 1)
 
+@then('we should see {thing:S} somewhere')
+def step_impl(context, thing):
+    time.sleep(2) # opening usually needs a task switch to some UI thread to process it
+    for w in l.getwindowlist():
+        objs = l.getobjectlist(w)
+        if thing in objs:
+            assert(True)
+            return
+    assert(False)
+    
+@then('we should not see {thing:S} somewhere')
+def step_impl(context, thing):
+    time.sleep(2) # opening usually needs a task switch to some UI thread to process it
+    for w in l.getwindowlist():
+        objs = l.getobjectlist(w)
+        if thing in objs:
+            assert(False)
+            return
+    assert(True)
+
 @then('we should not see {thing:S} in {win:S}')
 def step_impl(context, thing, win):
     time.sleep(2) # closing usually needs a task switch to some UI thread to process it
