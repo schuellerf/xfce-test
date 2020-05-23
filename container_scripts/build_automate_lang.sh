@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-python /data/container_scripts/patch_automate_po.py
+python3 /data/container_scripts/patch_automate_po.py
 
 ./autogen.sh --disable-debug --enable-maintainer-mode --host=x86_64-linux-gnu \
              --build=x86_64-linux-gnu --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu \

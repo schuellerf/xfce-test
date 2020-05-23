@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 import httplib
 import httplib2

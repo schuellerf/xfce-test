@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import re
 i=1
 with open("po/en_GB.po", 'r') as in_file, open("po/automate.po", 'w') as out_file:

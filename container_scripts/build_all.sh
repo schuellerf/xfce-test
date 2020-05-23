@@ -139,10 +139,10 @@ build() {
             sudo make install
         ;;
         "python")
-            python setup.py build
+            python3 setup.py build
             RET=$?
 
-            sudo python setup.py install
+            sudo python3 setup.py install
         ;;
         *)
             echo "Unknown build type: >$1<"
