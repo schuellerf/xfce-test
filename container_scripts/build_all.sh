@@ -184,7 +184,7 @@ for tuple in "${REPOS[@]}"; do
         wait -n
     fi
     i=$(( $i + 1 ))
-    build $BUILD_TYPE $BRANCH $URL $NAME $PARAMS 2>&1 | xargs -n1 -d '\n' echo "$NAME (${i}/${#REPOS[@]}): " &
+    build $BUILD_TYPE $BRANCH $URL $NAME "$PARAMS" 2>&1 | xargs -n1 -d '\n' echo "$NAME (${i}/${#REPOS[@]}): " &
 done
 
 wait
