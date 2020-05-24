@@ -106,6 +106,7 @@ build() {
     NAME=$4
     PARAMS=$5
     echo "--- Building $NAME ($BRANCH) ---"
+    echo "    Params: $PARAMS"
     cd /git
     git clone $URL
     cd $NAME
@@ -166,6 +167,7 @@ exec {LOCK_FD}<>$LOCKFILE
 
 export LOCK_FD
 echo "Building $PARALLEL_BUILDS in parallel"
+echo "With AUTOGEN_OPTIONS: $AUTOGEN_OPTIONS"
 i=0
 for tuple in "${REPOS[@]}"; do
     set -- $tuple
