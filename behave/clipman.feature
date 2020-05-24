@@ -42,7 +42,7 @@ Feature: Some tests with clipman
        and we click on chkIgnoremouseselections in dlgClipmanSettings
       then we think chkIgnoremouseselections of dlgClipmanSettings is unchecked
       when we click on btnClose in dlgClipmanSettings
-      then dlgClipmanSettings is gone
+        then dlgClipmanSettings is gone
 
   Scenario: Clear clipman list
      Given we repeat "Clipman popup is not empty"

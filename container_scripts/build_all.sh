@@ -20,8 +20,9 @@ REPOS+=("sync")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfconf.git xfconf")
 REPOS+=("sync")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/bindings/xfce4-vala.git xfce4-vala")
-REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-panel.git xfce4-panel")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/garcon.git garcon")
+REPOS+=("sync")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-panel.git xfce4-panel")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/thunar.git thunar")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/thunar-volman.git thunar-volman")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-power-manager.git xfce4-power-manager")
@@ -106,6 +107,7 @@ build() {
     NAME=$4
     PARAMS=$5
     echo "--- Building $NAME ($BRANCH) ---"
+    echo "    Params: $PARAMS"
     cd /git
     git clone $URL
     cd $NAME
@@ -166,6 +168,7 @@ exec {LOCK_FD}<>$LOCKFILE
 
 export LOCK_FD
 echo "Building $PARALLEL_BUILDS in parallel"
+echo "With AUTOGEN_OPTIONS: $AUTOGEN_OPTIONS"
 i=0
 for tuple in "${REPOS[@]}"; do
     set -- $tuple
@@ -183,7 +186,7 @@ for tuple in "${REPOS[@]}"; do
     if [ $(jobs -p |wc -w) -ge $PARALLEL_BUILDS ]; then
         wait -n
     fi
-    build $BUILD_TYPE $BRANCH $URL $NAME $PARAMS 2>&1 | xargs -n1 -d '\n' echo "$NAME (${i}/${#REPOS[@]}): " &
+    build $BUILD_TYPE $BRANCH $URL $NAME "$PARAMS" 2>&1 | xargs -n1 -d '\n' echo "$NAME (${i}/${#REPOS[@]}): " &
 done
 
 wait
