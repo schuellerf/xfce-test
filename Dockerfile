@@ -93,8 +93,10 @@ RUN /container_scripts/build_all.sh
 
 # only available after building exo:
 RUN sudo apt-get update \
- && sudo apt-get -y --no-install-recommends install exo-utils \
- && sudo rm -rf /var/lib/apt/lists/*
+ && cd /tmp \
+ && apt-get download exo-utils \
+ && sudo dpkg -i --ignore-depends=libexo-2-0,libxfce4ui-2-0 ./exo-utils_*.deb \
+ && sudo rm -rf /var/lib/apt/lists/* /tmp/exo-utils_*.deb
 
 COPY --chown=xfce-test_user behave /behave_tests
 RUN sudo mkdir /data && sudo chown xfce-test_user /data
