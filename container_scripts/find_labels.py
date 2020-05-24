@@ -7,7 +7,7 @@ import subprocess as s
 import os
 import time
 
-LANG = "en_GB"
+LANG = "en_GB.UTF-8"
 APP = ["xfce4-display-settings"]
 OUTPUT_DIR="/data/lang-screenshots"
 
@@ -74,7 +74,7 @@ env = os.environ
 
 print("Starting \"automate\" run...")
 
-env["LANG"] = "automate"
+env["LANG"] = "automate.UTF-8"
 
 automate_process = s.Popen(APP, shell=True, env=env)
 
