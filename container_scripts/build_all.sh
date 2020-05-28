@@ -9,18 +9,13 @@ VERSION_FILE="/home/xfce-test_user/version_info.txt"
 echo "# The OK marks if building this component in the current container was successful" >> $VERSION_FILE
 
 # (BUILD_TYPE BRANCH URL NAME) tuples:
-REPOS=( "autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4util.git libxfce4util")
-REPOS+=("sync")
+REPOS=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-dev-tools.git xfce4-dev-tools")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4util.git libxfce4util")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfconf.git xfconf")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4ui.git libxfce4ui")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/garcon.git garcon")
 REPOS+=("sync")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/exo.git exo")
-REPOS+=("sync")
-REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-dev-tools.git xfce4-dev-tools")
-REPOS+=("sync")
-REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfconf.git xfconf")
-REPOS+=("sync")
-REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/bindings/xfce4-vala.git xfce4-vala")
-REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/garcon.git garcon")
 REPOS+=("sync")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-panel.git xfce4-panel")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/thunar.git thunar")
@@ -32,6 +27,7 @@ REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfdesktop.git xfdesktop")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfwm4.git xfwm4")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-appfinder.git xfce4-appfinder")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/tumbler.git tumbler")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/bindings/xfce4-vala.git xfce4-vala")
 
 APPS="gigolo
 mousepad
@@ -83,6 +79,7 @@ xfce4-weather-plugin
 xfce4-xkb-plugin
 xfce4-mpc-plugin"
 
+# xfce4-mailwatch-plugin - not compatible with libxfce4panel-2 and libxfce4ui-2
 # xfce4-verve-plugin - not yet compatible with libxfce4panel-2 and libxfce4ui-2
 # xfce4-notes-plugin - not yet compatible with new xfconf and libxfce4ui interfaces
 
