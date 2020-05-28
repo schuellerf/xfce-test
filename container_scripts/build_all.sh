@@ -106,7 +106,7 @@ build() {
     echo "--- Building $NAME ($BRANCH) ---"
     echo "    Params: $PARAMS"
     cd /git
-    git clone $URL
+    git clone --depth 1 --no-single-branch $URL
     cd $NAME
     git checkout $BRANCH || echo "Branch $BRANCH not found - leaving default"
 
