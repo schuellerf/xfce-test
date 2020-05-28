@@ -19,21 +19,9 @@ RUN sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
 
 # Xfce specific build dependencies and default panel plugins
 RUN apt-get update \
- && apt-get -y --no-install-recommends install gnome-themes-standard libglib2.0-bin build-essential libgtk-3-dev gtk-doc-tools libgtk2.0-dev libx11-dev libglib2.0-dev libwnck-3-dev intltool libdbus-glib-1-dev liburi-perl x11-xserver-utils libvte-2.91-dev dbus-x11 strace libgl1-mesa-dev adwaita-icon-theme libwnck-dev adwaita-icon-theme-full cmake libsoup2.4-dev libpcre2-dev exo-utils libgtksourceview-3.0-dev libtag1-dev \
-&& apt-get -y --no-install-recommends install libgstreamer1.0-0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-doc gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio \
- && apt-get -y --no-install-recommends build-dep xfce4-panel thunar xfce4-settings xfce4-session xfdesktop4 xfwm4 xfce4-appfinder tumbler xfce4-terminal xfce4-clipman-plugin xfce4-screenshooter \
- && apt-get -y --no-install-recommends install xfce4-pulseaudio-plugin xfce4-statusnotifier-plugin \
- && apt-get -y --no-install-recommends install python-distutils-extra \
- && apt-get -y --no-install-recommends install libxss-dev \
- && apt-get -y --no-install-recommends install libindicator3-dev \
- && apt-get -y --no-install-recommends install libxmu-dev \
- && apt-get -y --no-install-recommends install libburn-dev libisofs-dev \
- && apt-get -y --no-install-recommends install libpulse-dev libkeybinder-3.0-dev \
- && apt-get -y --no-install-recommends install libmpd-dev valac gobject-introspection libgirepository1.0-dev \
- && apt-get -y --no-install-recommends install libvala-0.44-dev librsvg2-dev libtagc0-dev \
- && apt-get -y --no-install-recommends install libdbusmenu-gtk3-dev \
- && apt-get -y --no-install-recommends install libgtop2-dev \
- && apt-get -y remove libxfce4ui-1-0 libxfce4ui-2-0 \
+ && apt-get -y --no-install-recommends install gnome-themes-standard libglib2.0-bin build-essential libgtk-3-dev gtk-doc-tools libgtk2.0-dev libx11-dev libglib2.0-dev libwnck-3-dev intltool libdbus-glib-1-dev liburi-perl x11-xserver-utils libvte-2.91-dev dbus-x11 strace libgl1-mesa-dev adwaita-icon-theme libwnck-dev adwaita-icon-theme-full cmake libsoup2.4-dev libpcre2-dev libgtksourceview-3.0-dev libtag1-dev \
+ && apt-get -y --no-install-recommends install libgstreamer1.0-0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-doc gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
+ python-distutils-extra  libxss-dev libindicator3-dev libxmu-dev libburn-dev libisofs-dev  libpulse-dev libkeybinder-3.0-dev libmpd-dev valac gobject-introspection libgirepository1.0-dev libvala-0.44-dev librsvg2-dev libtagc0-dev libdbusmenu-gtk3-dev libgtop2-dev libtool libnotify-dev libxklavier-dev libexif-dev libgudev-1.0-dev libupower-glib-dev \
  && rm -rf /var/lib/apt/lists/*
 
 #needed for LDTP and friends
@@ -69,7 +57,7 @@ ENV DOWNLOAD_DATE=$DOWNLOAD_DATE
 RUN echo "Newly cloning all repos as date-flag changed to ${DOWNLOAD_DATE}"
 ARG AUTOGEN_OPTIONS="--disable-debug --enable-maintainer-mode --host=x86_64-linux-gnu \
                     --build=x86_64-linux-gnu --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu \
-                    --libexecdir=/usr/lib/x86_64-linux-gnu --sysconfdir=/etc --localstatedir=/var --enable-gtk3 --enable-gtk-doc\
+                    --libexecdir=/usr/lib/x86_64-linux-gnu --sysconfdir=/etc --localstatedir=/var --enable-gtk-doc\
                     --enable-vala=yes --enable-introspection=yes"
 ENV AUTOGEN_OPTIONS $AUTOGEN_OPTIONS
 
@@ -90,13 +78,6 @@ COPY --chown=xfce-test_user container_scripts /container_scripts
 RUN chmod a+x /container_scripts/*.sh /container_scripts/*.py
 
 RUN /container_scripts/build_all.sh
-
-# only available after building exo:
-RUN sudo apt-get update \
- && cd /tmp \
- && apt-get download exo-utils \
- && sudo dpkg -i --ignore-depends=libexo-2-0,libxfce4ui-2-0 ./exo-utils_*.deb \
- && sudo rm -rf /var/lib/apt/lists/* /tmp/exo-utils_*.deb
 
 COPY --chown=xfce-test_user behave /behave_tests
 RUN sudo mkdir /data && sudo chown xfce-test_user /data
