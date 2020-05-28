@@ -121,6 +121,7 @@ build() {
             RET=$?
 
             sudo make install
+            sudo make clean
         ;;
         "make")
             ./configure $PARAMS
@@ -128,6 +129,7 @@ build() {
             RET=$?
 
             sudo make install
+            sudo make clean
         ;;
         "cmake")
             mkdir build && cd build
@@ -136,6 +138,7 @@ build() {
             RET=$?
 
             sudo make install
+            sudo make clean
         ;;
         "python")
             python setup.py build
