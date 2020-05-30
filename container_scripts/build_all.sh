@@ -10,9 +10,13 @@ echo "# The OK marks if building this component in the current container was suc
 
 # (BUILD_TYPE BRANCH URL NAME) tuples:
 REPOS=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-dev-tools.git xfce4-dev-tools")
+REPOS+=("sync")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4util.git libxfce4util")
+REPOS+=("sync")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfconf.git xfconf")
+REPOS+=("sync")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4ui.git libxfce4ui")
+REPOS+=("sync")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/garcon.git garcon")
 REPOS+=("sync")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/exo.git exo")
@@ -28,6 +32,7 @@ REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfwm4.git xfwm4")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-appfinder.git xfce4-appfinder")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/tumbler.git tumbler")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/bindings/xfce4-vala.git xfce4-vala")
+REPOS+=("sync")
 
 APPS="gigolo
 mousepad
@@ -106,8 +111,9 @@ build() {
     echo "--- Building $NAME ($BRANCH) ---"
     echo "    Params: $PARAMS"
     cd /git
-    git clone --depth 1 --no-single-branch $URL
-    cd $NAME
+    DIR=$(pwd)
+    git clone $URL || export DIR="$NAME cloning failed"
+    cd $NAME || export DIR="$NAME cloning failed"
     git checkout $BRANCH || echo "Branch $BRANCH not found - leaving default"
 
     #WORKAROUNDS
@@ -121,6 +127,7 @@ build() {
             RET=$?
 
             sudo make install
+            sudo make clean
         ;;
         "make")
             ./configure $PARAMS
@@ -128,6 +135,7 @@ build() {
             RET=$?
 
             sudo make install
+            sudo make clean
         ;;
         "cmake")
             mkdir build && cd build
@@ -136,6 +144,7 @@ build() {
             RET=$?
 
             sudo make install
+            sudo make clean
         ;;
         "python")
             python setup.py build
@@ -155,7 +164,7 @@ build() {
     else
         echo -n "NOT OK: " >> $VERSION_FILE
     fi
-    echo "$(pwd): $(git describe)" >> $VERSION_FILE
+    echo "${DIR}: $(git describe)" >> $VERSION_FILE
     flock -u $LOCK_FD
 }
 
