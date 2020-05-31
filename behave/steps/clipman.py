@@ -58,10 +58,10 @@ def step_impl(context, popupwin, entry, win):
         click_x = x+(h/2)
         click_y = y+(h/2)
         while click_x < (x+w):
-            context._root["_click_animated"](context, click_x, click_y, button="b3c", delay=0)
-            if l.waittillguiexist(popupwin, entry, 1): return
+            context._root["_click_animated"](context, click_x, click_y, button="b3c", delay=0, timing=0)
+            if l.waittillguiexist(popupwin, entry, 0): return
             l.generatekeyevent("<esc>") #close possible menus
-            time.sleep(0.5)
+            time.sleep(0.1)
             click_x += h
     #not found
     assert(False)
@@ -69,13 +69,8 @@ def step_impl(context, popupwin, entry, win):
 # ---- when
 @when('we popup clipman')
 def step_impl(context):
-    time.sleep(2) # this is so asynchronous...
     l.launchapp("xfce4-popup-clipman", logfiles=("/tmp/xfce4-popup-clipman-stdout.log", "/tmp/xfce4-popup-clipman-stderr.log"))
     time.sleep(1) # this doesn't work every time...?
-    l.launchapp("xfce4-popup-clipman", logfiles=("/tmp/xfce4-popup-clipman-stdout.log", "/tmp/xfce4-popup-clipman-stderr.log"))
-    time.sleep(1) # now we are desperate
-    l.launchapp("xfce4-popup-clipman", logfiles=("/tmp/xfce4-popup-clipman-stdout.log", "/tmp/xfce4-popup-clipman-stderr.log"))
-    time.sleep(2) # he doesn't wait for the popup
 
 @when('we see {thing:S}')
 def step_impl(context, thing):

@@ -23,7 +23,7 @@ Feature: For translations: Make all texts visible
 
   Scenario: Open right-click menu
      Given we find dlg1 which has mnuQuit by stupid-clicking frm0
-      when we click on mnuAbout anywhere
+      when we click on mnuAbout somewhere
        and we click on rbtnCredits in dlgAboutClipman
        and we click on rbtnLicense in dlgAboutClipman
       then close it with <esc>

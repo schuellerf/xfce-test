@@ -4,6 +4,7 @@ import os
 import ldtp as l
 import signal
 import time
+import math
 
 def handler(signum, frame):
     print("Time is over!")
@@ -26,13 +27,16 @@ def before_all(context):
     setup_debug_on_error(context.config.userdata)
     context._root["_click_animated"] = _click_animated
 
-def _click_animated(context, click_x, click_y, button="b1c", delay=1):
+def _click_animated(context, click_x, click_y, button="b1c", delay=1, timing=None):
     start_x=context._root.get('last_mouse_x',0)
     start_y=context._root.get('last_mouse_y',0)
+
     try:
-        timing=1/math.sqrt(math.pow(math.fabs(start_x-click_x),2)+math.pow(math.fabs(start_y-click_y),2))
+        if timing is None:
+            timing=1/math.sqrt(math.pow(math.fabs(start_x-click_x),2)+math.pow(math.fabs(start_y-click_y),2))
     except:
-        timing=0.01
+        timing = 0.01
+    
     l.simulatemousemove(start_x, start_y, click_x, click_y, timing)
     time.sleep(delay)
     l.generatemouseevent(click_x,click_y, button)
@@ -42,7 +46,7 @@ def _click_animated(context, click_x, click_y, button="b1c", delay=1):
 
 def before_step(context, step):
     # workaround for LDTP problems
-    signal.alarm(60)
+    signal.alarm(120)
 
 def after_step(context, step):
     if os.environ.get("SCREENSHOTS") == "ALWAYS":
