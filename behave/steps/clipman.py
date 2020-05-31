@@ -38,6 +38,33 @@ def step_impl(context, app):
     else:
         print(app + " is running already")
 
+# ---- given
+@given('we have {app:S} started in {lang}')
+def step_impl(context, app, lang):
+    retry = 100
+    applist = l.getapplist()
+    if lang != "C":
+        context._root['my_lang'] = lang
+
+    if app not in applist:
+        if len(applist) == 0 and app_is_in_ps(app):
+            #grrrr why doesn't ldtp find the app!?
+            print(app + " was found by ps")
+            return
+        print(app + " needs to be launched")
+        l.launchapp(app, logfiles=("/tmp/%s-stdout.log" % app, "/tmp/%s-stderr.log" % app), lang=lang)
+        while True:
+            retry -= 1
+            assert(retry > 0)#, "Failed to start " + app)
+            applist = l.getapplist()
+            if app in applist:
+                time.sleep(1)
+                print(app + " started")
+                break
+            time.sleep(0.5)
+    else:
+        print(app + " is running already")
+
 #just for apps which can't be really detected
 @given('we just start {app:S}')
 def step_impl(context, app):

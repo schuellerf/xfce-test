@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import re
 i=1
-with open("po/en_GB.po", 'r') as in_file, open("po/automate.po", 'w') as out_file:
+with open("po/de.po", 'r') as in_file, open("po/automate.po", 'w') as out_file:
     line_nr=0
     for line in in_file:
         line_nr = line_nr + 1
