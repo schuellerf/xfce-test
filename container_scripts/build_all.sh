@@ -117,6 +117,9 @@ build() {
     if [ "$NAME" == "xfce4-vala" ]; then
         sed -i "s/vala_api='0...'/vala_api='0.44'/" configure.ac.in
     fi
+
+    python3 /container_scripts/patch_automate_po.py || echo "Just trying to create the \"automate\" language as a first test"
+
     case $BUILD_TYPE in
         "autogen")
             ./autogen.sh $PARAMS
