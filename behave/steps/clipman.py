@@ -45,6 +45,8 @@ def step_impl(context, app, lang):
     applist = l.getapplist()
     if lang != "C":
         context._root['my_lang'] = lang
+    else:
+        context._root['my_lang'] = None
 
     if app not in applist:
         if len(applist) == 0 and app_is_in_ps(app):
@@ -88,7 +90,7 @@ def step_impl(context, popupwin, entry, win):
             context._root["_click_animated"](context, click_x, click_y, button="b3c", delay=0, timing=0)
             if l.waittillguiexist(popupwin, entry, 0): return
             l.generatekeyevent("<esc>") #close possible menus
-            time.sleep(0.1)
+            time.sleep(0.2)
             click_x += h
     #not found
     assert(False)

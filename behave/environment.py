@@ -46,6 +46,7 @@ def _click_animated(context, click_x, click_y, button="b1c", delay=1, timing=Non
 
 def before_step(context, step):
     # workaround for LDTP problems
+    context._root["my_line"] = step.line
     signal.alarm(120)
 
 def after_step(context, step):
