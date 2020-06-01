@@ -15,7 +15,10 @@ with open("po/de.po", 'r') as in_file, open("po/automate.po", 'w') as out_file:
         orig_line = line
         line = re.sub(r"^msgstr \"([^<]?.*)\"", r'msgstr "\1auto{}auto"'.format(line_nr), line)
         line = re.sub(r"^msgstr \"(<[^>]+>)(.+)(<[^>]+>)\"", r'msgstr "\1\2auto{}auto\3"'.format(line_nr), line)
+
         if line != orig_line and len(text) > 0:
+            if orig_line.endswith('\\n"\n'):
+                line = line[:-2] + '\\n"\n'
             i += 1
         else:
             line = orig_line
