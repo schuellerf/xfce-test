@@ -4,6 +4,7 @@ import time
 import math
 import re
 import cv2
+import os
 
 def _resolveNames(context, win, thing = None, ignoreErrors = False):
     """ resolve Label names, as they are called differently once translated
