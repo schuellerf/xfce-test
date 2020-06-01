@@ -304,22 +304,18 @@ else
             "LANG")
                 # getting all languages with title out of the container
                 ALL_LANGS="$(docker run --rm schuellerf/xfce-test:$TAG locale -av |
-                   while read LINE; do
-                      if [[ $LINE =~ ^locale:.* ]]; then
-                        LOC=$(echo "$LINE"|grep -Po "(?<=locale: )[^ ]*");
-                      fi;
-                      if [[ $LINE =~ title ]]; then
-                        T=$(echo "$LINE"|grep -Po "(?<=title \| ).*");
-                        echo "$LOC ($T)";
-                      fi;
-                    done)"
+                   awk '$1 == "locale:" { loc=$2 }
+                        $1 == "title" {
+                                        sub(/^.*\| /, "");
+                                        printf "%s (%s)\n"  loc, $0;
+                                      }')"
 
                 OLD_IFS=${IFS}
                 IFS=$'\n'
                 select l in ${ALL_LANGS}; do
                   case $l in
                     *) if [ ${#l} -ge 1 ]; then
-                        LANG=$(echo $l|grep -Po "^[^ ]+")
+                        LANG=$(echo $l|awk '{print $1}')
                         echo "OK - language changed to \"$LANG\""
                       else
                         echo "OK - language is still \"$LANG\""
