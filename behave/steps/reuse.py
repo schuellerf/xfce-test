@@ -139,7 +139,7 @@ def step_impl(context, thing):
     context._root["_click_animated"](context, click_x, click_y)
     
 OUTPUT_DIR="/data/lang-screenshots"
-    
+
 @when('we now inspect {win}')
 def step_impl(context, win):
     lang = context._root.get('my_lang', None)
@@ -201,6 +201,10 @@ def step_impl(context, win):
 
                 # in both cases we want a screenshot
                 if size:
+                    # SMELL: move to feature function and execute only once -
+                    # also, make OUTPUT_DIR a real parameter
+                    if not os.path.exists(OUTPUT_DIR):
+                        os.makedirs(OUTPUT_DIR)
                     img = cv2.imread(img_name)
                     new_img = cv2.rectangle(img, (size[0], size[1]), (size[0] + size[2], size[1] + size[3]), (0,0,255), 3)
                     filename = f"{OUTPUT_DIR}/{feature}_{line}-{lang}_po{id_num}"
