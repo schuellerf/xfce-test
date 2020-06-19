@@ -111,9 +111,9 @@ build() {
     echo "--- Building $NAME ($BRANCH) ---"
     echo "    Params: $PARAMS"
     cd /git
-    DIR=$(pwd)
-    git clone $URL || export DIR="$NAME cloning failed"
-    cd $NAME || export DIR="$NAME cloning failed"
+    MODULE="$NAME"
+    git clone $URL || export MODULE="$NAME cloning failed"
+    cd $NAME || export MODULE="$NAME cloning failed"
     git checkout $BRANCH || echo "Branch $BRANCH not found - leaving default"
 
     #WORKAROUNDS
@@ -167,7 +167,7 @@ build() {
     else
         echo -n "NOT OK: " >> $VERSION_FILE
     fi
-    echo "${DIR}: $(git describe)" >> $VERSION_FILE
+    echo "${MODULE}: $(git describe)" >> $VERSION_FILE
     flock -u $LOCK_FD
 }
 

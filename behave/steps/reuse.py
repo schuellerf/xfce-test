@@ -208,7 +208,9 @@ def step_impl(context, win):
                         os.makedirs(OUTPUT_DIR)
                     img = cv2.imread(img_name)
                     new_img = cv2.rectangle(img, (size[0], size[1]), (size[0] + size[2], size[1] + size[3]), (0,0,255), 3)
-                    filename = f"{OUTPUT_DIR}/{feature}_{line}-{lang}_po{id_num}"
+                    filename = f"{OUTPUT_DIR}/{feature}_{lang}_po{id_num}_featureline_{line}"
                     multi_appear[filename] = multi_appear.get(filename, 0) + 1
                     cv2.imwrite(f"{filename}_{multi_appear[filename]}.png", new_img)
+            else:
+                print("Neither Automate nor mapping")
     context._root["w_o_mapping"] = w_o_mapping
