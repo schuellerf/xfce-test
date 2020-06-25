@@ -73,19 +73,29 @@ xfce-test build
 ```
 
 If you have enough RAM, let's say more than 10G, you can build all components in parallel like so:
+
 ```
 LOG=build.log PARALLEL_BUILDS=8 ./xfce-test build
 ```
-This drasically reduces the container build time.
 
-# Screenshots
+This drastically reduces the container build time.
 
-When you want to make screenshots for each test step just set the variable `SCREENSHOTS` to `ALWAYS`
+# Normal Test
+
+When you want to make screenshots for each behave test step just set the variable `SCREENSHOTS` to `ALWAYS`
 
 ```
 export SCREENSHOTS=ALWAYS
-xfce-test
 ```
+
+then run your behave tests
+
+# Translation Assistance
+
+TBD ...
+
+TRANSLATION_LANG
+VIDEO_FILE
 
 # Package compilation
 

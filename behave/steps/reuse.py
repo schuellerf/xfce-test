@@ -139,7 +139,7 @@ def step_impl(context, thing):
         # assert click_y > 0, f"I'd rather not click {click_x}/{click_y}"
     context._root["_click_animated"](context, click_x, click_y)
     
-OUTPUT_DIR="/data/lang-screenshots"
+OUTPUT_DIR=os.environ.get("OUTPUT_DIR", "/data/lang-screenshots")
 
 @when('we now inspect {win}')
 def step_impl(context, win):
@@ -147,6 +147,8 @@ def step_impl(context, win):
     w_o_mapping = context._root.get('w_o_mapping', {})
     feature = context._stack[1]["feature"].filename
     line = context._root["my_line"]
+    po_map = context._root.get('po_map', {})
+    locator_map = context._root.get('locator_map', {})
     
     (win, _) = _resolveNames(context, win)
 
@@ -157,7 +159,7 @@ def step_impl(context, win):
     img_name = l.imagecapture()
 
     re_pattern = r"(.*)auto([0-9]+)auto(.*)"
-
+    time.sleep(1)
     obj = l.getobjectlist(win)
     w_clean = re.sub(re_pattern,"\\1\\3",win)
 
@@ -167,50 +169,68 @@ def step_impl(context, win):
         print(f"Get info for {o}")
         info = l.getobjectinfo(win,o)
         o_clean = re.sub(re_pattern,"\\1\\3",o)
-        if 'label' in info:
-            print("Get label")
-            label = l.getobjectproperty(win,o,'label')
+        # "or o_clean" means that the pattern can be applied
+        if 'label' in info or o_clean:
+            if 'label' in info:
+                print("Get real label")
+                label = l.getobjectproperty(win,o,'label')
+            else:
+                print("Use object as label")
+                label = o
+            print(f"   label: {label}")
             size = None
             if label is None:
+                print("label is none")
                 continue
 
+
+            try:
+                size = l.getobjectsize(win,o)
+                if size[0] < 0:
+                    size = None
+            except Exception as e:
+                print(e)
+                size = None
             # check if we find the "automate language"
             m = re.search(re_pattern, label)
             if m:
+                print(f"Found automate here: {label}")
                 id_num = m.group(2)
-                try:
-                    size = l.getobjectsize(win,o)
-                    if size[0] > 0:
-                        w_o_mapping[(w_clean, o_clean)] = id_num
-                        print("Translation #{} is here: ('{}','{}')".format(id_num, w_clean, o_clean))
-                        print("Located in picture: {}".format(size))
-                except Exception as e:
-                    print(e)
+                if size:
+                    # store "translation ID" (i.e. po-line number) for later
+                    w_o_mapping[(w_clean, o_clean, line)] = id_num
+                    print("Translation #{} is here: ('{}','{}')".format(id_num, w_clean, o_clean))
+                    print("Located in picture: {}".format(size))
 
             # or check if we already know the translation from the "automate language"-run
-            elif (win, o) in w_o_mapping.keys():
-                id_num = w_o_mapping[(win, o)]
-                try:
-                    size = l.getobjectsize(win,o)
-                    if size[0] > 0:
-                        print("Found translation #{}".format(id_num))
-                    else:
-                        size = None
-                except Exception as e:
-                    print(e)
-                    size = None
-
-                # in both cases we want a screenshot
+            elif (win, o, line) in w_o_mapping.keys():
+                print(f"Found mapping: {label}")
+                id_num = w_o_mapping[(win, o, line)]
                 if size:
-                    # SMELL: move to feature function and execute only once -
-                    # also, make OUTPUT_DIR a real parameter
+                    print("Found translation #{}".format(id_num))
+
+                    # SMELL: move to feature function and execute only once
                     if not os.path.exists(OUTPUT_DIR):
                         os.makedirs(OUTPUT_DIR)
                     img = cv2.imread(img_name)
-                    new_img = cv2.rectangle(img, (size[0], size[1]), (size[0] + size[2], size[1] + size[3]), (0,0,255), 3)
-                    filename = f"{OUTPUT_DIR}/{feature}_{lang}_po{id_num}_featureline_{line}"
+                    x = size[0]
+                    y = size[1]
+                    w = size[2]
+                    h = size[3]
+                    new_img = cv2.rectangle(img, (x, y), (x + w, y + h), (0,0,255), 3)
+                    timestamp = int(time.time())
+                    filename = f"{feature}_{lang}_po{id_num}_featureline_{line}_{timestamp}"
+                    # for multiple ocurrances of one translation in the same window and same step
                     multi_appear[filename] = multi_appear.get(filename, 0) + 1
-                    cv2.imwrite(f"{filename}_{multi_appear[filename]}.png", new_img)
+                    filename=f"{filename}_{multi_appear[filename]}.png"
+                    cv2.imwrite(os.path.join(OUTPUT_DIR,filename), new_img)
+
+                    if timestamp not in locator_map:
+                        locator_map[timestamp] = []
+
+                    locator_map[timestamp].append({"x": x, "y": y, "w": w, "h": h, "timestamp": timestamp, "name": f"PO{id_num}", "filename": filename})
+
             else:
                 print("Neither Automate nor mapping")
     context._root["w_o_mapping"] = w_o_mapping
+    context._root["locator_map"] = locator_map

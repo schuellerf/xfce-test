@@ -37,8 +37,11 @@ Feature: For translations: Make all texts visible
       when we click on mnuQuit somewhere
       then dlg1 is gone
    Examples: Languages
-     | lang          |
-     | C             |
-     | automate.utf8 |
-     | de_DE.utf8    |
+     | lang             |
+     | C                |
+     | automate         |
+     | TRANSLATION_LANG |
 
+# we have to do it three times as the dialog names as referenced from the behave test are in english and
+# even behave won't work if we can't find the dialogs in the test
+# the framework remembers facts about the dialogs in the test for the "automate language" and "language" run itself

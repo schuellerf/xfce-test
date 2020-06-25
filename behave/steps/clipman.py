@@ -4,6 +4,7 @@ import time
 import os
 import subprocess, signal
 import math
+import re
 
 def app_is_in_ps(app):
     p = subprocess.Popen(['ps', '-A'], stdout=subprocess.PIPE)
@@ -28,7 +29,7 @@ def step_impl(context, app):
         l.launchapp(app, logfiles=("/tmp/%s-stdout.log" % app, "/tmp/%s-stderr.log" % app))
         while True:
             retry -= 1
-            assert(retry > 0)#, "Failed to start " + app)
+            assert retry > 0, "Failed to start " + app
             applist = l.getapplist()
             if app in applist:
                 time.sleep(1)
@@ -43,10 +44,26 @@ def step_impl(context, app):
 def step_impl(context, app, lang):
     retry = 100
     applist = l.getapplist()
-    if lang != "C":
-        context._root['my_lang'] = lang
-    else:
+    if lang == "C":
         context._root['my_lang'] = None
+        my_lang = lang
+    elif lang == "automate":
+        my_lang = os.environ['TRANSLATION_LANG']
+        m = re.search(r"^(.*?)(_.*)?$", my_lang)
+        if (m):
+            post=m.group(2) or ""
+            my_lang = f"{m.group(1)}automate{post}"
+            context._root['my_lang'] = my_lang
+        else:
+            assert False, f"I can't work with the language {my_lang} please set a good language with the environment variable TRANSLATION_LANG"
+        print(f"now: {my_lang}")
+        print(os.environ['TRANSLATION_LANG'])
+    elif lang == "TRANSLATION_LANG":
+        my_lang = os.environ['TRANSLATION_LANG']
+        context._root['my_lang'] = my_lang
+    else:
+        context._root['my_lang'] = lang
+        my_lang = lang
 
     if app not in applist:
         if len(applist) == 0 and app_is_in_ps(app):
@@ -54,10 +71,10 @@ def step_impl(context, app, lang):
             print(app + " was found by ps")
             return
         print(app + " needs to be launched")
-        l.launchapp(app, logfiles=("/tmp/%s-stdout.log" % app, "/tmp/%s-stderr.log" % app), lang=lang)
+        l.launchapp(app, logfiles=("/tmp/%s-stdout.log" % app, "/tmp/%s-stderr.log" % app), lang=my_lang)
         while True:
             retry -= 1
-            assert(retry > 0)#, "Failed to start " + app)
+            assert retry > 0 , "Failed to start " + app
             applist = l.getapplist()
             if app in applist:
                 time.sleep(1)
@@ -93,7 +110,7 @@ def step_impl(context, popupwin, entry, win):
             time.sleep(0.2)
             click_x += h
     #not found
-    assert(False)
+    assert False
 
 # ---- when
 @when('we popup clipman')
@@ -103,7 +120,7 @@ def step_impl(context):
 
 @when('we see {thing:S}')
 def step_impl(context, thing):
-    assert(l.waittillguiexist(thing) == 1)
+    assert l.waittillguiexist(thing) == 1
 
 @when('we type "{text}"')
 def step_impl(context, text):
@@ -132,12 +149,12 @@ def step_impl(context):
 @then('we should see {thing:S}')
 def step_impl(context, thing):
     time.sleep(2) # opening usually needs a task switch to some UI thread to process it
-    assert(l.waittillguiexist(thing) == 1)
+    assert l.waittillguiexist(thing) == 1
 
 @then('we should see {thing:S} in {win:S}')
 def step_impl(context, thing, win):
     time.sleep(2) # opening usually needs a task switch to some UI thread to process it
-    assert(l.waittillguiexist(win, thing) == 1)
+    assert l.waittillguiexist(win, thing) == 1
 
 @then('we should see {thing:S} somewhere')
 def step_impl(context, thing):
@@ -145,9 +162,9 @@ def step_impl(context, thing):
     for w in l.getwindowlist():
         objs = l.getobjectlist(w)
         if thing in objs:
-            assert(True)
+            assert True
             return
-    assert(False)
+    assert False
     
 @then('we should not see {thing:S} somewhere')
 def step_impl(context, thing):
@@ -155,14 +172,14 @@ def step_impl(context, thing):
     for w in l.getwindowlist():
         objs = l.getobjectlist(w)
         if thing in objs:
-            assert(False)
+            assert False 
             return
-    assert(True)
+    assert True
 
 @then('we should not see {thing:S} in {win:S}')
 def step_impl(context, thing, win):
     time.sleep(2) # closing usually needs a task switch to some UI thread to process it
-    assert(l.waittillguinotexist(win, thing) == 1)
+    assert l.waittillguinotexist(win, thing) == 1
 
 @then('close it with {key}')
 def step_impl(context, key):
@@ -172,7 +189,7 @@ def step_impl(context, key):
 @then('{win:S} is gone')
 def step_impl(context, win):
     time.sleep(2) # closing usually needs a task switch to some UI thread to process it
-    assert(l.waittillguinotexist(win) == 1)
+    assert l.waittillguinotexist(win) == 1
 
 @then('we make a short break')
 def step_impl(context):
@@ -180,7 +197,7 @@ def step_impl(context):
 
 @then("we don't expect anything")
 def step_impl(context):
-    assert(True)
+    assert True
 
 @then("we think {checkbox} of {win} is {state}")
 def step_impl(context, checkbox, win, state):
@@ -188,7 +205,7 @@ def step_impl(context, checkbox, win, state):
     if state.lower() in ["checked", "true", "enabled"]:
         check = True
     if check:
-        assert(l.verifycheck(win, checkbox))
+        assert l.verifycheck(win, checkbox)
     else:
-        assert(l.verifyuncheck(win, checkbox))
+        assert l.verifyuncheck(win, checkbox)
 
