@@ -72,13 +72,14 @@ def after_feature(context, feature):
 
     locator_map = context._root.get('locator_map', {})
     OUTPUT_DIR=os.environ.get("OUTPUT_DIR", "/data/lang-screenshots")
+    lang = context._root.get('my_lang', None)
 
 
     if len(locator_map) > 0:
         #video_file = os.environ['VIDEO_FILE']
         #po_file = os.environ['PO_FILE']
         #with open(os.path.join(OUTPUT_DIR,f"{feature.filename}.json"), 'w') as out_file:
-        with open(os.path.join(OUTPUT_DIR,"data.json"), 'w') as out_file:
+        with open(os.path.join(OUTPUT_DIR,f"{lang}_data.json"), 'w') as out_file:
             out_file.write("let translations_json = '")
             out_file.write(json.dumps(locator_map))
             out_file.write("';\n")

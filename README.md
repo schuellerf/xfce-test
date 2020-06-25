@@ -92,10 +92,11 @@ then run your behave tests
 
 # Translation Assistance
 
-TBD ...
+This is highly experimental!
 
-TRANSLATION_LANG
-VIDEO_FILE
+If you are fine that some of your files on your computer might get deleted, 
+you could run /behave_tests/translations.sh and see the resulting html file in /data/lang-screenshots
+
 
 # Package compilation
 

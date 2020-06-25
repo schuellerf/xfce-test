@@ -1,8 +1,10 @@
 #!/usr/bin/bash
 
-export TRANSLATION_LANG=${TRANSLATION_LANG:-de_DE.utf8}
-F=de_DE.html
+LANG=de_DE.utf8
+export TRANSLATION_LANG=${TRANSLATION_LANG:-${LANG}}
 PO_FILE=/git/xfce4-clipman-plugin/po/de.po
+
+F=${LANG}.html
 
 export VIDEO_PREFIX="lang-screenshots/xfce-test_video_"
 
@@ -62,7 +64,7 @@ cat - <<EOF >> $F
   pointer-events: none;
 }
 </style>
-<script type="text/javascript" src="data.json"></script>
+<script type="text/javascript" src="${LANG}_data.json"></script>
 <script>
 
 function show_details(o) {
@@ -82,6 +84,9 @@ function draw_canvas(element)
   t = Math.floor(element.currentTime) + parseInt(element.getAttribute('my_start_time'));
   for (i in translations[t]) {
     item = translations[t][i];
+    if (document.getElementById("po_filter").value.length > 0 && document.getElementById("po_filter").value.toUpperCase() != item.name) {
+      continue
+    }
     ctx.lineWidth = "2";
     ctx.strokeStyle = "red";
     size = item.h;
@@ -107,7 +112,14 @@ function resize_canvas(element)
 </head>
 <body>
 <video id="video" my_start_time="$start_time" src="$video" ontimeupdate="draw_canvas(this)" onplay="resize_canvas(this)" controls ></video><canvas class="canvas" id="canvas"></canvas>
+<form>
+<button type="button" onclick="document.getElementById('video').pause();document.getElementById('video').currentTime=Math.floor(document.getElementById('video').currentTime)-1">&lt;</button>
+<button type="button" onclick="document.getElementById('video').pause();document.getElementById('video').currentTime=Math.floor(document.getElementById('video').currentTime)+1">&gt;</button><br/>
+PO-line highlight in video: <input type="text" id="po_filter" onkeyup="draw_canvas(document.getElementById('video'))"/><br/>
+(leave blank to highlight all)
+</form>
 <hr/>
+<h1>${PO_FILE}</h1>
 <div class="pofile">
 EOF
 
@@ -130,7 +142,7 @@ pic_time=$(echo $p|grep -Po "(?<=_)[0-9]{4,}(?=_)")
 stop_pic=$(( $pic_time - $start_time ))
 #start_pic=$(( $stop_pic - 5 ))
 cat - <<EOF >> $F
-<div onclick='document.getElementById("video").pause();document.getElementById("video").currentTime=$stop_pic;window.scrollTo(0,0)'>$p</div>:<br/><img src="$p" onclick='document.getElementById("video").pause();document.getElementById("video").currentTime=$stop_pic;window.scrollTo(0,0)'/><br/>
+<div onclick='document.getElementById("po_filter").value="PO${i}";document.getElementById("video").pause();document.getElementById("video").currentTime=$stop_pic;window.scrollTo(0,0)'>$p</div>:<br/><img src="$p" onclick='document.getElementById("po_filter").value="PO${i}";document.getElementById("video").pause();document.getElementById("video").currentTime=$stop_pic;window.scrollTo(0,0)'/><br/>
 EOF
   done
   echo -n "</div></div>" >> $F
