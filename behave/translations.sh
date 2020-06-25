@@ -36,6 +36,7 @@ start_time=$(cat /tmp/video_start_time)
 echo "<HTML>" > $F
 cat - <<EOF >> $F
 <head>
+<meta charset="UTF-8">
 <style>
 .pofile {
     font-family: monospace; 
