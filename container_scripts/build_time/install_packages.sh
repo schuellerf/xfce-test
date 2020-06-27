@@ -27,7 +27,7 @@ sudo apt-get -y remove libxfce4ui-1-0 libxfce4ui-2-0
 sudo rm -rf /var/lib/apt/lists/*
 ) >$PIPE &
 
-echo "-${TRAVIS}-"
+echo "Running in travis: ${TRAVIS}"
 if [ "$TRAVIS" == "FALSE" ]; then
   cat <$PIPE
 else

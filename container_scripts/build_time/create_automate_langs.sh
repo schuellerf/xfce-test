@@ -1,5 +1,9 @@
 #!/usr/bin/bash
 
+PIPE=$(mktemp -u)
+mkfifo $PIPE
+( 
+
 set +x +e
 
 pushd /usr/share/i18n/locales/
@@ -19,3 +23,13 @@ for l in $VALID_LANGS; do
   locale-gen $CUR_LANG
 done
 popd
+
+) >$PIPE &
+
+echo "Running in travis: ${TRAVIS}"
+if [ "$TRAVIS" == "FALSE" ]; then
+  cat <$PIPE
+else
+  echo Filtered package output to save output log size
+  cat <$PIPE >/dev/null
+fi
