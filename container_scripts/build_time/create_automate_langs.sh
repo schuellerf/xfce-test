@@ -24,7 +24,7 @@ for l in $VALID_LANGS; do
 done
 popd
 
-) >$PIPE &
+) &>$PIPE &
 
 echo "Running in travis: ${TRAVIS}"
 if [ "$TRAVIS" == "FALSE" ]; then
