@@ -2,7 +2,8 @@
 
 LANG=de_DE.utf8
 export TRANSLATION_LANG=${TRANSLATION_LANG:-${LANG}}
-PO_FILE=/git/xfce4-clipman-plugin/po/de.po
+PO_FILE=${PO_FILE:-/git/xfce4-clipman-plugin/po/de.po}
+BEHAVE_TEST=${BEHAVE_TEST:-translation_xfce4-clipman-plugin.feature}
 
 F=${LANG}.html
 
@@ -23,7 +24,7 @@ export OVERLAY_FILE=${OVERLAY_FILE:-/tmp/video.txt}
 
 # -D DEBUG_ON_ERROR
 
-behave translation_xfce4-clipman-plugin.feature | while read LINE; do
+behave ${BEHAVE_TEST} | while read LINE; do
   echo "$LINE" | tee -a /tmp/text_all.txt
   tail -n5 /tmp/text_all.txt > /tmp/text_cut.txt
   mv /tmp/text_cut.txt ${OVERLAY_FILE}
