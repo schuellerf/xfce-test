@@ -406,7 +406,7 @@ case $mode in
         echo "You are building the container: $TAG"
         echo "DOWNLOAD_DATE is set to ${DOWNLOAD_DATE}"
         echo "Output of the build is written to ${LOG}"
-        docker build --build-arg PARALLEL_BUILDS=${PARALLEL_BUILDS} --build-arg DOWNLOAD_DATE=${DOWNLOAD_DATE} --tag schuellerf/xfce-test:$TAG . > ${LOG}
+        docker build --build-arg TRAVIS=${TRAVIS} --build-arg PARALLEL_BUILDS=${PARALLEL_BUILDS} --build-arg DOWNLOAD_DATE=${DOWNLOAD_DATE} --tag schuellerf/xfce-test:$TAG . > ${LOG}
         leave 0
     ;;
 esac
