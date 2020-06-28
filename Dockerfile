@@ -8,30 +8,30 @@ ARG TRAVIS=FALSE
 ENV TRAVIS=$TRAVIS
 
 
-# Test specific
-# python-wheel is a missing dependency from behave
-# psmisc for "killall"
 RUN apt-get update \
- && apt-get -y --no-install-recommends install apt-utils psmisc ffmpeg x11-utils libxrandr-dev \
- && apt-get -y --no-install-recommends install dirmngr git python3-pip python3-dogtail python3-psutil vim sudo gdb valgrind tmuxinator tmux ltrace \
+ && apt-get -y --no-install-recommends install apt-utils \
+ && apt-get -y --no-install-recommends install dirmngr git vim sudo \
  && rm -rf /var/lib/apt/lists/*
+
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
 # Create the directory for version_info.txt
 RUN useradd -ms /bin/bash xfce-test_user
 
 RUN adduser xfce-test_user sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 
 COPY --chown=xfce-test_user container_scripts /container_scripts
 RUN chmod a+x /container_scripts/*.sh /container_scripts/*.py
-
-RUN /usr/bin/pip3 install behave
 
 # Enable source repositories
 RUN sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
 
 # Xfce specific build dependencies and default panel plugins
 RUN /container_scripts/build_time/install_packages.sh
+
+RUN /usr/bin/pip3 install behave
 
 #needed for LDTP and friends
 RUN /usr/bin/dbus-run-session /usr/bin/gsettings set org.gnome.desktop.interface toolkit-accessibility true

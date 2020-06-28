@@ -5,6 +5,7 @@ RUN_AS=
 
 LOG=${LOG:-/dev/stdout}
 PARALLEL_BUILDS=${PARALLEL_BUILDS:-0}
+TRAVIS=${TRAVIS:-FALSE}
 
 install_me() {
     if grep "^ID=arch" /etc/*-release >/dev/null 2>&1; then
