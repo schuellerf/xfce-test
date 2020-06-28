@@ -9,6 +9,7 @@ set +x +e
 pushd /usr/share/i18n/locales/
 VALID_LANGS=$(ls|egrep -o "^(...?$)|^(...?_[^@]+)"|sort -u)
 for l in $VALID_LANGS; do
+  echo "Creating $l"
   if [[ $l == *_* ]]; then
       CUR_LANG="${l/_/automate_}"
   else
@@ -18,13 +19,13 @@ for l in $VALID_LANGS; do
   sed -i -E "s/(language +\".*)(\")/\1 Automate\2/" $CUR_LANG
   sed -i -E "s/(lang_lib +\".*)(\")/\1automate\2/" $CUR_LANG
   sed -i -E "s/(lang_name +\".*)(\")/\1 Automate\2/" $CUR_LANG
-  localedef -i $CUR_LANG -f UTF-8 ${CUR_LANG}.UTF-8 -c -v || echo "Ignoring warnings..."
-  echo "$CUR_LANG UTF-8" > /var/lib/locales/supported.d/$CUR_LANG
-  locale-gen $CUR_LANG
+  localedef -i $CUR_LANG -f UTF-8 ${CUR_LANG}.UTF-8 -c -v &>$PIPE || echo "Ignoring warnings..."
+  echo "$CUR_LANG UTF-8" > /var/lib/locales/supported.d/$CUR_LANG &>$PIPE
+  locale-gen $CUR_LANG &>$PIPE 
 done
 popd
 
-) &>$PIPE &
+) &
 
 echo "Running in travis: ${TRAVIS}"
 if [ "$TRAVIS" == "FALSE" ]; then
