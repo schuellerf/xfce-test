@@ -1,20 +1,25 @@
 #!/usr/bin/bash
+echo "Running in travis: ${TRAVIS}"
+if [ "$TRAVIS" == "FALSE" ]; then
+  PIPE=/dev/stdout
+else
+  echo Filtered package output to save output log size
+  PIPE=/dev/null
+fi
 
-PIPE=$(mktemp -u)
-mkfifo $PIPE
-( 
 
 set +x +e
 
 pushd /usr/share/i18n/locales/
 VALID_LANGS=$(ls|egrep -o "^(...?$)|^(...?_[^@]+)"|sort -u)
 for l in $VALID_LANGS; do
-  echo "Creating $l"
+  
   if [[ $l == *_* ]]; then
       CUR_LANG="${l/_/automate_}"
   else
       CUR_LANG="${l}automate"
   fi
+  echo "Creating $CUR_LANG"
   cp $l $CUR_LANG
   sed -i -E "s/(language +\".*)(\")/\1 Automate\2/" $CUR_LANG
   sed -i -E "s/(lang_lib +\".*)(\")/\1automate\2/" $CUR_LANG
@@ -24,13 +29,3 @@ for l in $VALID_LANGS; do
   locale-gen $CUR_LANG &>$PIPE 
 done
 popd
-
-) &
-
-echo "Running in travis: ${TRAVIS}"
-if [ "$TRAVIS" == "FALSE" ]; then
-  cat <$PIPE
-else
-  echo Filtered package output to save output log size
-  cat <$PIPE >/dev/null
-fi
