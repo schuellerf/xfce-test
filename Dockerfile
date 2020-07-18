@@ -53,7 +53,7 @@ RUN echo "Newly cloning all repos as date-flag changed to ${DOWNLOAD_DATE}"
 ARG AUTOGEN_OPTIONS="--disable-debug --enable-maintainer-mode --host=x86_64-linux-gnu \
                     --build=x86_64-linux-gnu --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu \
                     --libexecdir=/usr/lib/x86_64-linux-gnu --sysconfdir=/etc --localstatedir=/var --enable-gtk-doc\
-                    --enable-vala=yes --enable-introspection=yes"
+                    --enable-vala=yes --enable-introspection=yes --enable-sound-settings"
 ENV AUTOGEN_OPTIONS $AUTOGEN_OPTIONS
 
 
