@@ -11,10 +11,6 @@ RUN \
           git python-dogtail ldtp libglib2.0-bin python-libvirt python-setuptools python-pip libvirt0 libvirt-dev liblzma-dev libyaml-dev && \
   rm -rf /var/lib/apt/lists/*
 
-RUN git clone --branch ${AVOCADO_BRANCH} https://github.com/avocado-framework/avocado.git && \
-    cd avocado && pip install -r requirements.txt && python setup.py install && make link && \
-    echo "pip freeze" >> /etc/avocado/sysinfo/commands
-
 #needed for LDTP and friends
 RUN /usr/bin/gsettings set org.gnome.desktop.interface toolkit-accessibility true
 
