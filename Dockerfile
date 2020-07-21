@@ -1,6 +1,7 @@
 FROM ubuntu:16.04
 MAINTAINER Florian Schüller <florian.schueller@gmail.com>
 
+ENV DEBIAN_FRONTEND noninteractive
 ENV AVOCADO_BRANCH ${AVOCADO_BRANCH:-master}
 
 #Test specific
