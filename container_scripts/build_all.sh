@@ -32,6 +32,7 @@ REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfwm4.git xfwm4")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-appfinder.git xfce4-appfinder")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/tumbler.git tumbler")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/bindings/xfce4-vala.git xfce4-vala")
+REPOS+=("meson ${MAIN_BRANCH} https://github.com/shimmerproject/Greybird.git Greybird")
 REPOS+=("sync")
 
 APPS="gigolo
@@ -112,7 +113,7 @@ build() {
     echo "    Params: $PARAMS"
     cd /git
     MODULE="$NAME"
-    git clone $URL || export MODULE="$NAME cloning failed"
+    git clone $URL $NAME|| export MODULE="$NAME cloning failed"
     cd $NAME || export MODULE="$NAME cloning failed"
     git checkout $BRANCH || echo "Branch $BRANCH not found - leaving default"
 
@@ -154,6 +155,14 @@ build() {
             RET=$?
 
             sudo python3 setup.py install
+        ;;
+        "meson")
+            meson --prefix=/usr builddir
+            cd builddir
+            ninja
+            RET=$?
+
+            sudo ninja install
         ;;
         *)
             echo "Unknown build type: >$1<"

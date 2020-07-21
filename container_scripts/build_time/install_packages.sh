@@ -22,6 +22,9 @@ PACKAGES+=" libdbusmenu-gtk3-dev"
 PACKAGES+=" libgtop2-dev"
 PACKAGES+=" libpython3.8-dev"
 
+# Greybird
+PACKAGES+=" autoconf libgdk-pixbuf2.0-dev libglib2.0-bin librsvg2-dev meson ruby-sass sassc"
+
 # Test specific
 # python-wheel is a missing dependency from behave
 # psmisc for "killall"
