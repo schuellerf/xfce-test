@@ -11,7 +11,7 @@ echo "# The OK marks if building this component in the current container was suc
 # (BUILD_TYPE BRANCH URL NAME) tuples:
 REPOS=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-dev-tools.git xfce4-dev-tools")
 REPOS+=("sync")
-REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4util.git libxfce4util")
+REPOS+=("autogen libxfce4util-4.15.1 ${XFCE_BASE}/xfce/libxfce4util.git libxfce4util")
 REPOS+=("sync")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfconf.git xfconf")
 REPOS+=("sync")
@@ -32,6 +32,7 @@ REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfwm4.git xfwm4")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-appfinder.git xfce4-appfinder")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/tumbler.git tumbler")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/bindings/xfce4-vala.git xfce4-vala")
+REPOS+=("meson ${MAIN_BRANCH} https://github.com/shimmerproject/Greybird.git Greybird")
 REPOS+=("sync")
 
 APPS="gigolo
@@ -111,15 +112,18 @@ build() {
     echo "--- Building $NAME ($BRANCH) ---"
     echo "    Params: $PARAMS"
     cd /git
-    DIR=$(pwd)
-    git clone $URL || export DIR="$NAME cloning failed"
-    cd $NAME || export DIR="$NAME cloning failed"
+    MODULE="$NAME"
+    git clone $URL $NAME|| export MODULE="$NAME cloning failed"
+    cd $NAME || export MODULE="$NAME cloning failed"
     git checkout $BRANCH || echo "Branch $BRANCH not found - leaving default"
 
     #WORKAROUNDS
     if [ "$NAME" == "xfce4-vala" ]; then
         sed -i "s/vala_api='0...'/vala_api='0.44'/" configure.ac.in
     fi
+
+    python3 /container_scripts/patch_automate_po.py || echo "Just trying to create the \"automate\" language as a first test"
+
     case $BUILD_TYPE in
         "autogen")
             ./autogen.sh $PARAMS
@@ -147,10 +151,18 @@ build() {
             sudo make clean
         ;;
         "python")
-            python setup.py build
+            python3 setup.py build
             RET=$?
 
-            sudo python setup.py install
+            sudo python3 setup.py install
+        ;;
+        "meson")
+            meson --prefix=/usr builddir
+            cd builddir
+            ninja
+            RET=$?
+
+            sudo ninja install
         ;;
         *)
             echo "Unknown build type: >$1<"
@@ -164,7 +176,7 @@ build() {
     else
         echo -n "NOT OK: " >> $VERSION_FILE
     fi
-    echo "${DIR}: $(git describe)" >> $VERSION_FILE
+    echo "${MODULE}: $(git describe)" >> $VERSION_FILE
     flock -u $LOCK_FD
 }
 
@@ -183,14 +195,15 @@ for tuple in "${REPOS[@]}"; do
     URL=$3
     NAME=$4
     PARAMS=${5:-$AUTOGEN_OPTIONS}
+    i=$(( $i + 1 ))
     if [ "$BUILD_TYPE" == "sync" ]; then
         wait
+        echo " --- (${i}/${#REPOS[@]}) sync step for builds ---"
         continue
     fi
     if [ $(jobs -p |wc -w) -ge $PARALLEL_BUILDS ]; then
         wait -n
     fi
-    i=$(( $i + 1 ))
     build $BUILD_TYPE $BRANCH $URL $NAME "$PARAMS" 2>&1 | xargs -n1 -d '\n' echo "$NAME (${i}/${#REPOS[@]}): " &
 done
 

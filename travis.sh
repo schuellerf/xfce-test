@@ -5,7 +5,7 @@ sleep 10 # give xfce some time to start
 
 docker exec $(cat .docker_ID) bash -c "cat ~/version_info.txt"
 
-docker exec --detach $(cat .docker_ID) /usr/bin/dbus-run-session /usr/bin/ldtp || docker logs $(cat .docker_ID)
+docker exec --detach $(cat .docker_ID) /usr/bin/dbus-run-session /usr/local/bin/ldtp || docker logs $(cat .docker_ID)
 sleep 10 # give ldtp some time to start
 
 docker exec $(cat .docker_ID) bash -c "/container_scripts/full_test_video.sh" || docker logs $(cat .docker_ID)

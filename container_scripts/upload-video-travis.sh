@@ -9,5 +9,5 @@ For details see https://github.com/schuellerf/xfce-test/
 
 The versions of the applications in the video are the following:
 $(cat ~xfce-test_user/version_info.txt)"
-    python upload-video.py --file $f --title "${TITLE}"  --description "${DESCRIPTION}" --noauth_local_webserver
+    python3 upload-video.py --file $f --title "${TITLE}"  --description "${DESCRIPTION}" --noauth_local_webserver
 done

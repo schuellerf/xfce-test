@@ -1,53 +1,48 @@
-FROM ubuntu:19.10
+FROM ubuntu:20.04
 MAINTAINER Florian Schüller <florian.schueller@gmail.com>
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV DISPLAY ${DISPLAY:-:1}
 
-# Test specific
-# python-wheel is a missing dependency from behave
-# psmisc for "killall"
+ARG TRAVIS=FALSE
+ENV TRAVIS=$TRAVIS
+
+
 RUN apt-get update \
- && apt-get -y --no-install-recommends install apt-utils psmisc ffmpeg x11-utils libxrandr-dev \
- && apt-get -y --no-install-recommends install dirmngr git python-ldtp ldtp python-pip python-wheel python3-dogtail python-psutil python-setuptools vim sudo gdb valgrind tmuxinator tmux ltrace \
+ && apt-get -y --no-install-recommends install apt-utils \
+ && apt-get -y --no-install-recommends install dirmngr git vim sudo \
  && rm -rf /var/lib/apt/lists/*
 
-RUN /usr/bin/pip install behave
-
-# Enable source repositories
-RUN sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
-
-# Xfce specific build dependencies and default panel plugins
-RUN apt-get update \
- && apt-get -y --no-install-recommends install gnome-themes-standard libglib2.0-bin build-essential libgtk-3-dev gtk-doc-tools libgtk2.0-dev libx11-dev libglib2.0-dev libwnck-3-dev intltool libdbus-glib-1-dev liburi-perl x11-xserver-utils libvte-2.91-dev dbus-x11 strace libgl1-mesa-dev adwaita-icon-theme libwnck-dev adwaita-icon-theme-full cmake libsoup2.4-dev libpcre2-dev libgtksourceview-3.0-dev libtag1-dev \
- && apt-get -y --no-install-recommends install libgstreamer1.0-0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-doc gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
- python-distutils-extra  libxss-dev libindicator3-dev libxmu-dev libburn-dev libisofs-dev  libpulse-dev libkeybinder-3.0-dev libmpd-dev valac gobject-introspection libgirepository1.0-dev libvala-0.44-dev librsvg2-dev libtagc0-dev libdbusmenu-gtk3-dev libgtop2-dev libtool libnotify-dev libxklavier-dev libexif-dev libgudev-1.0-dev libupower-glib-dev \
- && rm -rf /var/lib/apt/lists/*
-
-#needed for LDTP and friends
-RUN /usr/bin/dbus-run-session /usr/bin/gsettings set org.gnome.desktop.interface toolkit-accessibility true
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
 # Create the directory for version_info.txt
 RUN useradd -ms /bin/bash xfce-test_user
 
 RUN adduser xfce-test_user sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN echo "Set disable_coredump false" >> /etc/sudo.conf
+
+COPY --chown=xfce-test_user container_scripts /container_scripts
+RUN chmod a+x /container_scripts/*.sh /container_scripts/*.py
+
+# Enable source repositories
+RUN sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
+
+# Xfce specific build dependencies and default panel plugins
+RUN /container_scripts/build_time/install_packages.sh
+
+RUN /usr/bin/pip3 install behave
+
+#needed for LDTP and friends
+RUN /usr/bin/dbus-run-session /usr/bin/gsettings set org.gnome.desktop.interface toolkit-accessibility true
+
 
 # Install _all_ languages for testing
 RUN apt-get update \
  && apt-get -y --no-install-recommends install transifex-client xautomation $(apt-cache search language-pack|grep -oP "^language-pack-...?(?= )") \
  && rm -rf /var/lib/apt/lists/*
 
-RUN pip install opencv-python google-api-python-client oauth2client
-
-RUN cp /usr/share/i18n/locales/en_GB /usr/share/i18n/locales/automate
-RUN sed -i -E "s/Language: en/Language: automate/" /usr/share/i18n/locales/automate
-RUN sed -i -E "s/lang_lib +\"eng\"/lang_lib    \"automate\"/" /usr/share/i18n/locales/automate
-RUN sed -i -E "s/lang_name +\"English\"/lang_name     \"Automate\"/" /usr/share/i18n/locales/automate
-RUN bash -c "cd /usr/share/i18n/locales;localedef -i automate -f UTF-8 automate.UTF-8 -c -v || echo Ignoring warnings..." \
- && echo "automate UTF-8" > /var/lib/locales/supported.d/automate \
- && locale-gen automate
-RUN dpkg-reconfigure fontconfig
+RUN pip3 install opencv-python google-api-python-client oauth2client
 
 # Line used to invalidate all git clones
 ARG PARALLEL_BUILDS=0
@@ -58,8 +53,11 @@ RUN echo "Newly cloning all repos as date-flag changed to ${DOWNLOAD_DATE}"
 ARG AUTOGEN_OPTIONS="--disable-debug --enable-maintainer-mode --host=x86_64-linux-gnu \
                     --build=x86_64-linux-gnu --prefix=/usr --libdir=/usr/lib/x86_64-linux-gnu \
                     --libexecdir=/usr/lib/x86_64-linux-gnu --sysconfdir=/etc --localstatedir=/var --enable-gtk-doc\
-                    --enable-vala=yes --enable-introspection=yes"
+                    --enable-vala=yes --enable-introspection=yes --enable-sound-settings"
 ENV AUTOGEN_OPTIONS $AUTOGEN_OPTIONS
+
+
+RUN /container_scripts/build_time/create_automate_langs.sh
 
 USER xfce-test_user
 ENV HOME /home/xfce-test_user
@@ -69,13 +67,9 @@ RUN sudo mkdir /git && sudo chown xfce-test_user /git
 
 # Rather use my patched version
 RUN cd git \
- && git clone https://github.com/schuellerf/ldtp2.git \
+ && git clone -b python3 https://github.com/schuellerf/ldtp2.git \
  && cd ldtp2 \
- && python setup.py build \
- && sudo python setup.py install
-
-COPY --chown=xfce-test_user container_scripts /container_scripts
-RUN chmod a+x /container_scripts/*.sh /container_scripts/*.py
+ && sudo pip3 install -e .
 
 RUN /container_scripts/build_all.sh
 
