@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 
-import httplib
+try:
+    import httplib
+except ImportError:  # python3 compatibility
+    from http import client
+    httplib = client
 import httplib2
 import os
 import random
