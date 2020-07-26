@@ -71,7 +71,6 @@ xfce4-genmon-plugin
 xfce4-indicator-plugin
 xfce4-mailwatch-plugin
 xfce4-netload-plugin
-xfce4-netload-plugin
 xfce4-pulseaudio-plugin
 xfce4-statusnotifier-plugin
 xfce4-places-plugin

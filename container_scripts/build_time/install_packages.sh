@@ -25,6 +25,31 @@ PACKAGES+=" libpython3.8-dev"
 # Greybird
 PACKAGES+=" autoconf libgdk-pixbuf2.0-dev libglib2.0-bin librsvg2-dev meson ruby-sass sassc"
 
+# at least: for xfce4-power-manager, xfce4-settings, xfdesktop, xfce4-notifyd, xfce4-volumed-pulse, xfce4-pulseaudio-plugin, xfce4-places-plugin, xfce4-sensors-plugin
+PACKAGES+=" libnotify-dev"
+
+# for catfish:
+PACKAGES+=" python-distutils-extra"
+
+# for ristretto
+PACKAGES+=" libexif-dev"
+
+# for xfce4-vala
+PACKAGES+=" libvala-0.48-dev"
+
+# for xfce4-screensaver, xfce4-xkb-plugin
+PACKAGES+=" libxklavier-dev"
+
+# for xfce4-mixer
+PACKAGES+=" libgstreamer-plugins-base1.0-dev"
+
+# for parole
+PACKAGES+=" libgstreamer1.0-dev"
+
+# for  xfce4-mailwatch-plugin
+PACKAGES+=" libgcrypt20-dev"
+
+
 # Test specific
 # python-wheel is a missing dependency from behave
 # psmisc for "killall"
