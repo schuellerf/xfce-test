@@ -11,7 +11,7 @@ echo "# The OK marks if building this component in the current container was suc
 # (BUILD_TYPE BRANCH URL NAME) tuples:
 REPOS=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfce4-dev-tools.git xfce4-dev-tools")
 REPOS+=("sync")
-REPOS+=("autogen libxfce4util-4.15.1 ${XFCE_BASE}/xfce/libxfce4util.git libxfce4util")
+REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/libxfce4util.git libxfce4util")
 REPOS+=("sync")
 REPOS+=("autogen ${MAIN_BRANCH} ${XFCE_BASE}/xfce/xfconf.git xfconf")
 REPOS+=("sync")
