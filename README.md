@@ -14,8 +14,8 @@ The main usecases are:
 
 The automatically created videos are on [my youtube channel](https://www.youtube.com/user/schuellerf) for now.
 
-This is a Xubuntu 18.10, with a build from git sources of all core Xfce components + some apps for testing.
-Other distributions and versions are on other branches!
+This containers are based on ubuntu with a build from git sources of all core Xfce components + some apps for testing.
+Other distributions and versions will be supported at a later stage!
 
 # Travis
 
