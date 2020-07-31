@@ -2,7 +2,7 @@
 
 XFCE_BASE=https://gitlab.xfce.org
 
-MAIN_BRANCH=master
+MAIN_BRANCH=last_release
 
 VERSION_FILE="/home/xfce-test_user/version_info.txt"
 
@@ -114,6 +114,9 @@ build() {
     MODULE="$NAME"
     git clone $URL $NAME|| export MODULE="$NAME cloning failed"
     cd $NAME || export MODULE="$NAME cloning failed"
+    if [ "$BRANCH" == "last_release" ]; then
+        BRANCH=$(git describe --match xfce-* |awk -F - '//{ printf "%s-%s",$1,$2 }')
+    fi
     git checkout $BRANCH || echo "Branch $BRANCH not found - leaving default"
 
     #WORKAROUNDS
@@ -183,6 +186,7 @@ LOCKFILE=/tmp/$$.lock
 touch $LOCKFILE
 exec {LOCK_FD}<>$LOCKFILE
 
+PARALLEL_BUILDS=${PARALLEL_BUILDS:-1}
 export LOCK_FD
 echo "Building $PARALLEL_BUILDS in parallel"
 echo "With AUTOGEN_OPTIONS: $AUTOGEN_OPTIONS"
