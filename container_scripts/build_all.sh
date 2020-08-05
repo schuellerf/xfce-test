@@ -55,7 +55,7 @@ for a in $APPS; do
 done
 
 REPOS+=("make ${MAIN_BRANCH} ${XFCE_BASE}/apps/xfce4-panel-profiles.git xfce4-panel-profiles --prefix=/usr")
-REPOS+=("python ${MAIN_BRANCH} ${XFCE_BASE}/apps/catfish.git catfish")
+REPOS+=("python2 ${MAIN_BRANCH} ${XFCE_BASE}/apps/catfish.git catfish")
 
 panelplugins="
 xfce4-notes-plugin
@@ -157,6 +157,12 @@ build() {
             RET=$?
 
             sudo python3 setup.py install
+        ;;
+        "python2")
+            python2 setup.py build
+            RET=$?
+
+            sudo python2 setup.py install
         ;;
         "meson")
             meson --prefix=/usr builddir
