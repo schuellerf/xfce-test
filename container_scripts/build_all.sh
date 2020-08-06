@@ -129,40 +129,40 @@ build() {
     case $BUILD_TYPE in
         "autogen")
             ./autogen.sh $PARAMS
-            make -j8
+            make -j8 >$PIPE
             RET=$?
 
-            sudo make install
-            sudo make clean
+            sudo make install >$PIPE
+            sudo make clean >$PIPE
         ;;
         "make")
             ./configure $PARAMS
-            make -j8
+            make -j8 >$PIPE
             RET=$?
 
-            sudo make install
-            sudo make clean
+            sudo make install >$PIPE
+            sudo make clean >$PIPE
         ;;
         "cmake")
             mkdir build && cd build
-            cmake ..
-            make -j8
+            cmake .. >$PIPE
+            make -j8 >$PIPE
             RET=$?
 
-            sudo make install
-            sudo make clean
+            sudo make install >$PIPE
+            sudo make clean >$PIPE
         ;;
         "python")
             python3 setup.py build
             RET=$?
 
-            sudo python3 setup.py install
+            sudo python3 setup.py install >$PIPE
         ;;
         "python2")
             python2 setup.py build
             RET=$?
 
-            sudo python2 setup.py install
+            sudo python2 setup.py install >$PIPE
         ;;
         "meson")
             meson --prefix=/usr builddir
@@ -191,6 +191,13 @@ build() {
 LOCKFILE=/tmp/$$.lock
 touch $LOCKFILE
 exec {LOCK_FD}<>$LOCKFILE
+
+if [ "$TRAVIS" == "FALSE" ]; then
+  PIPE=/dev/stdout
+else
+  echo Filtered package output to save output log size
+  PIPE=/dev/null
+fi
 
 PARALLEL_BUILDS=${PARALLEL_BUILDS:-1}
 export LOCK_FD
