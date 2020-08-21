@@ -115,7 +115,7 @@ build() {
     git clone $URL $NAME|| export MODULE="$NAME cloning failed"
     cd $NAME || export MODULE="$NAME cloning failed"
     if [ "$BRANCH" == "last_release" ]; then
-        BRANCH=$(git describe --match xfce-* |awk -F - '//{ printf "%s-%s",$1,$2 }')
+        BRANCH=$(git describe --match xfce*|sed -E "s/-[0-9]+-[g0-9a-f]+$//g")
     fi
     git checkout $BRANCH || echo "Branch $BRANCH not found - leaving default"
 
