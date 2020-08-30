@@ -13,17 +13,7 @@ RUN apt-get update \
  && apt-get -y --no-install-recommends install dirmngr git vim sudo \
  && rm -rf /var/lib/apt/lists/*
 
-<<<<<<< HEAD
-# audio specific
-RUN apt-get update \
- && apt-get -y --no-install-recommends install paprefs pavucontrol espeak \
- && rm -rf /var/lib/apt/lists/*
-
-#needed for LDTP and friends
-RUN /usr/bin/dbus-run-session /usr/bin/gsettings set org.gnome.desktop.interface toolkit-accessibility true
-=======
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
->>>>>>> master
 
 # Create the directory for version_info.txt
 RUN useradd -ms /bin/bash xfce-test_user
