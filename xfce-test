@@ -3,6 +3,9 @@
 DOWNLOAD_DATE=${DOWNLOAD_DATE:-$(date +%Y%m%d)}
 RUN_AS=
 
+LOG=${LOG:-/dev/stdout}
+PARALLEL_BUILDS=${PARALLEL_BUILDS:-0}
+TRAVIS=${TRAVIS:-FALSE}
 
 install_me() {
     if grep "^ID=arch" /etc/*-release >/dev/null 2>&1; then
@@ -17,7 +20,7 @@ install_me() {
     BASH_COMPLETION="#begin-xfce-test
 _xfce-test_completions()
 {
-  COMPREPLY=(\$(compgen -W \"${WORK_MODES[*]}\" \"\${COMP_WORDS[1]}\"))
+  COMPREPLY=(\$(compgen -W \"${MODES[*]}\" \"\${COMP_WORDS[1]}\"))
 }
 
 complete -F _xfce-test_completions xfce-test
@@ -43,6 +46,44 @@ complete -F _xfce-test_completions xfce-test
     echo "You can just call it with 'xfce-test'"
 }
 
+get-free-display(){
+    declare -a displays
+    # find all Xephyr instances and loop through them
+    while read line; do
+        # this lists the actual command that is running, and replaces
+        # the \x00 with a space
+        var="$(cat /proc/$line/cmdline | sed -e 's/\x00/ /g'; echo)"
+        # loop through the string
+        for word in $var; do
+            # if it matches a regex, output the number of the display
+            if [[ $word =~ ^:[0-9] ]]; then
+                displays+=("${word/:/}")
+            fi
+        done
+    done <<< "$(pgrep -f Xephyr)"
+    # the initial one
+    display=1
+    while true; do
+        for d in "${displays[@]}"; do
+            if [[ "$display" == "$d" ]]; then
+                display=$(( $display + 1 ))
+            fi
+        done
+        echo $display
+        return 0
+    done
+}
+
+# use this X display number for the tests
+export DISPLAY_NUM=$(get-free-display)
+
+CONTAINER_NAME=${CONTAINER_NAME:-xfce-test-${DISPLAY_NUM}}
+
+# resolution of the test X server
+# TBD: define what the minimal supported resolution is for compatibility tests
+export RESOLUTION=${RESOLUTION:-1024x768}
+
+
 usage() {
     echo "Usage:"
     echo "  $0 [command]"
@@ -50,36 +91,66 @@ usage() {
     echo "  Without a command, interactive mode is started"
     echo ""
     echo "  command:"
-    echo "      start          Start the container for testing"
-    echo "                     USE THIS IF YOU ARE NOT SURE"
-    echo "      pull           Get the latest container"
-    echo "      no-session     starts the container without a session"
-    echo "                     (this is great if you want to test the session itself ;)"
-    echo "      install        Installed the script to ~/.local/bin for"
-    echo "                     easier execution"
+    echo "      start            Start the container for testing"
+    echo "                       USE THIS IF YOU ARE NOT SURE"
+    echo "      list             List all docker-tags available online (on hub.docker.com)"
+    echo "      list_local       List all docker-tags available locally (already built or pulled)"
+    echo "      pull [tag]       Get the latest (or the given) container-tag"
+    echo "      no-session       starts the container without a session"
+    echo "                       (this is great if you want to test the session itself ;)"
+    echo "      install          Installed the script to ~/.local/bin for"
+    echo "                       easier execution"
+    echo "      call [...]       Call the given commands in the container (without Xephyr)"
+    echo "                       can be used to compile the local folder but in the context of the container"
     echo ""
     echo "  -- Commands doing some automatic stuff"
-    echo "      screenshots    Creating just a screenshot of each 'main' xfce app"
-    echo "      behave         Run all behave tests"
-    echo "      behavevideo    Run all behave tests while recording them"
-    echo "      fulltestvideo  Create a demo video - this is the one done by travis"
+    echo "      screenshots      Creating just a screenshot of each 'main' xfce app"
+    echo "      behave           Run all behave tests"
+    echo "      behavevideo      Run all behave tests while recording them"
+    echo "      fulltestvideo    Create a demo video - this is the one done by travis"
     echo ""
     echo "  -- Commands only working from within the cloned git repository"
-    echo "      build          Builds the container locally"
-    echo "                     Environment variable:"
-    echo "                     DOWNLOAD_DATE defines if all source code should be"
-    echo "                                 newly cloned and rebuilt"
-    echo "                     default: ${DOWNLOAD_DATE}"
+    echo "      build            Builds the container locally"
+    echo "                       Environment variable:"
+    echo "                       DOWNLOAD_DATE defines if all source code should be"
+    echo "                                   newly cloned and rebuilt"
+    echo "                       default: ${DOWNLOAD_DATE}"
     echo "  Environment variables:"
     echo "     (useful environment variables you might want to set)"
-    echo "      XFSM_VERBOSE   set to \"1\" to get a log file in ~/.xfce4-session.verbose-log"
-    echo "                     default: \"${XFSM_VERBOSE}\""
-    echo "      LANG           choose language for the session"
-    echo "                     default: \"${LANG}\""
+    echo "      XFSM_VERBOSE     set to \"1\" to get a log file in ~/.xfce4-session.verbose-log"
+    echo "                       default: \"${XFSM_VERBOSE}\""
+    echo "      LANG             choose language for the session"
+    echo "                       default: \"${LANG}\""
+    echo "      LOG              Logfile to save container build output"
+    echo "                       default: \"${LOG}\""
+    echo "      PARALLEL_BUILDS  Start more than one module build in parallel"
+    echo "                       Use very carefully!"
+    echo "                       default: \"${PARALLEL_BUILDS}\""
+    echo "      KEEP             set to \"1\" to keep the container so you can continue using it"
+    echo "                       default: \"${KEEP}\""
+    echo "      CONTAINER_NAME   define a container name useful to continue work later"
+    echo "                       setting KEEP to 1 is mandatory here"
+    echo "                       default: \"${CONTAINER_NAME}\""
+    echo "      RESOLUTION       Resolution of Xephyr"
+    echo "                       default: \"${RESOLUTION}\""
 
 }
 
-MANUAL_MODES=("start" "pull" "no-session")
+leave() {
+    STOP_TIME=$(date +%s)
+    echo "Execution took $(( STOP_TIME -START_TIME)) seconds"
+    exit $1
+}
+
+get_tags() {
+  tags=$(curl https://registry.hub.docker.com/v1/repositories/schuellerf/xfce-test/tags)
+  echo $tags|jq ".[].name"|tr -d '"'
+}
+get_local_tags() {
+  docker images --format "{{.Tag}}" schuellerf/xfce-test
+}
+
+MANUAL_MODES=("start" "no-session" "list" "list_local")
 AUTOMATIC_MODES=("screenshots" "behave" "behavevideo" "fulltestvideo")
 
 REPO_MODES=("build")
@@ -88,8 +159,22 @@ if git status > /dev/null 2>&1; then
     WORK_MODES+=(${REPO_MODES[*]})
 fi
 
-MODES=("install" ${WORK_MODES[*]})
+MODES=("install" "call" "pull" ${WORK_MODES[*]})
 
+# quit on errors
+set +e
+
+# TBD replace by nicer check
+if [ -f /etc/lsb-release ] && grep Ubuntu /etc/lsb-release >/dev/null; then
+  UBUNTU_PACKAGES="xserver-xephyr docker.io xvfb ffmpeg jq curl"
+
+  for package in ${UBUNTU_PACKAGES}; do
+    if ! apt list --installed 2>/dev/null|grep "^$package" >/dev/null; then
+      echo "I might need the sudo password to install '$package' ..."
+      sudo apt install -y $package
+    fi
+  done
+fi
 
 # prepare all available modes in a bash-case syntax
 MODES_FOR_CASE=$(IFS=$'|'; echo "${WORK_MODES[*]}")
@@ -103,7 +188,7 @@ if [ -z $TAG ]; then
     fi
 fi
 
-if [ $# -eq 1 ]; then
+if [ $# -ge 1 ]; then
     case $1 in
         "install")
             install_me
@@ -112,6 +197,22 @@ if [ $# -eq 1 ]; then
         --help|help|-h)
             usage
             exit 0
+        ;;
+        "call")
+            if [ $# -eq 1 ]; then
+                echo "Please add some commands to 'call' within the container"
+                exit 1
+            fi
+            remaining_args=$(( $# - 1 ))
+
+            call_args="${@:2:$remaining_args}"
+            mode=$1
+        ;;
+        "pull")
+            if [ -n "$2" ]; then
+                TAG=$2
+            fi
+	    mode=$1
         ;;
         $MODES_FOR_CASE )
             mode=$1
@@ -129,14 +230,18 @@ else
     usage
 
     
-    MODES=(${MODES[*]} "tag" "XFSM_VERBOSE" "LANG")
+    MODES=(${MODES[*]} "tag" "XFSM_VERBOSE" "LANG" "LOG" "PARALLEL_BUILDS" "KEEP")
 
     echo ""
     echo "  -- Commands only for interactive mode"
-    echo "      tag          changes docker \"TAG\" to work with (e.g. ubuntu_19.04)"
-    echo "                   (only for the current execution of $0)"
-    echo "      XFSM_VERBOSE change verbosity of xfce4-session"
-    echo "      LANG         change the language for the session (default: $LANG)"
+    echo "      tag              changes docker \"TAG\" to work with (default: $TAG)"
+    echo "      XFSM_VERBOSE     change verbosity of xfce4-session"
+    echo "      LANG             change the language for the session (default: $LANG)"
+    echo "      LOG              change the logfile (default: $LOG)"
+    echo "      PARALLEL_BUILDS  change the number of parallel builds (default: $PARALLEL_BUILDS)"
+    echo "      KEEP             keep the container (don't delete after usage)"
+    echo "      CONTAINER_NAME   Set a container name to keep and continue"
+    echo "      RESOLUTION       Set the screen resolution of Xephyr"
     echo ""
 
     PS3="Choose option: "
@@ -146,8 +251,40 @@ else
                 install_me
                 exit 0
             ;;
+            "call")
+                read -p "Command to call in the container: " call_args
+                break
+            ;;
+          "pull")
+                tags=$(get_tags)
+                echo ""
+                echo "Locally you have:"
+                echo $(get_local_tags)
+                echo "---"
+                echo "Now, pull from docker hub: "
+
+                PS3_TMP=$PS3
+                PS3="Pull tag number: "
+                select TAG_NEW in $tags; do
+                  break
+                done
+                PS3=$PS3_TMP
+                if [ ${#TAG_NEW} -ge 1 ]; then
+                    TAG=$TAG_NEW
+                    echo "OK - pulling ${TAG}"
+                    break
+                else
+                  echo "Pull canceled"
+                fi
+            ;;
+
             "tag")
-                read -i $TAG -p "Change tag from \"$TAG\" to: " TAG_NEW
+                PS3_TMP=$PS3
+                PS3="Change tag from \"$TAG\" to: "
+                select TAG_NEW in $(get_local_tags); do
+                  break
+                done
+                PS3=$PS3_TMP
 
                 if [ ${#TAG_NEW} -ge 1 ]; then
                     TAG=$TAG_NEW
@@ -168,22 +305,18 @@ else
             "LANG")
                 # getting all languages with title out of the container
                 ALL_LANGS="$(docker run --rm schuellerf/xfce-test:$TAG locale -av |
-                   while read LINE; do
-                      if [[ $LINE =~ ^locale:.* ]]; then
-                        LOC=$(echo "$LINE"|grep -Po "(?<=locale: )[^ ]*");
-                      fi;
-                      if [[ $LINE =~ title ]]; then
-                        T=$(echo "$LINE"|grep -Po "(?<=title \| ).*");
-                        echo "$LOC ($T)";
-                      fi;
-                    done)"
+                   awk '$1 == "locale:" { loc=$2 }
+                        $1 == "title" {
+                                        sub(/^.*\| /, "");
+                                        printf "%s (%s)\n"  loc, $0;
+                                      }')"
 
                 OLD_IFS=${IFS}
                 IFS=$'\n'
                 select l in ${ALL_LANGS}; do
                   case $l in
                     *) if [ ${#l} -ge 1 ]; then
-                        LANG=$(echo $l|grep -Po "^[^ ]+")
+                        LANG=$(echo $l|awk '{print $1}')
                         echo "OK - language changed to \"$LANG\""
                       else
                         echo "OK - language is still \"$LANG\""
@@ -196,126 +329,204 @@ else
                 IFS=${OLD_IFS}
 
             ;;
+            "LOG")
+                read -i $LOG -p "Change logfile from \"$LOG\" to: " LOG_NEW
+
+                if [ ${#LOG_NEW} -ge 1 ]; then
+                    LOG=$LOG_NEW
+                    echo "OK - logfile changed to \"$LOG\""
+                else
+                    echo "OK - logfile is still \"$LOG\""
+                fi
+            ;;
+            "PARALLEL_BUILDS")
+                read -i $PARALLEL_BUILDS -p "Change number of builds from \"$PARALLEL_BUILDS\" to: " PARALLEL_BUILDS_NEW 
+
+                if [ ${#PARALLEL_BUILDS_NEW} -ge 1 ]; then
+                    PARALLEL_BUILDS=$PARALLEL_BUILDS_NEW
+                    echo "OK - changed to \"$PARALLEL_BUILDS\""
+                else
+                    echo "OK - still \"$PARALLEL_BUILDS\""
+                fi
+            ;;
+            "KEEP")
+                if [ "x${KEEP}" != "x1" ]; then
+                    echo "Keeping the container..."
+                    export KEEP=1
+                else
+                    echo "Remove the container after usage..."
+                    unset KEEP
+                fi
+            ;;
+            "CONTAINER_NAME")
+                read -i "${CONTAINER_NAME}" -p "Name for the container: " CONTAINER_NAME
+                echo "Name set to \"${CONTAINER_NAME}\" - I also set KEEP=1 automatically now"
+                export KEEP=1
+            ;;
+            "RESOLUTION")
+                read -i ${RESOLUTION} -p "Screen resolution: " RESOLUTION
+                echo "Resolution set to ${RESOLUTION}"
+            ;;
+
             *)
                 break
             ;;
         esac
-        echo "-- Main Menu --"
+        echo "-- Main Menu (${TAG}) --"
     done
 fi
 
-if [ ${#mode} -ge 1 ]; then
-  echo "You are working with the container: $TAG"
-else
+if [ ${#mode} -lt 1 ]; then
   echo "Nothing valid selected - exiting"
   exit 1
 fi
 
+START_TIME=$(date +%s)
+
 case $mode in
-    "pull")
-        docker pull schuellerf/xfce-test:${TAG}
-        exit 0
-    ;;
+  "pull")
+    docker pull schuellerf/xfce-test:${TAG}
+    leave 0
+  ;;
+  "list")
+    tags=$(get_tags)
+	  echo "---"
+	  echo "All tags available to pull:"
+	  echo "$tags"
+	  leave 0
+  ;;
+  "list_local")
+    echo "$(get_local_tags)"
+	  exit 0
+  ;;
     "build")
+        echo "You are building the container: $TAG"
         echo "DOWNLOAD_DATE is set to ${DOWNLOAD_DATE}"
-        docker build --build-arg DOWNLOAD_DATE=${DOWNLOAD_DATE} --tag schuellerf/xfce-test:$TAG .
-        # easier to rebuild if we know the DOWNLOAD_DATE
-        docker tag schuellerf/xfce-test:$TAG schuellerf/xfce-test:${TAG}-${DOWNLOAD_DATE}
-        exit 0
+        echo "Output of the build is written to ${LOG}"
+        docker build --build-arg TRAVIS=${TRAVIS} --build-arg PARALLEL_BUILDS=${PARALLEL_BUILDS} --build-arg DOWNLOAD_DATE=${DOWNLOAD_DATE} --tag schuellerf/xfce-test:$TAG . > ${LOG}
+        leave 0
     ;;
 esac
 
+echo "You are working with the container: $TAG"
+
 # This starts the container for manual or semi automated tests
 
-# resolution of the test X server
-# TBD: define what the minimal supported resolution is
-export RESOLUTION=1024x768
 
-# use this X display number for the tests
-export DISPLAY_NUM=1
 
 # set SCREENSHOTS to ALWAYS to get screenshots during behave tests
 export SCREENSHOTS=${SCREENSHOTS:-NONE}
 
-# quit on errors
-set +e
 
-# TBD replace by nicer check
-if [ -f /etc/lsb-release ] && grep Ubuntu /etc/lsb-release >/dev/null; then
-  UBUNTU_PACKAGES="xserver-xephyr docker.io xvfb ffmpeg"
-
-  for package in ${UBUNTU_PACKAGES}; do
-    if ! apt list --installed 2>/dev/null|grep "^$package" >/dev/null; then
-      echo "I might need the sudo password to install the necessary packages..."
-      sudo apt install -y $package
-    fi
-  done
+if [ $mode != "call" ]; then
+    Xephyr :${DISPLAY_NUM} -sw-cursor -softCursor -resizeable -ac -screen ${RESOLUTION} &
 fi
 
-# kill an already running instance if still running from the last test
-killall -q Xephyr
+if [ -z "$KEEP" ]; then
+  docker rm "${CONTAINER_NAME}" 2>/dev/null
+  echo ""
 
-Xephyr :${DISPLAY_NUM} -sw-cursor -softCursor -resizeable -ac -screen ${RESOLUTION} &
-
-docker rm xfce-test 2>/dev/null
-echo ""
+else
+  # check if the container already exists
+  if [ "$(docker ps -a --filter "name=${CONTAINER_NAME}" --format "{{.Names}}")" == "${CONTAINER_NAME}" ]; then
+    RESUME=1
+  else
+    unset RESUME
+  fi
+fi
 
 #default parameters
 
 COMMAND=""
 DETACH="--detach"
 DOCKER_MODES=""
+RESUME_MODE=""
 
 if [ $mode == "no-session" ]; then
     COMMAND=/bin/bash
     # don't detach:
     DETACH=""
     DOCKER_MODES="--tty --interactive"
+    RESUME_MODE="--attach --interactive"
+elif [ $mode == "call" ]; then
+    COMMAND=$call_args
+    DETACH=""
+    DOCKER_MODES=""
+    RESUME_MODE="--attach"
 fi
 
 DOCKER_MODES="${DOCKER_MODES} --volume /etc/timezone:/etc/timezone"
 DOCKER_MODES="${DOCKER_MODES} --volume /etc/localtime:/etc/localtime"
 
-echo -n "Starting container: "
-docker run --tty --interactive --name xfce-test $DETACH $DOCKER_MODES \
-           --cap-add=SYS_PTRACE \
-           --env DISPLAY=":${DISPLAY_NUM}" \
-           --env LDTP_DEBUG=2 \
-           --env SCREENSHOTS \
-           --env RESOLUTION \
-           --env XFSM_VERBOSE \
-           --env LANG \
-           --volume ${PWD}:/data \
-           --volume /tmp/.X11-unix:/tmp/.X11-unix:z \
-           schuellerf/xfce-test:$TAG $COMMAND
+if [ -n "$DETACH" ]; then
+    echo -n "Starting container: "
+fi
+if [ -z "$RESUME" ]; then
+  docker run --name "${CONTAINER_NAME}" $DETACH $DOCKER_MODES \
+             --cap-add=SYS_PTRACE \
+	           --security-opt seccomp=unconfined \
+             --env DISPLAY=":${DISPLAY_NUM}" \
+             --env LDTP_DEBUG=2 \
+             --env SCREENSHOTS \
+             --env RESOLUTION \
+             --env XFSM_VERBOSE \
+             --env LANG \
+             --env PARALLEL_BUILDS \
+             --volume ${PWD}:/data \
+             --volume /tmp/.X11-unix:/tmp/.X11-unix:z \
+             schuellerf/xfce-test:$TAG $COMMAND 
+else
+  docker start ${RESUME_MODE} ${CONTAINER_NAME} ${COMMAND}
+fi
 
-if [ -n $DETACH ]; then
+if [ -n "$DETACH" ]; then
     sleep 3 # give ldtp and the session some time
     if [ $mode == "screenshots" ]; then
-        docker exec --tty --interactive xfce-test /container_scripts/make_screenshots.py
+        docker exec --tty --interactive "${CONTAINER_NAME}" /container_scripts/make_screenshots.py
     elif [ $mode == "behave" ]; then
-        docker exec --tty --interactive xfce-test bash -c "cd /behave_tests; GUI_TIMEOUT=120 behave"
+        docker exec --tty --interactive "${CONTAINER_NAME}" bash -c "cd /behave_tests; GUI_TIMEOUT=120 behave"
     elif [ $mode == "behavevideo" ]; then
-        docker exec --tty --interactive xfce-test /container_scripts/run_behave_recorded.sh
+        docker exec --tty --interactive "${CONTAINER_NAME}" /container_scripts/run_behave_recorded.sh
     elif [ $mode == "fulltestvideo" ]; then
-        docker exec --tty --interactive xfce-test /container_scripts/full_test_video.sh
+        docker exec --tty --interactive "${CONTAINER_NAME}" /container_scripts/full_test_video.sh
     else
-        docker exec --tty --interactive xfce-test bash -c 'echo "This container includes:";
+        docker exec --tty --interactive "${CONTAINER_NAME}" bash -c 'echo "This container includes:";
             cat ~xfce-test_user/version_info.txt;
             echo "You might want to call \"tmux attach\" if you know what tmux ( https://tmux.github.io ) is and need to go to the internals."'
-        docker exec --tty --interactive xfce-test /bin/bash
+        docker exec --tty --interactive "${CONTAINER_NAME}" /bin/bash
     fi
 fi
 
 # Copy out the debug file if it exists
-docker cp xfce-test:/home/xfce-test_user/.xfce4-session.verbose-log . || echo ""
+docker cp "${CONTAINER_NAME}":/home/xfce-test_user/.xfce4-session.verbose-log . 2>/dev/null|| echo ""
 
 # Tear down
-if [ $mode != "no-session" ]; then
-    docker exec xfce-test xfce4-session-logout --logout
+if [ $mode != "no-session" ] && [ $mode != "call" ]; then
+    docker exec "${CONTAINER_NAME}" xfce4-session-logout --logout
 fi
-docker stop xfce-test
-docker rm xfce-test
-killall -q Xephyr
-rm -rf /tmp/.X11-unix/X${DISPLAY_NUM} /tmp/.X${DISPLAY_NUM}-lock
+
+echo -n "Stopping: "
+docker stop "${CONTAINER_NAME}"
+if [ -z "$KEEP" ]; then
+  echo -n "Removing: "
+  docker rm "${CONTAINER_NAME}"
+fi
+
+if [ $mode != "call" ]; then
+    # terminate only the current display
+    while read line; do
+        var="$(cat /proc/$line/cmdline | sed -e 's/\x00/ /g'; echo)"
+        for word in $var; do
+            if [[ $word =~ ^:[0-9] ]]; then
+                if [[ "${word/:/}" == "$DISPLAY_NUM" ]]; then
+                    kill "$line"
+                fi
+            fi
+        done
+    done <<< "$(pgrep -f Xephyr)"
+
+    rm -rf /tmp/.X11-unix/X${DISPLAY_NUM} /tmp/.X${DISPLAY_NUM}-lock
+fi
+
+leave 0
 

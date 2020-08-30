@@ -14,8 +14,8 @@ The main usecases are:
 
 The automatically created videos are on [my youtube channel](https://www.youtube.com/user/schuellerf) for now.
 
-This is a Xubuntu 18.10, with a build from git sources of all core Xfce components + some apps for testing.
-Other distributions and versions are on other branches!
+This containers are based on ubuntu with a build from git sources of all core Xfce components + some apps for testing.
+Other distributions and versions will be supported at a later stage!
 
 # Travis
 
@@ -49,6 +49,11 @@ For ubuntu those prerequisites are automatically installed by `xfce-test`
 
 There is no direct _need_ to install XFCE Test but for convenience you can install the script and the bash autocompletion functions with `./xfce-test install`
 
+If you did not clone all the source code of xfce-test already you can boot-strap easily with:
+```
+curl --fail --location -o /tmp/xfce-test https://github.com/schuellerf/xfce-test/raw/master/xfce-test && chmod u+x /tmp/xfce-test && /tmp/xfce-test install
+```
+
 # Usage
 
 Just start `xfce-test` to get an interactive menu for possible options or call `xfce-test --help`
@@ -59,14 +64,39 @@ To see the container in action and play around with the "master" versions of XFC
 
 To inspect stuff inside the docker to help create more tests you might want to start `sniff` which will help you identify the windows and buttons for LDTP.
 
-# Screenshots
+# Building
 
-When you want to make screenshots for each test step just set the variable `SCREENSHOTS` to `ALWAYS`
+You don't need to build the container you can just pull one to work with. If you really want to build the container locally you can just call
+
+```
+xfce-test build
+```
+
+If you have enough RAM, let's say more than 10G, you can build all components in parallel like so:
+
+```
+LOG=build.log PARALLEL_BUILDS=8 ./xfce-test build
+```
+
+This drastically reduces the container build time.
+
+# Normal Test
+
+When you want to make screenshots for each behave test step just set the variable `SCREENSHOTS` to `ALWAYS`
 
 ```
 export SCREENSHOTS=ALWAYS
-xfce-test
 ```
+
+then run your behave tests
+
+# Translation Assistance
+
+This is highly experimental!
+
+If you are fine that some of your files on your computer might get deleted, 
+you could run /behave_tests/translations.sh and see the resulting html file in /data/lang-screenshots
+
 
 # Package compilation
 
@@ -78,3 +108,24 @@ So when you started the container with `xfce-test start` or `xfce-test no-sessio
 ## Sources
 As the applications of the container are built from source _all_ developer packages and many developer tools are pre-installed. Also the sourcecode is available in the folder `/git` within the container
 
+## Examples
+An advanced example if you want to check a command in all docker images you have locally:
+```
+xfce-test list_local|xargs -n1 -I XYZ bash -c "TAG=XYZ xfce-test call apt search gtk-3-dev 2>&1 | egrep gtk-3\|working ; echo '----' "
+```
+
+This results in:
+```
+You are working with the container: latest
+libgtk-3-dev/now 3.24.12-1ubuntu1 amd64 [installed,local]
+----
+You are working with the container: ubuntu_19.04
+libgtk-3-dev/now 3.24.8-1ubuntu1 amd64 [installed,local]
+----
+You are working with the container: audio_test
+libgtk-3-dev/now 3.24.8-1ubuntu1 amd64 [installed,local]
+----
+You are working with the container: ubuntu_18.04
+libgtk-3-dev/now 3.22.30-1ubuntu4 amd64 [installed,local]
+---- 
+```

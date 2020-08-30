@@ -4,9 +4,11 @@ import os
 import ldtp as l
 import signal
 import time
+import math
+import json
 
 def handler(signum, frame):
-    print "Time is over!"
+    print("Time is over!")
     raise Exception("It's time to fix those LDTP bugs!")
 
 def before_scenario(context, scenario):
@@ -26,13 +28,16 @@ def before_all(context):
     setup_debug_on_error(context.config.userdata)
     context._root["_click_animated"] = _click_animated
 
-def _click_animated(context, click_x, click_y, button="b1c", delay=1):
+def _click_animated(context, click_x, click_y, button="b1c", delay=1, timing=None):
     start_x=context._root.get('last_mouse_x',0)
     start_y=context._root.get('last_mouse_y',0)
+
     try:
-        timing=1/math.sqrt(math.pow(math.fabs(start_x-click_x),2)+math.pow(math.fabs(start_y-click_y),2))
+        if timing is None:
+            timing=1/math.sqrt(math.pow(math.fabs(start_x-click_x),2)+math.pow(math.fabs(start_y-click_y),2))
     except:
-        timing=0.01
+        timing = 0.01
+    
     l.simulatemousemove(start_x, start_y, click_x, click_y, timing)
     time.sleep(delay)
     l.generatemouseevent(click_x,click_y, button)
@@ -42,7 +47,8 @@ def _click_animated(context, click_x, click_y, button="b1c", delay=1):
 
 def before_step(context, step):
     # workaround for LDTP problems
-    signal.alarm(60)
+    context._root["my_line"] = step.line
+    signal.alarm(120)
 
 def after_step(context, step):
     if os.environ.get("SCREENSHOTS") == "ALWAYS":
@@ -60,3 +66,21 @@ def after_step(context, step):
         import pdb
         pdb.set_trace()
     signal.alarm(0)
+    
+
+def after_feature(context, feature):
+
+    locator_map = context._root.get('locator_map', {})
+    OUTPUT_DIR=os.environ.get("OUTPUT_DIR", "/data/lang-screenshots")
+    lang = context._root.get('my_lang', None)
+
+
+    if len(locator_map) > 0:
+        #video_file = os.environ['VIDEO_FILE']
+        #po_file = os.environ['PO_FILE']
+        #with open(os.path.join(OUTPUT_DIR,f"{feature.filename}.json"), 'w') as out_file:
+        with open(os.path.join(OUTPUT_DIR,f"{lang}_data.json"), 'w') as out_file:
+            out_file.write("let translations_json = '")
+            out_file.write(json.dumps(locator_map))
+            out_file.write("';\n")
+            out_file.write("let translations = JSON.parse(translations_json);")

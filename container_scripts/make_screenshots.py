@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import ldtp as l
 import os
@@ -48,7 +48,7 @@ l.generatemouseevent(800,600, "abs")
 
 do_screenshot("xfce4-appfinder", "ApplicationFinder")
 do_screenshot("xfce4-terminal", "Terminal*")
-do_screenshot("thunar", "*File Manager")
+do_screenshot("thunar", "data") # SMELL: very bad window title & bad way to identify
 do_screenshot("xfce4-clipman-settings", "Clipman")
 do_screenshot("xfce4-display-settings", "Display")
 do_screenshot("xfce4-keyboard-settings", "Keyboard")

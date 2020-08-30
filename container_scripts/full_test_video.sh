@@ -16,7 +16,7 @@ source /container_scripts/video_helpers.sh
 /container_scripts/start_recording.sh
 
 # Remove possible "PowerManager" error
-python -c "
+python3 -c "
 import ldtp as l
 if 'dlgQuestion' in l.getwindowlist() and 'btnRemove' in l.getobjectlist('dlgQuestion') and filter(lambda element: 'PowerManagerPlugin' in element, l.getobjectlist('dlgQuestion')):
         win='dlgQuestion'

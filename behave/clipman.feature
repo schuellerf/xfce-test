@@ -13,7 +13,7 @@ Feature: Some tests with clipman
   Scenario: Clipman popup is empty
      Given we have xfce4-clipman started
       when we popup clipman
-      then we should see mnuClipboardisempty in dlg0
+      then we should see mnuClipboardisempty somewhere
        and we make a short break
        and close it with <esc>
 
@@ -25,31 +25,32 @@ Feature: Some tests with clipman
        and we type "<ctrl>c"
        and we type "<esc>"
        and we popup clipman
-      then we should see mnuExampleText in dlg0
+      then we should see mnuExampleText somewhere
        and close it with <esc>
 
   Scenario: Clipman popup is not empty
      Given we have xfce4-clipman started
       when we popup clipman
-      then we should not see mnuClipboardisempty in dlg0
+      then we should not see mnuClipboardisempty somewhere
        and we make a short break
        and close it with <esc>
 
   Scenario: enable selection copy
      Given we have xfce4-clipman started
        and we have xfce4-clipman-settings started
-      when we click on chkIgnoreselections in dlgClipman
-      then we think chkIgnoreselections of dlgClipman is unchecked
-      when we click on btnClose in dlgClipman
-      then dlgClipman is gone
+      when we click on ptabHistory in dlgClipmanSettings
+       and we click on chkIgnoremouseselections in dlgClipmanSettings
+      then we think chkIgnoremouseselections of dlgClipmanSettings is unchecked
+      when we click on btnClose in dlgClipmanSettings
+        then dlgClipmanSettings is gone
 
   Scenario: Clear clipman list
      Given we repeat "Clipman popup is not empty"
       when we popup clipman
-       and we click on mnuClearhistory in dlg0
+       and we click on mnuClearhistory somewhere
        and we click on btnYes in dlgQuestion
        and we popup clipman
-      then we should see mnuClipboardisempty in dlg0
+      then we should see mnuClipboardisempty somewhere
        and close it with <esc>
 
   Scenario: Just selecting now also copies
@@ -60,18 +61,18 @@ Feature: Some tests with clipman
        and we make a short break
        and we type "<esc>"
        and we popup clipman
-      then we should see mnuExampleText in dlg0
+      then we should see mnuExampleText somewhere
        and close it with <esc>
 
   Scenario: Should be saved
-     Given we find dlg0 which has mnuQuit by stupid-clicking frm0
-      when we click on mnuQuit in dlg0
-      then dlg0 is gone
+     Given we find dlg1 which has mnuQuit by stupid-clicking frm0
+      when we click on mnuQuit somewhere
+      then dlg1 is gone
 
   Scenario: Text should be here after re-starting
      Given we have xfce4-clipman started
       when we popup clipman
-      then we should see mnuExampleText in dlg0
+      then we should see mnuExampleText somewhere
        and close it with <esc>
 
   Scenario: There was no clipman before _we_ started...
