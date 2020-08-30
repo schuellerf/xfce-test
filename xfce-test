@@ -150,12 +150,20 @@ get_local_tags() {
   docker images --format "{{.Tag}}" schuellerf/xfce-test
 }
 
+is_my_git() {
+  if git remote -v 2>/dev/null|grep "schuellerf/xfce-test" &>/dev/null; then
+    return 0
+  else
+    return 1
+  fi
+}
+
 MANUAL_MODES=("start" "no-session" "list" "list_local")
 AUTOMATIC_MODES=("screenshots" "behave" "behavevideo" "fulltestvideo")
 
 REPO_MODES=("build")
 WORK_MODES=(${MANUAL_MODES[*]} ${AUTOMATIC_MODES[*]})
-if git status > /dev/null 2>&1; then
+if is_my_git; then
     WORK_MODES+=(${REPO_MODES[*]})
 fi
 
@@ -182,11 +190,16 @@ shopt -s extglob
 MODES_FOR_CASE="+($MODES_FOR_CASE)"
 
 if [ -z $TAG ]; then
+  if is_my_git; then
     TAG=$(git rev-parse --abbrev-ref HEAD 2>/dev/null|tr '/' '_')
     if [[ $TAG != *_* ]] && [[ $TAG != "devel" ]]; then
         TAG=latest
     fi
+  else
+    TAG=latest
+  fi
 fi
+
 
 if [ $# -ge 1 ]; then
     case $1 in
