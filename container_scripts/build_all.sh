@@ -145,7 +145,7 @@ build() {
         ;;
         "cmake")
             mkdir build && cd build
-            cmake ..
+            cmake -DCMAKE_INSTALL_PREFIX=/usr ..
             make -j8
             RET=$?
 
