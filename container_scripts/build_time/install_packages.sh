@@ -28,6 +28,9 @@ PACKAGES+=" autoconf libgdk-pixbuf2.0-dev libglib2.0-bin librsvg2-dev meson ruby
 # at least: for xfce4-power-manager, xfce4-settings, xfdesktop, xfce4-notifyd, xfce4-volumed-pulse, xfce4-pulseaudio-plugin, xfce4-places-plugin, xfce4-sensors-plugin
 PACKAGES+=" libnotify-dev"
 
+# for xfce4-power-manager
+PACKAGES+=" libupower-glib-dev"
+
 # for catfish:
 PACKAGES+=" python-distutils-extra"
 
