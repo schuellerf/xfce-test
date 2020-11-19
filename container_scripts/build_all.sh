@@ -2,7 +2,7 @@
 
 XFCE_BASE=https://gitlab.xfce.org
 
-MAIN_BRANCH=xfce-4.16pre1
+MAIN_BRANCH=xfce-4.16pre2
 
 VERSION_FILE="/home/xfce-test_user/version_info.txt"
 
