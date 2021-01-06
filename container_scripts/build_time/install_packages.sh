@@ -21,6 +21,7 @@ PACKAGES+=" libvala-0.48-dev librsvg2-dev libtagc0-dev"
 PACKAGES+=" libdbusmenu-gtk3-dev"
 PACKAGES+=" libgtop2-dev"
 PACKAGES+=" libpython3.8-dev"
+PACKAGES+=" libgudev-1.0-dev"
 
 # Greybird
 PACKAGES+=" autoconf libgdk-pixbuf2.0-dev libglib2.0-bin librsvg2-dev meson ruby-sass sassc"
