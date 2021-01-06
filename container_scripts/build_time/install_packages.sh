@@ -79,5 +79,5 @@ else
       sudo apt-get -y --no-install-recommends install $p >$PIPE
   done
 fi
-sudo apt-get -y remove libxfce4ui-1-0 libxfce4ui-2-0
+sudo apt-get -y remove libxfce4ui-1-0 libxfce4ui-2-0 >$PIPE
 sudo rm -rf /var/lib/apt/lists/*
