@@ -5,6 +5,9 @@ if xprop -root >/dev/null; then
   tmuxinator start xfce-test-tmux --no-attach
   tmux wait xfce-test-tmux
 else
+  echo "I have the following packages built:"
+  cat ~xfce-test_user/version_info.txt
+  echo ""
   echo "-------------------"
   cat /xfce-test
   echo "-------------------"

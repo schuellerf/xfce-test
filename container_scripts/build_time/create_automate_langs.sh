@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 echo "Running in travis: ${TRAVIS}"
 if [ "$TRAVIS" == "FALSE" ]; then
   PIPE=/dev/stdout

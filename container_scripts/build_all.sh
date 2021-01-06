@@ -2,7 +2,7 @@
 
 XFCE_BASE=https://gitlab.xfce.org
 
-MAIN_BRANCH=last_release
+MAIN_BRANCH=${MAIN_BRANCH:-last_release}
 
 VERSION_FILE="/home/xfce-test_user/version_info.txt"
 

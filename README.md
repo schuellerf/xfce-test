@@ -75,7 +75,7 @@ xfce-test build
 If you have enough RAM, let's say more than 10G, you can build all components in parallel like so:
 
 ```
-LOG=build.log PARALLEL_BUILDS=8 ./xfce-test build
+TAG=ubuntu_20.04-xfce-4.16 LOG=build-${TAG}.log PARALLEL_BUILDS=8 ./xfce-test build
 ```
 
 This drastically reduces the container build time.
