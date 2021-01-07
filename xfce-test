@@ -112,8 +112,9 @@ usage() {
     echo "  -- Commands only working from within the cloned git repository"
     echo "      build            Builds the container locally"
     echo "                       Environment variable:"
-    echo "                       DOWNLOAD_DATE defines if all source code should be"
-    echo "                                   newly cloned and rebuilt"
+    echo "                       DOWNLOAD_DATE defines at what specific date the sources"
+    echo "                                     are checked out. Starting from the given branch/TAG."
+    echo "                                     Also helps to reduce cloning on some rebuilds"
     echo "                       default: ${DOWNLOAD_DATE}"
     echo "  Environment variables:"
     echo "     (useful environment variables you might want to set)"
@@ -415,7 +416,7 @@ case $mode in
         echo "You are building the container: $TAG"
         echo "DOWNLOAD_DATE is set to ${DOWNLOAD_DATE}"
         echo "Output of the build is written to ${LOG}"
-        docker build --build-arg TAG --build-arg TRAVIS=${TRAVIS} --build-arg PARALLEL_BUILDS=${PARALLEL_BUILDS} --build-arg DOWNLOAD_DATE=${DOWNLOAD_DATE} --tag schuellerf/xfce-test:$TAG --file dockerfiles/Dockerfile-${TAG} . > ${LOG}
+        docker build --build-arg TAG --build-arg TRAVIS --build-arg PARALLEL_BUILDS --build-arg DOWNLOAD_DATE --tag schuellerf/xfce-test:$TAG --file dockerfiles/Dockerfile-${TAG} . > ${LOG}
         leave 0
     ;;
 esac
