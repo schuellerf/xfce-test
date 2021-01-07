@@ -72,6 +72,11 @@ You don't need to build the container you can just pull one to work with. If you
 xfce-test build
 ```
 
+When you want to have the sources from some timeago you can use the "DOWNLOAD_DATE" to help there
+```
+DOWNLOAD_DATE=2020-07-01 xfce-test build
+```
+
 If you have enough RAM, let's say more than 10G, you can build all components in parallel like so:
 
 ```
