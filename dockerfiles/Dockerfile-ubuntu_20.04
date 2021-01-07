@@ -1,11 +1,16 @@
 FROM ubuntu:20.04
 MAINTAINER Florian Schüller <florian.schueller@gmail.com>
 
+ENV MAIN_BRANCH=last_release
+
 ENV DEBIAN_FRONTEND noninteractive
 ENV DISPLAY ${DISPLAY:-:1}
 
 ARG TRAVIS=FALSE
 ENV TRAVIS=$TRAVIS
+
+ARG TAG=latest
+ENV TAG=$TAG
 
 RUN apt-get update \
  && apt-get -y --no-install-recommends install apt-utils \
@@ -70,7 +75,7 @@ RUN cd git \
  && cd ldtp2 \
  && sudo pip3 install -e .
 
-RUN /container_scripts/build_all.sh
+RUN /container_scripts/build_all-${TAG}.sh
 
 COPY --chown=xfce-test_user behave /behave_tests
 RUN sudo mkdir /data && sudo chown xfce-test_user /data
