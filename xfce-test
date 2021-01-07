@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-DOWNLOAD_DATE=${DOWNLOAD_DATE:-$(date +%Y%m%d)}
+DOWNLOAD_DATE=${DOWNLOAD_DATE:-$(date +%Y-%m-%d)}
 RUN_AS=
 
 LOG=${LOG:-/dev/stdout}
