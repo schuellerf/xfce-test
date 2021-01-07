@@ -115,12 +115,24 @@ build() {
     git clone $URL $NAME|| export MODULE="$NAME cloning failed"
     cd $NAME || export MODULE="$NAME cloning failed"
     if [ "$BRANCH" == "last_release" ]; then
-        BRANCH=$(git describe --match xfce*|sed -E "s/-[0-9]+-[g0-9a-f]+$//g")
-    fi
-    git checkout $BRANCH || echo "Branch $BRANCH not found - leaving default"
+        # for more reproducable behavior go given time on master
+        git checkout $(git rev-list -1 --before="${DOWNLOAD_DATE}" master) || echo "Can't switch to specific date $DOWNLOAD_DATE"
 
-    # for more reproducable behavior
-    git checkout $(git rev-list -1 --before="${DOWNLOAD_DATE}" $BRANCH || echo "Can't switch to specific date $DOWNLOAD_DATE - leaving as is on $BRANCH"
+        # then start searching the last release
+        BRANCH=$(git describe --match xfce*|sed -E "s/-[0-9]+-[g0-9a-f]+$//g")
+
+        git checkout $BRANCH || echo "Branch $BRANCH not found - leaving default"
+    elif git show-ref --verify refs/remotes/origin/$BRANCH &>/dev/null; then
+        # if it's a branch go back to the requested time
+        # for more reproducable behavior
+        git checkout $(git rev-list -1 --before="${DOWNLOAD_DATE}" ${BRANCH}) || echo "Can't switch to specific date $DOWNLOAD_DATE - leaving as is on $BRANCH"
+    elif git show-ref --verify refs/tags/$BRANCH &>/dev/null; then
+        git checkout $BRANCH || echo "Tag $BRANCH not found - leaving default"
+    else
+        echo "$BRANCH is neither a tag nor a branch!?"
+        git checkout $BRANCH || echo "$BRANCH not found - leaving default"
+    fi
+
 
     #WORKAROUNDS
     if [ "$NAME" == "xfce4-vala" ]; then
