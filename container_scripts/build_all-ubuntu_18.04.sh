@@ -119,6 +119,9 @@ build() {
     fi
     git checkout $BRANCH || echo "Branch $BRANCH not found - leaving default"
 
+    # for more reproducable behavior
+    git checkout $(git rev-list -1 --before="${DOWNLOAD_DATE}" $BRANCH || echo "Can't switch to specific date $DOWNLOAD_DATE - leaving as is on $BRANCH"
+
     #WORKAROUNDS
     if [ "$NAME" == "xfce4-vala" ]; then
         sed -i "s/vala_api='0...'/vala_api='0.44'/" configure.ac.in
