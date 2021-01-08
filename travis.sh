@@ -27,5 +27,4 @@ test_container() {
 }
 
 test_container devel
-test_container latest
 
