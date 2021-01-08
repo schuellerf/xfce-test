@@ -52,7 +52,7 @@ RUN chmod a+x /container_scripts/*.sh /container_scripts/*.py
 RUN sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list
 
 # Xfce specific build dependencies and default panel plugins
-RUN /container_scripts/build_time/install_packages-ubuntu_18.04.sh
+RUN /container_scripts/build_time/install_packages-${TAG}.sh
 
 RUN /usr/bin/pip install behave
 
