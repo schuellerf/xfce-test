@@ -122,6 +122,14 @@ build() {
         BRANCH=$(git describe --match xfce*|sed -E "s/-[0-9]+-[g0-9a-f]+$//g")
 
         git checkout $BRANCH || echo "Branch $BRANCH not found - leaving default"
+    elif [ "$BRANCH" == "last_tag" ]; then
+        # for more reproducable behavior go given time on master
+        git checkout $(git rev-list -1 --before="${DOWNLOAD_DATE}" master) || echo "Can't switch to specific date $DOWNLOAD_DATE"
+
+        # then start searching the last tag
+        BRANCH=$(git describe --abbrev=0)
+
+        git checkout $BRANCH || echo "Branch $BRANCH not found - leaving default"
     elif git show-ref --verify refs/remotes/origin/$BRANCH &>/dev/null; then
         # if it's a branch go back to the requested time
         # for more reproducable behavior

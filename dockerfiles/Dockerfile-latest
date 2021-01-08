@@ -1,7 +1,7 @@
 FROM ubuntu:20.04
 MAINTAINER Florian Schüller <florian.schueller@gmail.com>
 
-ENV MAIN_BRANCH=last_release
+ENV MAIN_BRANCH=last_tag
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV DISPLAY ${DISPLAY:-:1}
