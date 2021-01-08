@@ -7,7 +7,7 @@ export VIDEO_PREFIX=${VIDEO_PREFIX:-xfce-test_video_}
 if [ -n "${TRAVIS_BRANCH}" ]; then
     # append the travis branch to the video name
     # but replacing / with _
-    export VIDEO_PREFIX="${VIDEO_PREFIX}${TRAVIS_BRANCH//\//_}_"
+    export VIDEO_PREFIX="${VIDEO_PREFIX}${MAIN_BRANCH//\//_}_${TAG}_"
 fi
 
 source /container_scripts/video_helpers.sh

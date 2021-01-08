@@ -9,6 +9,7 @@ services:
 
 before_install:
   - docker build --build-arg PARALLEL_BUILDS=8 --build-arg TRAVIS=${TRAVIS} --tag test-xfce-ubuntu:latest --file dockerfiles/Dockerfile-latest .
+  - docker build --build-arg PARALLEL_BUILDS=8 --build-arg TRAVIS=${TRAVIS} --tag test-xfce-ubuntu:devel --file dockerfiles/Dockerfile-devel .
 
 script:
   - "./travis.sh"
