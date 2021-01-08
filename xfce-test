@@ -7,6 +7,14 @@ LOG=${LOG:-/dev/stdout}
 PARALLEL_BUILDS=${PARALLEL_BUILDS:-0}
 TRAVIS=${TRAVIS:-FALSE}
 
+is_my_git() {
+  if git remote -v 2>/dev/null|grep "schuellerf/xfce-test" &>/dev/null; then
+    return 0
+  else
+    return 1
+  fi
+}
+
 install_me() {
     if grep "^ID=arch" /etc/*-release >/dev/null 2>&1; then
         INSTALL_TARGET=/usr/local/bin/xfce-test
@@ -35,12 +43,14 @@ complete -F _xfce-test_completions xfce-test
         echo "$BASH_COMPLETION" >> ~/.bash_completion
     fi
 
-    # "fall back"
-    $RUN_AS cp $0 ${INSTALL_TARGET}
-
-    echo "Trying to get the latest version"
-    $RUN_AS curl -o ${INSTALL_TARGET} https://raw.githubusercontent.com/schuellerf/xfce-test/master/xfce-test || echo "... well I tried to."
-    $RUN_AS chmod u+x ${INSTALL_TARGET}
+    if is_my_git; then
+      echo "Install local git version"
+      $RUN_AS cp $0 ${INSTALL_TARGET}
+    else
+      echo "Trying to get the latest version"
+      $RUN_AS curl -o ${INSTALL_TARGET} https://raw.githubusercontent.com/schuellerf/xfce-test/master/xfce-test || echo "... well I tried to."
+      $RUN_AS chmod u+x ${INSTALL_TARGET}
+    fi
 
     echo "Installed 'xfce-test' to $(readlink -f ${INSTALL_TARGET})"
     echo "You can just call it with 'xfce-test'"
@@ -116,6 +126,8 @@ usage() {
     echo "                                     are checked out. Starting from the given branch/TAG."
     echo "                                     Also helps to reduce cloning on some rebuilds"
     echo "                       default: ${DOWNLOAD_DATE}"
+    echo "      build_list       List all TAGs you can build here, e.g. with"
+    echo "                       TAG=YOUR_CHOICE_FROM_THIS_LIST LOG=build-${TAG}.log PARALLEL_BUILDS=8 ./xfce-test build"
     echo "  Environment variables:"
     echo "     (useful environment variables you might want to set)"
     echo "      XFSM_VERBOSE     set to \"1\" to get a log file in ~/.xfce4-session.verbose-log"
@@ -151,18 +163,10 @@ get_local_tags() {
   docker images --format "{{.Tag}}" schuellerf/xfce-test
 }
 
-is_my_git() {
-  if git remote -v 2>/dev/null|grep "schuellerf/xfce-test" &>/dev/null; then
-    return 0
-  else
-    return 1
-  fi
-}
-
 MANUAL_MODES=("start" "no-session" "list" "list_local")
 AUTOMATIC_MODES=("screenshots" "behave" "behavevideo" "fulltestvideo")
 
-REPO_MODES=("build")
+REPO_MODES=("build" "build_list")
 WORK_MODES=(${MANUAL_MODES[*]} ${AUTOMATIC_MODES[*]})
 if is_my_git; then
     WORK_MODES+=(${REPO_MODES[*]})
@@ -401,6 +405,7 @@ case $mode in
     docker pull schuellerf/xfce-test:${TAG}
     leave 0
   ;;
+
   "list")
     tags=$(get_tags)
 	  echo "---"
@@ -408,11 +413,20 @@ case $mode in
 	  echo "$tags"
 	  leave 0
   ;;
+
   "list_local")
     echo "$(get_local_tags)"
 	  exit 0
   ;;
-    "build")
+
+  "build_list")
+    echo "---"
+    echo "All TAGs you can build:"
+    ls dockerfiles/Dockerfile-* | awk 'match($0, ".*Dockerfile-(.+)", r) {print r[1]}'
+    leave 0
+  ;;
+
+  "build")
         echo "You are building the container: $TAG"
         echo "DOWNLOAD_DATE is set to ${DOWNLOAD_DATE}"
         echo "Output of the build is written to ${LOG}"
