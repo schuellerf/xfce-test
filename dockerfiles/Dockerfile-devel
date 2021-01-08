@@ -73,6 +73,8 @@ RUN cd git \
  && cd ldtp2 \
  && sudo pip3 install -e .
 
+ENV MAIN_BRANCH=master
+
 RUN /container_scripts/build_all-${TAG}.sh
 
 COPY --chown=xfce-test_user behave /behave_tests
