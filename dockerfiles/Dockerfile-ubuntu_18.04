@@ -1,10 +1,6 @@
 FROM ubuntu:18.04
 MAINTAINER Florian Schüller <florian.schueller@gmail.com>
 
-# fixing to xfce-4.14 mainly for garcon needing newer Automake
-# not available in ubuntu 18.04 (by default)
-ENV MAIN_BRANCH=xfce-4.14
-
 ENV DEBIAN_FRONTEND noninteractive
 ENV DISPLAY ${DISPLAY:-:1}
 
@@ -95,6 +91,10 @@ RUN cd git \
  && git clone -b python3 https://github.com/schuellerf/ldtp2.git \
  && cd ldtp2 \
  && sudo python setup.py install
+
+# fixing to xfce-4.14 mainly for garcon needing newer Automake
+# not available in ubuntu 18.04 (by default)
+ENV MAIN_BRANCH=xfce-4.14
 
 RUN /container_scripts/build_all-${TAG}.sh
 

@@ -1,8 +1,6 @@
 FROM ubuntu:20.04
 MAINTAINER Florian Schüller <florian.schueller@gmail.com>
 
-ENV MAIN_BRANCH=xfce-4.16
-
 ENV DEBIAN_FRONTEND noninteractive
 ENV DISPLAY ${DISPLAY:-:1}
 
@@ -74,6 +72,8 @@ RUN cd git \
  && git clone -b python3 https://github.com/schuellerf/ldtp2.git \
  && cd ldtp2 \
  && sudo pip3 install -e .
+
+ENV MAIN_BRANCH=xfce-4.16
 
 RUN /container_scripts/build_all-${TAG}.sh
 
