@@ -157,7 +157,10 @@ build() {
 
     case $BUILD_TYPE in
         "autogen")
-            [ $SUBSEQUENT_RUN -eq 1 ] && sudo make uninstall
+            if [ $SUBSEQUENT_RUN -eq 1 ]; then
+                sudo make uninstall
+                sudo chown -R xfce-test_user: .
+            fi
 
             ./autogen.sh $PARAMS
             make -j8 >$PIPE
@@ -166,7 +169,10 @@ build() {
             sudo make install >$PIPE
         ;;
         "make")
-            [ $SUBSEQUENT_RUN -eq 1 ] && sudo make uninstall
+            if [ $SUBSEQUENT_RUN -eq 1 ]; then
+                sudo make uninstall
+                sudo chown -R xfce-test_user: .
+            fi
 
             ./configure $PARAMS
             make -j8 >$PIPE
@@ -178,6 +184,7 @@ build() {
             if [ $SUBSEQUENT_RUN -eq 1 ]; then
                 cd build
                 sudo make uninstall
+                sudo chown -R xfce-test_user: ..
             else
                 mkdir build
                 cd build
@@ -200,6 +207,7 @@ build() {
                 pushd builddir
                 sudo ninja uninstall
                 popd
+                sudo chown -R xfce-test_user: .
             fi
             meson --prefix=/usr builddir
             cd builddir
