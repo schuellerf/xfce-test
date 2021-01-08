@@ -7,7 +7,7 @@ ENV DISPLAY ${DISPLAY:-:1}
 ARG TRAVIS=FALSE
 ENV TRAVIS=$TRAVIS
 
-ARG TAG=latest
+ARG TAG=ubuntu_18.04
 ENV TAG=$TAG
 
 RUN apt-get update \
@@ -91,10 +91,6 @@ RUN cd git \
  && git clone -b python3 https://github.com/schuellerf/ldtp2.git \
  && cd ldtp2 \
  && sudo python setup.py install
-
-# fixing to xfce-4.14 mainly for garcon needing newer Automake
-# not available in ubuntu 18.04 (by default)
-ENV MAIN_BRANCH=xfce-4.14
 
 RUN /container_scripts/build_all-${TAG}.sh
 

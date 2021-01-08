@@ -7,7 +7,7 @@ ENV DISPLAY ${DISPLAY:-:1}
 ARG TRAVIS=FALSE
 ENV TRAVIS=$TRAVIS
 
-ARG TAG=latest
+ARG TAG=devel
 ENV TAG=$TAG
 
 RUN apt-get update \
@@ -72,8 +72,6 @@ RUN cd git \
  && git clone -b python3 https://github.com/schuellerf/ldtp2.git \
  && cd ldtp2 \
  && sudo pip3 install -e .
-
-ENV MAIN_BRANCH=master
 
 RUN /container_scripts/build_all-${TAG}.sh
 
