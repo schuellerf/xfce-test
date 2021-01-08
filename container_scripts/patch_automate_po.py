@@ -15,7 +15,7 @@ import os
 
 def patch(file, new_file):
     i=1
-    with open(file, 'r', encoding='utf-8') as in_file, open(new_file, 'w') as out_file:
+    with open(file, 'r', encoding='utf-8') as in_file, open(new_file, 'w', encoding='utf-8') as out_file:
         line_nr=0
         for line in in_file:
             line_nr = line_nr + 1
