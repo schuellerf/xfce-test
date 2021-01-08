@@ -172,10 +172,10 @@ build() {
             sudo make clean >$PIPE
         ;;
         "python")
-            python2 setup.py build
+            python3 setup.py build
             RET=$?
 
-            sudo python2 setup.py install >$PIPE
+            sudo python3 setup.py install >$PIPE
         ;;
         "meson")
             meson --prefix=/usr builddir
