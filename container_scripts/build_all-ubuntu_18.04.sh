@@ -115,11 +115,8 @@ build() {
     git clone $URL $NAME|| export MODULE="$NAME cloning failed"
     cd $NAME || export MODULE="$NAME cloning failed"
     if [ "$BRANCH" == "last_release" ]; then
-        # for more reproducable behavior go given time on master
-        git checkout $(git rev-list -1 --before="${DOWNLOAD_DATE}" master) || echo "Can't switch to specific date $DOWNLOAD_DATE"
-
-        # then start searching the last release
-        BRANCH=$(git describe --match xfce*|sed -E "s/-[0-9]+-[g0-9a-f]+$//g")
+        # then start searching the last release before the given DOWNLOAD_DATE
+        BRANCH=$(git describe --abbrev=0 --tags $(git rev-list --tags --before="${DOWNLOAD_DATE}" master) 2>/dev/null|egrep "xfce-[0-9]+\.[0-9]+.*"|sort -u  --version-sort|tail -n1)
 
         git checkout $BRANCH || echo "Branch $BRANCH not found - leaving default"
     elif [ "$BRANCH" == "last_tag" ]; then

@@ -17,6 +17,21 @@ The automatically created videos are on [my youtube channel](https://www.youtube
 This containers are based on ubuntu with a build from git sources of all core Xfce components + some apps for testing.
 Other distributions and versions will be supported at a later stage!
 
+# Flavors
+
+There are some flavors available (see the dockerfiles/ directory) which mainly destinguish between the base container.
+
+The special tags are described here:
+
+## latest
+Dockerfile-latest currently builds "MAIN_BRANCH=last_tag" which ends up with the current master but going back to the last valid tag set.
+
+## last_release
+Dockerfile-last_release currently builds "MAIN_BRANCH=last_release" which tries to find the last tag starting with "xfce-M.m" which should be a special tag representing some compatibility between the main components
+
+## devel
+Dockerfile-devel really builds "master" so the latest source available
+
 # Travis
 
 The tests are run automatically by [travis](https://travis-ci.org/schuellerf/xfce-test).
