@@ -418,6 +418,9 @@ case $mode in
         echo "Output of the build is written to ${LOG}"
         docker build --build-arg TAG --build-arg TRAVIS --build-arg PARALLEL_BUILDS --build-arg DOWNLOAD_DATE --tag schuellerf/xfce-test:$TAG --file dockerfiles/Dockerfile-${TAG} . > ${LOG}
         docker tag schuellerf/xfce-test:${TAG} schuellerf/xfce-test:${TAG}-${DOWNLOAD_DATE}
+        echo ""
+        echo "Build summary of components:" | tee -a ${LOG}
+        docker run --rm schuellerf/xfce-test:$TAG cat /home/xfce-test_user/version_info.txt | tee -a ${LOG}
         leave 0
     ;;
 esac
