@@ -52,7 +52,7 @@ do_screenshot("thunar", "data") # SMELL: very bad window title & bad way to iden
 do_screenshot("xfce4-clipman-settings", "Clipman Settings")
 do_screenshot("xfce4-display-settings", "Display")
 do_screenshot("xfce4-keyboard-settings", "Keyboard")
-do_screenshot("xfce4-mime-settings", "MIME Type Editor")
+do_screenshot("xfce4-mime-settings", "Default Applications")
 do_screenshot("xfce4-mouse-settings", "Mouse and Touchpad")
 do_screenshot("xfce4-settings-manager", "Settings")
 do_screenshot("xfce4-taskmanager", "Task Manager")
