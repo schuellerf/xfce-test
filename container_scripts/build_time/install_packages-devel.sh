@@ -32,7 +32,7 @@ PACKAGES+=" libnotify-dev"
 PACKAGES+=" libupower-glib-dev"
 
 # for catfish:
-PACKAGES+=" python3-distutils-extra"
+PACKAGES+=" python3-distutils-extra python3-dbus python3-pexpect"
 
 # for ristretto
 PACKAGES+=" libexif-dev"
