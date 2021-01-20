@@ -58,6 +58,9 @@ PACKAGES+=" libgudev-1.0-dev"
 # for xfce4-power-manager
 PACKAGES+=" libupower-glib-dev"
 
+# for elementary-xfce
+PACKAGES+=" optipng"
+
 # Test specific
 # python-wheel is a missing dependency from behave
 # psmisc for "killall"

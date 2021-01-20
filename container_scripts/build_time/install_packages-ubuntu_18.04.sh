@@ -52,6 +52,9 @@ PACKAGES+=" libgstreamer1.0-dev"
 # for  xfce4-mailwatch-plugin
 PACKAGES+=" libgcrypt20-dev"
 
+# for elementary-xfce
+PACKAGES+=" optipng"
+
 
 # Test specific
 # python-wheel is a missing dependency from behave

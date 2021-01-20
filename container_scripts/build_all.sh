@@ -93,6 +93,7 @@ for a in $panelplugins; do
 done
 
 REPOS+=("cmake ${MAIN_BRANCH} ${XFCE_BASE}/panel-plugins/xfce4-whiskermenu-plugin.git xfce4-whiskermenu-plugin")
+REPOS+=("iconmake ${MAIN_BRANCH} https://github.com/shimmerproject/elementary-xfce.git elementary-xfce")
 
 thunarplugins="thunar-archive-plugin
 thunar-media-tags-plugin"
@@ -179,6 +180,19 @@ build() {
             RET=$?
 
             sudo make install >$PIPE
+        ;;
+        "iconmake")
+            if [ $SUBSEQUENT_RUN -eq 1 ]; then
+                sudo make uninstall
+                sudo chown -R xfce-test_user: .
+            fi
+
+            ./configure $PARAMS
+            make -j8 >$PIPE
+            RET=$?
+
+            sudo make install >$PIPE
+            sudo make icon-caches >$PIPE
         ;;
         "cmake")
             if [ $SUBSEQUENT_RUN -eq 1 ]; then
