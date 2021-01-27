@@ -86,6 +86,7 @@ COPY .tmuxinator /home/xfce-test_user/.tmuxinator
 
 RUN mkdir -p ~xfce-test_user/Desktop
 RUN ln -s /container_scripts ~xfce-test_user/Desktop/container_scripts
+RUN ln -s /data ~xfce-test_user/Desktop/data
 RUN ln -s ~xfce-test_user/version_info.txt ~xfce-test_user/Desktop
 RUN mkdir -p ~xfce-test_user/.config
 COPY extra_files/mimeapps.list /home/xfce-test_user/.config/
