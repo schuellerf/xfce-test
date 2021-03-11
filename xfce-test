@@ -6,6 +6,7 @@ RUN_AS=
 LOG=${LOG:-/dev/stdout}
 PARALLEL_BUILDS=${PARALLEL_BUILDS:-0}
 TRAVIS=${TRAVIS:-FALSE}
+TAG='latest'
 
 is_my_git() {
   if git remote -v 2>/dev/null|grep "schuellerf/xfce-test" &>/dev/null; then
@@ -83,6 +84,30 @@ get-free-display(){
         return 0
     done
 }
+
+# checks that the passed tag is available on Dockerhub
+validate_tag(){
+    if [ $# -ne 1 ]; then
+        printf "ERROR: you need to supply one argument!\n"
+        exit 1
+    fi
+    TAG="$1"
+    if [ -z "${TAG}" ]; then
+        TAG='latest'
+        return 0
+    else
+        # check the tag is valid
+        tags="$(get_tags)"
+        for t in ${tags}; do
+            if [ "${t}" = "${TAG}" ]; then
+                return 0
+            fi
+        done
+        # the specified tag doesn't exist on Dockerhub
+        return 1
+    fi
+}
+
 
 # use this X display number for the tests
 export DISPLAY_NUM=$(get-free-display)
@@ -194,17 +219,6 @@ MODES_FOR_CASE=$(IFS=$'|'; echo "${WORK_MODES[*]}")
 shopt -s extglob
 MODES_FOR_CASE="+($MODES_FOR_CASE)"
 
-if [ -z $TAG ]; then
-  if is_my_git; then
-    TAG=$(git rev-parse --abbrev-ref HEAD 2>/dev/null|tr '/' '_')
-    if [[ $TAG == "last_tag" ]]; then
-        TAG=latest
-    fi
-  else
-    TAG=latest
-  fi
-fi
-
 if [ $# -ge 1 ]; then
     case $1 in
         "install")
@@ -227,7 +241,11 @@ if [ $# -ge 1 ]; then
         ;;
         "pull")
             if [ -n "$2" ]; then
-                TAG=$2
+                TAG="$2"
+                if ! validate_tag "${TAG}"; then
+                    printf "The tag '%s' was not found on Dockerhub\n" "${TAG}"
+                    exit 2
+                fi
             fi
 	    mode=$1
         ;;
