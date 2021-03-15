@@ -6,7 +6,7 @@ RUN_AS=
 LOG=${LOG:-/dev/stdout}
 PARALLEL_BUILDS=${PARALLEL_BUILDS:-0}
 TRAVIS=${TRAVIS:-FALSE}
-TAG='latest'
+TAG=${TAG:-latest}
 
 is_my_git() {
   if git remote -v 2>/dev/null|grep "schuellerf/xfce-test" &>/dev/null; then
