@@ -85,21 +85,33 @@ get-free-display(){
     done
 }
 
-# checks that the passed tag is available on Dockerhub
+# checks that the passed tag ($1) is available on Dockerhub or locally ($2)
 validate_tag(){
     TAG="$1"
-    # check the tag is valid
-    tags="$(get_tags)"
+
+    # check against whatever $2 is
+    case "$2" in
+        "Dockerhub")
+        tags="$(get_tags)"
+        location="on Dockerhub"
+    ;;
+        "local")
+        tags="$(get_local_tags)"
+        location="locally"
+    ;;
+    esac
+
     for t in ${tags}; do
         if [ "${t}" = "${TAG}" ]; then
             return 0
         fi
     done
 
-    # the specified tag doesn't exist on Dockerhub,
+    # the specified tag doesn't exist on Dockerhub or locally,
     # so we list the available ones and return non-zero exit code
-    printf "The tag '%s' was not found on Dockerhub\n" "${TAG}"
-    printf "The following tags are available on Dockerhub:\n"
+    printf "The tag '%s' was not found %s\n" "${TAG}" "${location}" >&2
+    printf -- "---\n"
+    printf "The following tags are available %s:\n" "${location}"
     printf "%s\n" "${tags}"
     return 1
 }
@@ -238,7 +250,7 @@ if [ $# -ge 1 ]; then
         "pull")
             if [ -n "$2" ]; then
                 TAG="$2"
-                if ! validate_tag "${TAG}"; then
+                if ! validate_tag "${TAG}" "Dockerhub"; then
                     exit 2
                 fi
             fi
@@ -451,6 +463,13 @@ case $mode in
         leave 0
     ;;
 esac
+
+# check whether the tag the user passed is actually valid
+if ! validate_tag "${TAG}" "Dockerhub" >/dev/null && \
+   ! ( printf "Attempting to find the tag '%s' locally...\n" "${TAG}" && \
+        validate_tag "${TAG}" "local" >/dev/null ); then
+    exit 1
+fi
 
 echo "You are working with the container: $TAG"
 
