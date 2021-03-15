@@ -109,7 +109,7 @@ validate_tag(){
 
     # the specified tag doesn't exist on Dockerhub or locally,
     # so we list the available ones and return non-zero exit code
-    printf "The tag '%s' was not found %s\n" "${TAG}" "${location}" >&2
+    printf "The tag '%s' was not found %s\n" "${TAG}" "${location}"
     printf -- "---\n"
     printf "The following tags are available %s:\n" "${location}"
     printf "%s\n" "${tags}"
@@ -465,9 +465,10 @@ case $mode in
 esac
 
 # check whether the tag the user passed is actually valid
-if ! validate_tag "${TAG}" "Dockerhub" >/dev/null && \
+if ! validate_tag "${TAG}" "Dockerhub" && \
    ! ( printf "Attempting to find the tag '%s' locally...\n" "${TAG}" && \
-        validate_tag "${TAG}" "local" >/dev/null ); then
+        validate_tag "${TAG}" "local" ); then
+    printf "Unable to find the tag '%s' either on Dockerhub or locally, exiting...\n" "${TAG}"
     exit 1
 fi
 
