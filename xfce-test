@@ -87,25 +87,21 @@ get-free-display(){
 
 # checks that the passed tag is available on Dockerhub
 validate_tag(){
-    if [ $# -ne 1 ]; then
-        printf "ERROR: you need to supply one argument!\n"
-        exit 1
-    fi
     TAG="$1"
-    if [ -z "${TAG}" ]; then
-        TAG='latest'
-        return 0
-    else
-        # check the tag is valid
-        tags="$(get_tags)"
-        for t in ${tags}; do
-            if [ "${t}" = "${TAG}" ]; then
-                return 0
-            fi
-        done
-        # the specified tag doesn't exist on Dockerhub
-        return 1
-    fi
+    # check the tag is valid
+    tags="$(get_tags)"
+    for t in ${tags}; do
+        if [ "${t}" = "${TAG}" ]; then
+            return 0
+        fi
+    done
+
+    # the specified tag doesn't exist on Dockerhub,
+    # so we list the available ones and return non-zero exit code
+    printf "The tag '%s' was not found on Dockerhub\n" "${TAG}"
+    printf "The following tags are available on Dockerhub:\n"
+    printf "%s\n" "${tags}"
+    return 1
 }
 
 
@@ -243,7 +239,6 @@ if [ $# -ge 1 ]; then
             if [ -n "$2" ]; then
                 TAG="$2"
                 if ! validate_tag "${TAG}"; then
-                    printf "The tag '%s' was not found on Dockerhub\n" "${TAG}"
                     exit 2
                 fi
             fi
