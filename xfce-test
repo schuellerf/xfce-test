@@ -246,8 +246,8 @@ else
 
     usage
 
-    
-    MODES=(${MODES[*]} "tag" "XFSM_VERBOSE" "LANG" "LOG" "PARALLEL_BUILDS" "KEEP")
+
+    MODES=(${MODES[*]} "tag" "XFSM_VERBOSE" "LANG" "LOG" "PARALLEL_BUILDS" "KEEP" CONTAINER_NAME RESOLUTION)
 
     echo ""
     echo "  -- Commands only for interactive mode"
@@ -357,7 +357,7 @@ else
                 fi
             ;;
             "PARALLEL_BUILDS")
-                read -i $PARALLEL_BUILDS -p "Change number of builds from \"$PARALLEL_BUILDS\" to: " PARALLEL_BUILDS_NEW 
+                read -i $PARALLEL_BUILDS -p "Change number of builds from \"$PARALLEL_BUILDS\" to: " PARALLEL_BUILDS_NEW
 
                 if [ ${#PARALLEL_BUILDS_NEW} -ge 1 ]; then
                     PARALLEL_BUILDS=$PARALLEL_BUILDS_NEW
@@ -430,11 +430,23 @@ case $mode in
         echo "You are building the container: $TAG"
         echo "DOWNLOAD_DATE is set to ${DOWNLOAD_DATE}"
         echo "Output of the build is written to ${LOG}"
-        docker build --build-arg TAG --build-arg TRAVIS --build-arg PARALLEL_BUILDS --build-arg DOWNLOAD_DATE --tag schuellerf/xfce-test:$TAG --file dockerfiles/Dockerfile-${TAG} . > ${LOG}
+        podman build \
+          --build-arg TAG \
+          --build-arg DISPLAY \
+          --build-arg TRAVIS \
+          --build-arg USERSHELL \
+          --build-arg DEFAULT_USER \
+          --build-arg PACMAN \
+          --build-arg PARALLEL_BUILDS \
+          --build-arg DOWNLOAD_DATE \
+          --build-arg MAIN_BRANCH \
+          --build-arg AUTOGEN_OPTIONS \
+          --build-arg CFLAGS \
+          --tag schuellerf/xfce-test:$TAG --file dockerfiles/Dockerfile-${TAG} . > ${LOG}
         docker tag schuellerf/xfce-test:${TAG} schuellerf/xfce-test:${TAG}-${DOWNLOAD_DATE}
         echo ""
         echo "Build summary of components:" | tee -a ${LOG}
-        docker run --rm schuellerf/xfce-test:$TAG cat /home/xfce-test_user/version_info.txt | tee -a ${LOG}
+        docker run --rm schuellerf/xfce-test:$TAG cat /home/${DEFAULT_USER:-xfce-test_user}/version_info.txt | tee -a ${LOG}
         leave 0
     ;;
 esac
@@ -486,7 +498,7 @@ elif [ $mode == "call" ]; then
     RESUME_MODE="--attach"
 fi
 
-DOCKER_MODES="${DOCKER_MODES} --volume /etc/timezone:/etc/timezone"
+#DOCKER_MODES="${DOCKER_MODES} --volume /etc/timezone:/etc/timezone"
 DOCKER_MODES="${DOCKER_MODES} --volume /etc/localtime:/etc/localtime"
 
 if [ -n "$DETACH" ]; then
@@ -505,7 +517,7 @@ if [ -z "$RESUME" ]; then
              --env PARALLEL_BUILDS \
              --volume ${PWD}:/data \
              --volume /tmp/.X11-unix:/tmp/.X11-unix:z \
-             schuellerf/xfce-test:$TAG $COMMAND 
+             schuellerf/xfce-test:$TAG $COMMAND
 else
   docker start ${RESUME_MODE} ${CONTAINER_NAME} ${COMMAND}
 fi
@@ -522,14 +534,14 @@ if [ -n "$DETACH" ]; then
         docker exec --tty --interactive "${CONTAINER_NAME}" /container_scripts/full_test_video.sh
     else
         docker exec --tty --interactive "${CONTAINER_NAME}" bash -c 'echo "This container includes:";
-            cat ~xfce-test_user/version_info.txt;
+            cat ~${DEFAULT_USER:-xfce-test_user}/version_info.txt;
             echo "You might want to call \"tmux attach\" if you know what tmux ( https://tmux.github.io ) is and need to go to the internals."'
         docker exec --tty --interactive "${CONTAINER_NAME}" /bin/bash
     fi
 fi
 
 # Copy out the debug file if it exists
-docker cp "${CONTAINER_NAME}":/home/xfce-test_user/.xfce4-session.verbose-log . 2>/dev/null|| echo ""
+docker cp "${CONTAINER_NAME}":/home/${DEFAULT_USER:-xfce-test_user}/.xfce4-session.verbose-log . 2>/dev/null|| echo ""
 
 # Tear down
 if [ $mode != "no-session" ] && [ $mode != "call" ]; then

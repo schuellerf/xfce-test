@@ -8,6 +8,6 @@ for f in /data/*.mp4; do
 For details see https://github.com/schuellerf/xfce-test/
 
 The versions of the applications in the video are the following:
-$(cat ~xfce-test_user/version_info.txt)"
+$(cat ~${DEFAULT_USER:-xfce-test_user}/version_info.txt)"
     python3 upload-video.py --file $f --title "${TITLE}"  --description "${DESCRIPTION}" --noauth_local_webserver
 done

@@ -4,7 +4,7 @@ XFCE_BASE=https://gitlab.xfce.org
 
 MAIN_BRANCH=${MAIN_BRANCH:-last_release}
 
-VERSION_FILE="/home/xfce-test_user/version_info.txt"
+VERSION_FILE="/home/${DEFAULT_USER:-xfce-test_user}/version_info.txt"
 
 echo "# The OK marks if building this component in the current container was successful" >> $VERSION_FILE
 
@@ -115,7 +115,7 @@ build() {
     MODULE="$NAME"
 
     SUBSEQUENT_RUN=0
-    
+
     if [ ! -d $NAME ]; then
         git clone $URL $NAME|| export MODULE="$NAME cloning failed"
         SUBSEQUENT_RUN=0
@@ -160,7 +160,7 @@ build() {
         "autogen")
             if [ $SUBSEQUENT_RUN -eq 1 ]; then
                 sudo make uninstall
-                sudo chown -R xfce-test_user: .
+                sudo chown -R ${DEFAULT_USER:-xfce-test_user}: .
             fi
 
             ./autogen.sh $PARAMS
@@ -172,7 +172,7 @@ build() {
         "make")
             if [ $SUBSEQUENT_RUN -eq 1 ]; then
                 sudo make uninstall
-                sudo chown -R xfce-test_user: .
+                sudo chown -R ${DEFAULT_USER:-xfce-test_user}: .
             fi
 
             ./configure $PARAMS
@@ -184,7 +184,7 @@ build() {
         "iconmake")
             if [ $SUBSEQUENT_RUN -eq 1 ]; then
                 sudo make uninstall
-                sudo chown -R xfce-test_user: .
+                sudo chown -R ${DEFAULT_USER:-xfce-test_user}: .
             fi
 
             ./configure $PARAMS
@@ -198,7 +198,7 @@ build() {
             if [ $SUBSEQUENT_RUN -eq 1 ]; then
                 cd build
                 sudo make uninstall
-                sudo chown -R xfce-test_user: ..
+                sudo chown -R ${DEFAULT_USER:-xfce-test_user}: ..
             else
                 mkdir build
                 cd build
@@ -221,7 +221,7 @@ build() {
                 pushd builddir
                 sudo ninja uninstall
                 popd
-                sudo chown -R xfce-test_user: .
+                sudo chown -R ${DEFAULT_USER:-xfce-test_user}: .
             fi
             meson --prefix=/usr builddir
             cd builddir
