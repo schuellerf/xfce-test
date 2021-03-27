@@ -21,15 +21,15 @@ ARG PARALLEL_BUILDS='2'
 
 # Line used to invalidate all git clones
 ARG DOWNLOAD_DATE
+ENV DOWNLOAD_DATE="${DOWNLOAD_DATE:-epoch}"
 
 ARG MAIN_BRANCH='master'
+ENV MAIN_BRANCH="${MAIN_BRANCH}"
 
 # useful for affecting compilation
 ARG CFLAGS='-O2 -pipe'
 
-# TODO: The docker image has a line in /etc/pacman.conf that effectively
-# disables the extraction of man pages
-# Enabling this may prolong the build time of this docker image
+# extract manpage archives from installed packages
 ARG EXTRACT_MAN=true
 
 # don't pass in --hosts; let pkgconf use the one it was compiled with
@@ -72,9 +72,6 @@ RUN pacman -Syu --noconfirm \
 
 # Setup the test user
 RUN useradd --create-home --no-log-init --shell "/bin/${USERSHELL}" "${DEFAULT_USER}"
-# RUN usermod --add-subuids 10000-65536 --add-subgids 10000-65536 "${DEFAULT_USER}"
-# RUN echo "${DEFAULT_USER}:10000:65536" >> /etc/subuid
-# RUN echo "${DEFAULT_USER}:10000:65536" >> /etc/subgid
 RUN install -dm755 /etc/sudoers.d/
 RUN { \
     echo "Defaults:%${DEFAULT_USER} targetpw"; \
@@ -123,18 +120,12 @@ RUN install -dm755 --owner=${DEFAULT_USER} /git
 #  && cd ldtp2 \
 #  && sudo pip3 install -e .
 
-ENV PKG_CONFIG_PATH="${PKG_CONFIG_PATH}${PKG_CONFIG_PATH:+:}/usr/local/lib/pkgconfig"
-RUN env PKG_CONFIG_PATH="$(pkg-config --variable=pc_path pkg-config):${PKG_CONFIG_PATH} \
-        /container_scripts/build_all-${TAG}.sh
+# ENV PKG_CONFIG_PATH="${PKG_CONFIG_PATH}${PKG_CONFIG_PATH:+:}/usr/local/lib/pkgconfig"
+# RUN env PKG_CONFIG_PATH="$(pkg-config --variable=pc_path pkg-config):${PKG_CONFIG_PATH} \
+#         /container_scripts/build_all-${TAG}.sh
 
 # clean the install cache
 RUN runuser -u ${DEFAULT_USER} -- ${PACMAN} -Sc --noconfirm
-
-# allow networking
-# https://git.io/JYen7#5-rootless-containers-cannot-ping-hosts
-# RUN install -dm755 /etc/sysctl.d/
-# RUN echo 'net.ipv4.ping_group_range=0 100000' >/etc/sysctl.d/20-unprivileged-pings
-# RUN echo 'kernel.unprivileged_userns_clone=1' > /etc/sysctl.d/30-userns
 
 COPY behave /behave_tests
 

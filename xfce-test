@@ -498,7 +498,9 @@ elif [ $mode == "call" ]; then
     RESUME_MODE="--attach"
 fi
 
-#DOCKER_MODES="${DOCKER_MODES} --volume /etc/timezone:/etc/timezone"
+if [ -f '/etc/timezone' ]; then
+  DOCKER_MODES="${DOCKER_MODES} --volume /etc/timezone:/etc/timezone"
+fi
 DOCKER_MODES="${DOCKER_MODES} --volume /etc/localtime:/etc/localtime"
 
 if [ -n "$DETACH" ]; then
