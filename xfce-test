@@ -197,7 +197,7 @@ MODES_FOR_CASE="+($MODES_FOR_CASE)"
 if [ -z $TAG ]; then
   if is_my_git; then
     TAG=$(git rev-parse --abbrev-ref HEAD 2>/dev/null|tr '/' '_')
-    if [[ $TAG == "last_tag" ]]; then
+    if [[ $TAG == "last_tag" ]] || [[ $TAG == "master" ]]; then
         TAG=latest
     fi
   else
